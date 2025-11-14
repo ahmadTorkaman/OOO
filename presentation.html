@@ -96,6 +96,36 @@
       width: 100% !important;
       height: 100% !important;
     }
+
+    /* Ball labels */
+    .ball-labels {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .ball-label {
+      position: absolute;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      color: #000000;
+      white-space: nowrap;
+      transform: translate(-50%, -50%);
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .ball-label.small {
+      font-size: 3rem;
+    }
+
+    .ball-label.large {
+      font-size: 2.5rem;
+      transform: translate(0, -50%);
+    }
   </style>
 </head>
 <body>
@@ -117,7 +147,7 @@
 
   <!-- Main App - Using type=module for ES imports -->
   <script type="module">
-    import React, { useState, useRef, useEffect, useMemo, forwardRef, createElement as h } from 'react';
+    import React, { useState, useRef, useEffect, useMemo, forwardRef, useCallback, createElement as h } from 'react';
     import { createRoot } from 'react-dom/client';
 
     // Import from ESM
@@ -230,7 +260,9 @@
       clumpFactor = 1.2,
       cursorBallSize = 2,
       cursorBallColor = '#6a7fc1',
-      enableTransparency = true
+      enableTransparency = true,
+      alignMode = false,
+      onBallPositionsUpdate = null
     }) {
       const containerRef = useRef(null);
 
@@ -331,33 +363,68 @@
           const elapsed = (t - startTime) * 0.001;
           program.uniforms.iTime.value = elapsed;
 
-          // Flowing animation for all balls
-          for (let i = 0; i < effectiveBallCount; i++) {
-            const p = ballParams[i];
-            const dt = elapsed * speed * p.dtFactor;
-            const th = p.st + dt;
-            const x = Math.cos(th);
-            const y = Math.sin(th + dt * p.toggle);
-            const posX = x * p.baseScale * clumpFactor;
-            const posY = y * p.baseScale * clumpFactor;
-            metaBallsUniform[i].set(posX, posY, p.radius);
+          if (alignMode) {
+            // Aligned mode: balls in vertical column with subtle breathing
+            const centerX = 0;
+            const spacing = 18; // Vertical spacing between balls
+
+            for (let i = 0; i < 3; i++) {
+              // Vertical positions: top, middle, bottom
+              const baseY = (i - 1) * spacing; // -spacing, 0, spacing
+
+              // Subtle breathing motion
+              const breathX = Math.sin(elapsed * 0.5 + i * 0.3) * 0.8;
+              const breathY = Math.cos(elapsed * 0.6 + i * 0.4) * 0.6;
+
+              metaBallsUniform[i].set(centerX + breathX, baseY + breathY, 2.5);
+            }
+
+            // Hide cursor ball
+            program.uniforms.iMouse.value.set(10000, 10000, 0);
+          } else {
+            // Flowing animation for all balls
+            for (let i = 0; i < effectiveBallCount; i++) {
+              const p = ballParams[i];
+              const dt = elapsed * speed * p.dtFactor;
+              const th = p.st + dt;
+              const x = Math.cos(th);
+              const y = Math.sin(th + dt * p.toggle);
+              const posX = x * p.baseScale * clumpFactor;
+              const posY = y * p.baseScale * clumpFactor;
+              metaBallsUniform[i].set(posX, posY, p.radius);
+            }
+
+            let targetX, targetY;
+            if (pointerInside) {
+              targetX = pointerX;
+              targetY = pointerY;
+            } else {
+              const cx = gl.canvas.width * 0.5;
+              const cy = gl.canvas.height * 0.5;
+              const rx = gl.canvas.width * 0.15;
+              const ry = gl.canvas.height * 0.15;
+              targetX = cx + Math.cos(elapsed * speed) * rx;
+              targetY = cy + Math.sin(elapsed * speed) * ry;
+            }
+            mouseBallPos.x += (targetX - mouseBallPos.x) * hoverSmoothness;
+            mouseBallPos.y += (targetY - mouseBallPos.y) * hoverSmoothness;
+            program.uniforms.iMouse.value.set(mouseBallPos.x, mouseBallPos.y, 0);
           }
 
-          let targetX, targetY;
-          if (pointerInside) {
-            targetX = pointerX;
-            targetY = pointerY;
-          } else {
-            const cx = gl.canvas.width * 0.5;
-            const cy = gl.canvas.height * 0.5;
-            const rx = gl.canvas.width * 0.15;
-            const ry = gl.canvas.height * 0.15;
-            targetX = cx + Math.cos(elapsed * speed) * rx;
-            targetY = cy + Math.sin(elapsed * speed) * ry;
+          // Report ball positions for labels
+          if (onBallPositionsUpdate && container) {
+            const containerRect = container.getBoundingClientRect();
+            const scale = animationSize / gl.canvas.height;
+            const positions = [];
+            for (let i = 0; i < Math.min(3, effectiveBallCount); i++) {
+              const ball = metaBallsUniform[i];
+              // Convert from shader space to screen space
+              const screenX = (ball.x / scale) + containerRect.width / 2;
+              const screenY = (-ball.y / scale) + containerRect.height / 2;
+              positions.push({ x: screenX, y: screenY });
+            }
+            onBallPositionsUpdate(positions);
           }
-          mouseBallPos.x += (targetX - mouseBallPos.x) * hoverSmoothness;
-          mouseBallPos.y += (targetY - mouseBallPos.y) * hoverSmoothness;
-          program.uniforms.iMouse.value.set(mouseBallPos.x, mouseBallPos.y, 0);
 
           renderer.render({ scene: mesh });
         }
@@ -374,7 +441,7 @@
           }
           gl.getExtension('WEBGL_lose_context')?.loseContext();
         };
-      }, [color, cursorBallColor, speed, enableMouseInteraction, hoverSmoothness, animationSize, ballCount, clumpFactor, cursorBallSize, enableTransparency]);
+      }, [color, cursorBallColor, speed, enableMouseInteraction, hoverSmoothness, animationSize, ballCount, clumpFactor, cursorBallSize, enableTransparency, alignMode, onBallPositionsUpdate]);
 
       return h('div', { ref: containerRef, className: `metaballs-container ${className}` });
     }
@@ -569,11 +636,27 @@
 
     function App() {
       const containerRef = useRef(null);
-      const [hideText, setHideText] = useState(false);
+      const [clickState, setClickState] = useState(0); // 0: initial, 1: first click, 2: second click
+      const [ballPositions, setBallPositions] = useState([]);
 
       const handleClick = () => {
-        setHideText(true);
+        if (clickState < 2) {
+          setClickState(prev => prev + 1);
+        }
       };
+
+      const handleBallPositionsUpdate = useCallback((positions) => {
+        setBallPositions(positions);
+      }, []);
+
+      // Labels for each state
+      const getLabels = () => {
+        if (clickState === 0) return null;
+        if (clickState === 1) return ['O', 'O', 'O'];
+        return ['One System', 'One Tool', 'One Design'];
+      };
+
+      const labels = getLabels();
 
       return h(
         'div',
@@ -581,7 +664,7 @@
           className: 'slide-hero',
           ref: containerRef,
           onClick: handleClick,
-          style: { cursor: hideText ? 'default' : 'pointer' }
+          style: { cursor: clickState < 2 ? 'pointer' : 'default' }
         },
         h(
           'div',
@@ -592,23 +675,48 @@
             cursorBallSize: 2,
             ballCount: 3,
             animationSize: 30,
-            enableMouseInteraction: true,
+            enableMouseInteraction: clickState < 2,
             enableTransparency: true,
             hoverSmoothness: 0.05,
             clumpFactor: 0.8,
-            speed: 0.2
-          })
+            speed: 0.2,
+            alignMode: clickState === 2,
+            onBallPositionsUpdate: handleBallPositionsUpdate
+          }),
+          // Ball labels
+          labels && h(
+            'div',
+            { className: 'ball-labels' },
+            labels.map((label, i) =>
+              ballPositions[i] && h(
+                motion.div,
+                {
+                  key: i,
+                  className: `ball-label ${clickState === 1 ? 'small' : 'large'}`,
+                  initial: { opacity: 0, scale: 0 },
+                  animate: {
+                    opacity: 1,
+                    scale: 1,
+                    left: clickState === 2 ? `${ballPositions[i].x + 120}px` : `${ballPositions[i].x}px`,
+                    top: `${ballPositions[i].y}px`
+                  },
+                  transition: { duration: 0.8, ease: [0.4, 0, 0.2, 1] }
+                },
+                label
+              )
+            )
+          )
         ),
         h(
           motion.div,
           {
             className: 'hero-content',
             animate: {
-              opacity: hideText ? 0 : 1,
-              scale: hideText ? 0.8 : 1
+              opacity: clickState === 0 ? 1 : 0,
+              scale: clickState === 0 ? 1 : 0.8
             },
             transition: { duration: 0.6, ease: 'easeOut' },
-            style: { pointerEvents: hideText ? 'none' : 'auto' }
+            style: { pointerEvents: clickState === 0 ? 'auto' : 'none' }
           },
           h(
             'div',
