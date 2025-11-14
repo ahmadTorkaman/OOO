@@ -111,11 +111,10 @@
     .ball-label {
       position: absolute;
       font-family: 'Montserrat', sans-serif;
-      font-weight: 700;
+      font-weight: 100;
       color: #000000;
       white-space: nowrap;
       transform: translate(-50%, -50%);
-      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .ball-label.small {
@@ -366,7 +365,7 @@
           if (alignMode) {
             // Aligned mode: balls in vertical column with subtle breathing
             const centerX = 0;
-            const spacing = 18; // Vertical spacing between balls
+            const spacing = 25; // Vertical spacing between balls
 
             for (let i = 0; i < 3; i++) {
               // Vertical positions: top, middle, bottom
@@ -691,9 +690,14 @@
               ballPositions[i] && h(
                 motion.div,
                 {
-                  key: i,
+                  key: `${clickState}-${i}`,
                   className: `ball-label ${clickState === 1 ? 'small' : 'large'}`,
-                  initial: { opacity: 0, scale: 0 },
+                  initial: {
+                    opacity: 1,
+                    scale: 1,
+                    left: `${ballPositions[i].x}px`,
+                    top: `${ballPositions[i].y}px`
+                  },
                   animate: {
                     opacity: 1,
                     scale: 1,
