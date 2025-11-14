@@ -1,0 +1,6 @@
+npm install motion
+npm install ogl
+npx shadcn@latest add @react-bits/GradientText-JS-CSS
+npx shadcn@latest add @react-bits/Folder-JS-CSS
+npm install matter-js
+npm install gsap
