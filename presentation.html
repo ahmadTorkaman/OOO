@@ -283,7 +283,7 @@
           const baseScale = 5.0 + h1[1] * (10.0 - 5.0);
           const h2 = hash33(h1);
           const toggle = Math.floor(h2[0] * 2.0);
-          const radiusVal = 0.5 + h2[2] * (2.0 - 0.5);
+          const radiusVal = 2.5; // Same size for all balls
           ballParams.push({ st, dtFactor, baseScale, toggle, radius: radiusVal });
         }
 
@@ -591,11 +591,11 @@
             cursorBallColor: '#6a7fc1',
             cursorBallSize: 2,
             ballCount: 3,
-            animationSize: 40,
+            animationSize: 30,
             enableMouseInteraction: true,
             enableTransparency: true,
             hoverSmoothness: 0.05,
-            clumpFactor: 1.2,
+            clumpFactor: 0.8,
             speed: 0.2
           })
         ),
