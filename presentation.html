@@ -101,14 +101,12 @@
 <body>
   <div id="root"></div>
 
-  <!-- React from CDN (UMD) -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-
   <!-- Import map for ES modules -->
   <script type="importmap">
     {
       "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
         "motion/react": "https://esm.sh/motion@11.14.4/react",
         "ogl": "https://esm.sh/ogl@1.0.6"
       }
@@ -117,8 +115,8 @@
 
   <!-- Main App - Using type=module for ES imports -->
   <script type="module">
-    const { useState, useRef, useEffect, useMemo, forwardRef, createElement: h } = React;
-    const { createRoot } = ReactDOM;
+    import React, { useState, useRef, useEffect, useMemo, forwardRef, createElement as h } from 'react';
+    import { createRoot } from 'react-dom/client';
 
     // Import from ESM
     import { motion } from 'motion/react';
