@@ -230,7 +230,8 @@
       clumpFactor = 1.2,
       cursorBallSize = 2,
       cursorBallColor = '#6a7fc1',
-      enableTransparency = true
+      enableTransparency = true,
+      moleculeMode = false
     }) {
       const containerRef = useRef(null);
 
@@ -331,32 +332,56 @@
           const elapsed = (t - startTime) * 0.001;
           program.uniforms.iTime.value = elapsed;
 
-          for (let i = 0; i < effectiveBallCount; i++) {
-            const p = ballParams[i];
-            const dt = elapsed * speed * p.dtFactor;
-            const th = p.st + dt;
-            const x = Math.cos(th);
-            const y = Math.sin(th + dt * p.toggle);
-            const posX = x * p.baseScale * clumpFactor;
-            const posY = y * p.baseScale * clumpFactor;
-            metaBallsUniform[i].set(posX, posY, p.radius);
-          }
+          if (moleculeMode) {
+            // O3 molecule structure: 3 atoms in bent configuration (~117° bond angle)
+            // Position them in screen space
+            const spacing = 15; // Distance between atoms
+            const angle = (117 * Math.PI) / 180; // O3 bond angle
 
-          let targetX, targetY;
-          if (pointerInside) {
-            targetX = pointerX;
-            targetY = pointerY;
+            // Central oxygen atom
+            metaBallsUniform[0].set(0, 0, 3);
+
+            // Left oxygen atom
+            const leftX = -spacing * Math.cos(angle / 2);
+            const leftY = spacing * Math.sin(angle / 2);
+            metaBallsUniform[1].set(leftX, leftY, 3);
+
+            // Right oxygen atom
+            const rightX = spacing * Math.cos(angle / 2);
+            const rightY = spacing * Math.sin(angle / 2);
+            metaBallsUniform[2].set(rightX, rightY, 3);
+
+            // Hide cursor ball
+            program.uniforms.iMouse.value.set(10000, 10000, 0);
           } else {
-            const cx = gl.canvas.width * 0.5;
-            const cy = gl.canvas.height * 0.5;
-            const rx = gl.canvas.width * 0.15;
-            const ry = gl.canvas.height * 0.15;
-            targetX = cx + Math.cos(elapsed * speed) * rx;
-            targetY = cy + Math.sin(elapsed * speed) * ry;
+            // Original flowing animation
+            for (let i = 0; i < effectiveBallCount; i++) {
+              const p = ballParams[i];
+              const dt = elapsed * speed * p.dtFactor;
+              const th = p.st + dt;
+              const x = Math.cos(th);
+              const y = Math.sin(th + dt * p.toggle);
+              const posX = x * p.baseScale * clumpFactor;
+              const posY = y * p.baseScale * clumpFactor;
+              metaBallsUniform[i].set(posX, posY, p.radius);
+            }
+
+            let targetX, targetY;
+            if (pointerInside) {
+              targetX = pointerX;
+              targetY = pointerY;
+            } else {
+              const cx = gl.canvas.width * 0.5;
+              const cy = gl.canvas.height * 0.5;
+              const rx = gl.canvas.width * 0.15;
+              const ry = gl.canvas.height * 0.15;
+              targetX = cx + Math.cos(elapsed * speed) * rx;
+              targetY = cy + Math.sin(elapsed * speed) * ry;
+            }
+            mouseBallPos.x += (targetX - mouseBallPos.x) * hoverSmoothness;
+            mouseBallPos.y += (targetY - mouseBallPos.y) * hoverSmoothness;
+            program.uniforms.iMouse.value.set(mouseBallPos.x, mouseBallPos.y, 0);
           }
-          mouseBallPos.x += (targetX - mouseBallPos.x) * hoverSmoothness;
-          mouseBallPos.y += (targetY - mouseBallPos.y) * hoverSmoothness;
-          program.uniforms.iMouse.value.set(mouseBallPos.x, mouseBallPos.y, 0);
 
           renderer.render({ scene: mesh });
         }
@@ -373,9 +398,52 @@
           }
           gl.getExtension('WEBGL_lose_context')?.loseContext();
         };
-      }, [color, cursorBallColor, speed, enableMouseInteraction, hoverSmoothness, animationSize, ballCount, clumpFactor, cursorBallSize, enableTransparency]);
+      }, [color, cursorBallColor, speed, enableMouseInteraction, hoverSmoothness, animationSize, ballCount, clumpFactor, cursorBallSize, enableTransparency, moleculeMode]);
 
       return h('div', { ref: containerRef, className: `metaballs-container ${className}` });
+    }
+
+    // Wrapper to add bond lines for molecule mode
+    function MetaBallsMolecule({ moleculeMode, ...props }) {
+      return h(
+        'div',
+        { style: { position: 'relative', width: '100%', height: '100%' } },
+        h(MetaBalls, { moleculeMode, ...props }),
+        moleculeMode && h(
+          'svg',
+          {
+            style: {
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              pointerEvents: 'none',
+              zIndex: 2
+            }
+          },
+          // Line from center to left atom
+          h('line', {
+            x1: '50%',
+            y1: '50%',
+            x2: 'calc(50% - 80px)',
+            y2: 'calc(50% + 60px)',
+            stroke: '#4c62ba',
+            strokeWidth: '3',
+            opacity: '0.6'
+          }),
+          // Line from center to right atom
+          h('line', {
+            x1: '50%',
+            y1: '50%',
+            x2: 'calc(50% + 80px)',
+            y2: 'calc(50% + 60px)',
+            stroke: '#4c62ba',
+            strokeWidth: '3',
+            opacity: '0.6'
+          })
+        )
+      );
     }
 
     // ============================================
@@ -568,29 +636,47 @@
 
     function App() {
       const containerRef = useRef(null);
+      const [isMolecule, setIsMolecule] = useState(false);
+
+      const handleClick = () => {
+        setIsMolecule(true);
+      };
 
       return h(
         'div',
-        { className: 'slide-hero', ref: containerRef },
+        {
+          className: 'slide-hero',
+          ref: containerRef,
+          onClick: handleClick,
+          style: { cursor: isMolecule ? 'default' : 'pointer' }
+        },
         h(
           'div',
           { className: 'metaballs-background' },
-          h(MetaBalls, {
+          h(MetaBallsMolecule, {
             color: '#4c62ba',
             cursorBallColor: '#6a7fc1',
             cursorBallSize: 2,
-            ballCount: 12,
+            ballCount: isMolecule ? 3 : 12,
             animationSize: 40,
-            enableMouseInteraction: true,
+            enableMouseInteraction: !isMolecule,
             enableTransparency: true,
             hoverSmoothness: 0.05,
             clumpFactor: 1.2,
-            speed: 0.2
+            speed: 0.2,
+            moleculeMode: isMolecule
           })
         ),
         h(
-          'div',
-          { className: 'hero-content' },
+          motion.div,
+          {
+            className: 'hero-content',
+            animate: {
+              opacity: isMolecule ? 0 : 1,
+              scale: isMolecule ? 0.8 : 1
+            },
+            transition: { duration: 0.6, ease: 'easeOut' }
+          },
           h(
             'div',
             { className: 'ozone-logo' },
