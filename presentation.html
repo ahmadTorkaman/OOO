@@ -226,12 +226,11 @@
       enableMouseInteraction = true,
       hoverSmoothness = 0.05,
       animationSize = 40,
-      ballCount = 12,
+      ballCount = 3,
       clumpFactor = 1.2,
       cursorBallSize = 2,
       cursorBallColor = '#6a7fc1',
-      enableTransparency = true,
-      moleculeMode = false
+      enableTransparency = true
     }) {
       const containerRef = useRef(null);
 
@@ -332,69 +331,33 @@
           const elapsed = (t - startTime) * 0.001;
           program.uniforms.iTime.value = elapsed;
 
-          if (moleculeMode) {
-            // O3 molecule structure: 3 atoms in bent configuration (~117° bond angle)
-            // But the whole structure HOVERS/FLOATS
-            const spacing = 15; // Distance between atoms
-            const angle = (117 * Math.PI) / 180; // O3 bond angle
-
-            // Gentle hovering motion for the entire molecule
-            const hoverSpeed = speed * 0.3; // Slower than original
-            const hoverRadius = 8; // How far it drifts
-
-            // Center point of molecule hovers in a gentle pattern
-            const centerX = Math.sin(elapsed * hoverSpeed) * hoverRadius + Math.cos(elapsed * hoverSpeed * 0.7) * hoverRadius * 0.5;
-            const centerY = Math.cos(elapsed * hoverSpeed * 0.8) * hoverRadius + Math.sin(elapsed * hoverSpeed * 1.2) * hoverRadius * 0.3;
-
-            // Central oxygen atom (with slight individual hover)
-            const centerJitter = Math.sin(elapsed * 2) * 0.5;
-            metaBallsUniform[0].set(centerX + centerJitter, centerY, 3);
-
-            // Left oxygen atom (maintains bond angle, adds its own subtle motion)
-            const leftX = centerX + (-spacing * Math.cos(angle / 2));
-            const leftY = centerY + (spacing * Math.sin(angle / 2));
-            const leftJitterX = Math.sin(elapsed * 1.7) * 0.4;
-            const leftJitterY = Math.cos(elapsed * 2.1) * 0.3;
-            metaBallsUniform[1].set(leftX + leftJitterX, leftY + leftJitterY, 3);
-
-            // Right oxygen atom (maintains bond angle, adds its own subtle motion)
-            const rightX = centerX + (spacing * Math.cos(angle / 2));
-            const rightY = centerY + (spacing * Math.sin(angle / 2));
-            const rightJitterX = Math.cos(elapsed * 1.9) * 0.4;
-            const rightJitterY = Math.sin(elapsed * 2.3) * 0.3;
-            metaBallsUniform[2].set(rightX + rightJitterX, rightY + rightJitterY, 3);
-
-            // Hide cursor ball
-            program.uniforms.iMouse.value.set(10000, 10000, 0);
-          } else {
-            // Original flowing animation
-            for (let i = 0; i < effectiveBallCount; i++) {
-              const p = ballParams[i];
-              const dt = elapsed * speed * p.dtFactor;
-              const th = p.st + dt;
-              const x = Math.cos(th);
-              const y = Math.sin(th + dt * p.toggle);
-              const posX = x * p.baseScale * clumpFactor;
-              const posY = y * p.baseScale * clumpFactor;
-              metaBallsUniform[i].set(posX, posY, p.radius);
-            }
-
-            let targetX, targetY;
-            if (pointerInside) {
-              targetX = pointerX;
-              targetY = pointerY;
-            } else {
-              const cx = gl.canvas.width * 0.5;
-              const cy = gl.canvas.height * 0.5;
-              const rx = gl.canvas.width * 0.15;
-              const ry = gl.canvas.height * 0.15;
-              targetX = cx + Math.cos(elapsed * speed) * rx;
-              targetY = cy + Math.sin(elapsed * speed) * ry;
-            }
-            mouseBallPos.x += (targetX - mouseBallPos.x) * hoverSmoothness;
-            mouseBallPos.y += (targetY - mouseBallPos.y) * hoverSmoothness;
-            program.uniforms.iMouse.value.set(mouseBallPos.x, mouseBallPos.y, 0);
+          // Flowing animation for all balls
+          for (let i = 0; i < effectiveBallCount; i++) {
+            const p = ballParams[i];
+            const dt = elapsed * speed * p.dtFactor;
+            const th = p.st + dt;
+            const x = Math.cos(th);
+            const y = Math.sin(th + dt * p.toggle);
+            const posX = x * p.baseScale * clumpFactor;
+            const posY = y * p.baseScale * clumpFactor;
+            metaBallsUniform[i].set(posX, posY, p.radius);
           }
+
+          let targetX, targetY;
+          if (pointerInside) {
+            targetX = pointerX;
+            targetY = pointerY;
+          } else {
+            const cx = gl.canvas.width * 0.5;
+            const cy = gl.canvas.height * 0.5;
+            const rx = gl.canvas.width * 0.15;
+            const ry = gl.canvas.height * 0.15;
+            targetX = cx + Math.cos(elapsed * speed) * rx;
+            targetY = cy + Math.sin(elapsed * speed) * ry;
+          }
+          mouseBallPos.x += (targetX - mouseBallPos.x) * hoverSmoothness;
+          mouseBallPos.y += (targetY - mouseBallPos.y) * hoverSmoothness;
+          program.uniforms.iMouse.value.set(mouseBallPos.x, mouseBallPos.y, 0);
 
           renderer.render({ scene: mesh });
         }
@@ -411,52 +374,9 @@
           }
           gl.getExtension('WEBGL_lose_context')?.loseContext();
         };
-      }, [color, cursorBallColor, speed, enableMouseInteraction, hoverSmoothness, animationSize, ballCount, clumpFactor, cursorBallSize, enableTransparency, moleculeMode]);
+      }, [color, cursorBallColor, speed, enableMouseInteraction, hoverSmoothness, animationSize, ballCount, clumpFactor, cursorBallSize, enableTransparency]);
 
       return h('div', { ref: containerRef, className: `metaballs-container ${className}` });
-    }
-
-    // Wrapper to add bond lines for molecule mode
-    function MetaBallsMolecule({ moleculeMode, ...props }) {
-      return h(
-        'div',
-        { style: { position: 'relative', width: '100%', height: '100%' } },
-        h(MetaBalls, { moleculeMode, ...props }),
-        moleculeMode && h(
-          'svg',
-          {
-            style: {
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              pointerEvents: 'none',
-              zIndex: 2
-            }
-          },
-          // Line from center to left atom
-          h('line', {
-            x1: '50%',
-            y1: '50%',
-            x2: 'calc(50% - 80px)',
-            y2: 'calc(50% + 60px)',
-            stroke: '#4c62ba',
-            strokeWidth: '3',
-            opacity: '0.6'
-          }),
-          // Line from center to right atom
-          h('line', {
-            x1: '50%',
-            y1: '50%',
-            x2: 'calc(50% + 80px)',
-            y2: 'calc(50% + 60px)',
-            stroke: '#4c62ba',
-            strokeWidth: '3',
-            opacity: '0.6'
-          })
-        )
-      );
     }
 
     // ============================================
@@ -649,10 +569,10 @@
 
     function App() {
       const containerRef = useRef(null);
-      const [isMolecule, setIsMolecule] = useState(false);
+      const [hideText, setHideText] = useState(false);
 
       const handleClick = () => {
-        setIsMolecule(true);
+        setHideText(true);
       };
 
       return h(
@@ -661,23 +581,22 @@
           className: 'slide-hero',
           ref: containerRef,
           onClick: handleClick,
-          style: { cursor: isMolecule ? 'default' : 'pointer' }
+          style: { cursor: hideText ? 'default' : 'pointer' }
         },
         h(
           'div',
           { className: 'metaballs-background' },
-          h(MetaBallsMolecule, {
+          h(MetaBalls, {
             color: '#4c62ba',
             cursorBallColor: '#6a7fc1',
             cursorBallSize: 2,
-            ballCount: isMolecule ? 3 : 12,
+            ballCount: 3,
             animationSize: 40,
-            enableMouseInteraction: !isMolecule,
+            enableMouseInteraction: true,
             enableTransparency: true,
             hoverSmoothness: 0.05,
             clumpFactor: 1.2,
-            speed: 0.2,
-            moleculeMode: isMolecule
+            speed: 0.2
           })
         ),
         h(
@@ -685,10 +604,11 @@
           {
             className: 'hero-content',
             animate: {
-              opacity: isMolecule ? 0 : 1,
-              scale: isMolecule ? 0.8 : 1
+              opacity: hideText ? 0 : 1,
+              scale: hideText ? 0.8 : 1
             },
-            transition: { duration: 0.6, ease: 'easeOut' }
+            transition: { duration: 0.6, ease: 'easeOut' },
+            style: { pointerEvents: hideText ? 'none' : 'auto' }
           },
           h(
             'div',
