@@ -334,22 +334,35 @@
 
           if (moleculeMode) {
             // O3 molecule structure: 3 atoms in bent configuration (~117° bond angle)
-            // Position them in screen space
+            // But the whole structure HOVERS/FLOATS
             const spacing = 15; // Distance between atoms
             const angle = (117 * Math.PI) / 180; // O3 bond angle
 
-            // Central oxygen atom
-            metaBallsUniform[0].set(0, 0, 3);
+            // Gentle hovering motion for the entire molecule
+            const hoverSpeed = speed * 0.3; // Slower than original
+            const hoverRadius = 8; // How far it drifts
 
-            // Left oxygen atom
-            const leftX = -spacing * Math.cos(angle / 2);
-            const leftY = spacing * Math.sin(angle / 2);
-            metaBallsUniform[1].set(leftX, leftY, 3);
+            // Center point of molecule hovers in a gentle pattern
+            const centerX = Math.sin(elapsed * hoverSpeed) * hoverRadius + Math.cos(elapsed * hoverSpeed * 0.7) * hoverRadius * 0.5;
+            const centerY = Math.cos(elapsed * hoverSpeed * 0.8) * hoverRadius + Math.sin(elapsed * hoverSpeed * 1.2) * hoverRadius * 0.3;
 
-            // Right oxygen atom
-            const rightX = spacing * Math.cos(angle / 2);
-            const rightY = spacing * Math.sin(angle / 2);
-            metaBallsUniform[2].set(rightX, rightY, 3);
+            // Central oxygen atom (with slight individual hover)
+            const centerJitter = Math.sin(elapsed * 2) * 0.5;
+            metaBallsUniform[0].set(centerX + centerJitter, centerY, 3);
+
+            // Left oxygen atom (maintains bond angle, adds its own subtle motion)
+            const leftX = centerX + (-spacing * Math.cos(angle / 2));
+            const leftY = centerY + (spacing * Math.sin(angle / 2));
+            const leftJitterX = Math.sin(elapsed * 1.7) * 0.4;
+            const leftJitterY = Math.cos(elapsed * 2.1) * 0.3;
+            metaBallsUniform[1].set(leftX + leftJitterX, leftY + leftJitterY, 3);
+
+            // Right oxygen atom (maintains bond angle, adds its own subtle motion)
+            const rightX = centerX + (spacing * Math.cos(angle / 2));
+            const rightY = centerY + (spacing * Math.sin(angle / 2));
+            const rightJitterX = Math.cos(elapsed * 1.9) * 0.4;
+            const rightJitterY = Math.sin(elapsed * 2.3) * 0.3;
+            metaBallsUniform[2].set(rightX + rightJitterX, rightY + rightJitterY, 3);
 
             // Hide cursor ball
             program.uniforms.iMouse.value.set(10000, 10000, 0);
