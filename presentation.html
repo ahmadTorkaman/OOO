@@ -365,11 +365,11 @@
           if (alignMode) {
             // Aligned mode: balls in vertical column with subtle breathing
             const centerX = 0;
-            const spacing = 25; // Vertical spacing between balls
+            const spacing = 40; // Vertical spacing between balls - increased for visibility
 
             for (let i = 0; i < 3; i++) {
               // Vertical positions: top, middle, bottom
-              const baseY = (i - 1) * spacing; // -spacing, 0, spacing
+              const baseY = (i - 1) * spacing; // -40, 0, 40
 
               // Subtle breathing motion
               const breathX = Math.sin(elapsed * 0.5 + i * 0.3) * 0.8;
@@ -688,23 +688,15 @@
             { className: 'ball-labels' },
             labels.map((label, i) =>
               ballPositions[i] && h(
-                motion.div,
+                'div',
                 {
-                  key: `${clickState}-${i}`,
+                  key: i,
                   className: `ball-label ${clickState === 1 ? 'small' : 'large'}`,
-                  initial: {
-                    opacity: 1,
-                    scale: 1,
-                    left: `${ballPositions[i].x}px`,
-                    top: `${ballPositions[i].y}px`
-                  },
-                  animate: {
-                    opacity: 1,
-                    scale: 1,
+                  style: {
                     left: clickState === 2 ? `${ballPositions[i].x + 120}px` : `${ballPositions[i].x}px`,
-                    top: `${ballPositions[i].y}px`
-                  },
-                  transition: { duration: 0.8, ease: [0.4, 0, 0.2, 1] }
+                    top: `${ballPositions[i].y}px`,
+                    transition: clickState === 2 ? 'left 0.8s cubic-bezier(0.4, 0, 0.2, 1), font-size 0.8s cubic-bezier(0.4, 0, 0.2, 1)' : 'none'
+                  }
                 },
                 label
               )
