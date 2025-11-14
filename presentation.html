@@ -167,15 +167,15 @@
       return result;
     }
 
-    const vertex = \`#version 300 es
+    const vertex = `#version 300 es
     precision highp float;
     layout(location = 0) in vec2 position;
     void main() {
       gl_Position = vec4(position, 0.0, 1.0);
     }
-    \`;
+    `;
 
-    const fragment = \`#version 300 es
+    const fragment = `#version 300 es
     precision highp float;
     uniform vec3 iResolution;
     uniform float iTime;
@@ -217,7 +217,7 @@
       }
       outColor = vec4(cFinal * f, enableTransparency ? f : 1.0);
     }
-    \`;
+    `;
 
     function MetaBalls({
       className = '',
@@ -375,7 +375,7 @@
         };
       }, [color, cursorBallColor, speed, enableMouseInteraction, hoverSmoothness, animationSize, ballCount, clumpFactor, cursorBallSize, enableTransparency]);
 
-      return h('div', { ref: containerRef, className: \`metaballs-container \${className}\` });
+      return h('div', { ref: containerRef, className: `metaballs-container ${className}` });
     }
 
     // ============================================
@@ -512,7 +512,7 @@
           const newSettings = parsedSettings
             .map(({ axis, fromValue, toValue }) => {
               const interpolatedValue = fromValue + (toValue - fromValue) * falloffValue;
-              return \`'\${axis}' \${interpolatedValue}\`;
+              return `'${axis}' ${interpolatedValue}`;
             })
             .join(', ');
 
@@ -528,7 +528,7 @@
         'span',
         {
           ref,
-          className: \`\${className} variable-proximity\`,
+          className: `${className} variable-proximity`,
           onClick,
           style: { display: 'inline', ...style },
           ...restProps
