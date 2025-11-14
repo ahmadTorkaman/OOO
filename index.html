@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React Bits Presentation</title>
+
+  <!-- Import all component CSS -->
+  <link rel="stylesheet" href="./Presentation/VariableProximity/VariableProximity.css">
+  <link rel="stylesheet" href="./Presentation/FallingText/FallingText.css">
+  <link rel="stylesheet" href="./Presentation/MetaBalls/MetaBalls.css">
+  <link rel="stylesheet" href="./Presentation/GradientText/GradientText.css">
+  <link rel="stylesheet" href="./Presentation/CardSwap/CardSwap.css">
+  <link rel="stylesheet" href="./Presentation/TrueFocus/TrueFocus.css">
+  <link rel="stylesheet" href="./Presentation/Folder/Folder.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #0a0a0a;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    #root {
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    .presentation-container {
+      width: 100%;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem;
+      margin-bottom: 4rem;
+    }
+
+    .hero h1 {
+      font-size: 4rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.5rem;
+      color: #888;
+      margin-bottom: 2rem;
+    }
+
+    .components-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .component-card {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .component-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(102, 126, 234, 0.5);
+      box-shadow: 0 10px 40px rgba(102, 126, 234, 0.2);
+    }
+
+    .component-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: #667eea;
+    }
+
+    .component-card p {
+      color: #aaa;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .component-card .tech-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .tech-badge {
+      background: rgba(102, 126, 234, 0.2);
+      color: #667eea;
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .setup-section {
+      max-width: 900px;
+      margin: 4rem auto;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .setup-section h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      color: #667eea;
+    }
+
+    .setup-section h3 {
+      font-size: 1.3rem;
+      margin: 1.5rem 0 1rem;
+      color: #888;
+    }
+
+    .setup-section pre {
+      background: #000;
+      padding: 1rem;
+      border-radius: 10px;
+      overflow-x: auto;
+      margin: 1rem 0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .setup-section code {
+      color: #40ffaa;
+      font-family: 'Courier New', monospace;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-weight: 600;
+      margin-top: 1rem;
+      margin-right: 1rem;
+    }
+
+    .status-ready {
+      background: rgba(64, 255, 170, 0.2);
+      color: #40ffaa;
+      border: 1px solid #40ffaa;
+    }
+
+    .status-pending {
+      background: rgba(255, 170, 64, 0.2);
+      color: #ffaa40;
+      border: 1px solid #ffaa40;
+    }
+  </style>
+</head>
+<body>
+  <div id="root">
+    <div class="presentation-container">
+      <!-- Hero Section -->
+      <div class="hero">
+        <h1>React Bits Presentation</h1>
+        <p>8 Amazing Interactive Components from reactbit.dev</p>
+        <div class="status-badge status-ready">✓ Files Ready</div>
+        <div class="status-badge status-pending">⚙ Setup Required</div>
+      </div>
+
+      <!-- Components Grid -->
+      <div class="components-grid">
+        <!-- VariableProximity -->
+        <div class="component-card">
+          <h3>1. VariableProximity</h3>
+          <p>Interactive text with variable font weights that respond to mouse proximity. Letters dynamically adjust their font properties based on cursor distance.</p>
+          <div class="tech-stack">
+            <span class="tech-badge">motion</span>
+            <span class="tech-badge">variable-fonts</span>
+          </div>
+        </div>
+
+        <!-- FallingText -->
+        <div class="component-card">
+          <h3>2. FallingText</h3>
+          <p>Physics-based text animation where words fall and interact with realistic physics. Supports mouse interaction for dragging words around.</p>
+          <div class="tech-stack">
+            <span class="tech-badge">matter-js</span>
+            <span class="tech-badge">physics</span>
+          </div>
+        </div>
+
+        <!-- MetaBalls -->
+        <div class="component-card">
+          <h3>3. MetaBalls</h3>
+          <p>WebGL-powered fluid animation with organic blob shapes that follow your cursor. Customizable colors, speed, and interaction.</p>
+          <div class="tech-stack">
+            <span class="tech-badge">ogl</span>
+            <span class="tech-badge">WebGL</span>
+            <span class="tech-badge">shaders</span>
+          </div>
+        </div>
+
+        <!-- CountUp -->
+        <div class="component-card">
+          <h3>4. CountUp</h3>
+          <p>Smooth animated number counter with spring physics. Counts up or down with customizable duration, delay, and formatting.</p>
+          <div class="tech-stack">
+            <span class="tech-badge">motion</span>
+            <span class="tech-badge">spring-physics</span>
+          </div>
+        </div>
+
+        <!-- GradientText -->
+        <div class="component-card">
+          <h3>5. GradientText</h3>
+          <p>Animated gradient text effect with smooth color transitions. Optional border with synchronized gradient animation.</p>
+          <div class="tech-stack">
+            <span class="tech-badge">CSS</span>
+            <span class="tech-badge">gradients</span>
+          </div>
+        </div>
+
+        <!-- CardSwap -->
+        <div class="component-card">
+          <h3>6. CardSwap</h3>
+          <p>3D card stack with automatic rotation animation. Cards swap positions with elastic or smooth easing. Pause on hover support.</p>
+          <div class="tech-stack">
+            <span class="tech-badge">gsap</span>
+            <span class="tech-badge">3D-transforms</span>
+          </div>
+        </div>
+
+        <!-- TrueFocus -->
+        <div class="component-card">
+          <h3>7. TrueFocus</h3>
+          <p>Spotlight effect that focuses on one word at a time while blurring others. Animated corner brackets track the focused word.</p>
+          <div class="tech-stack">
+            <span class="tech-badge">motion</span>
+            <span class="tech-badge">blur-effects</span>
+          </div>
+        </div>
+
+        <!-- Folder -->
+        <div class="component-card">
+          <h3>8. Folder</h3>
+          <p>Interactive 3D folder that opens to reveal papers inside. Magnetic hover effect on papers with smooth CSS animations.</p>
+          <div class="tech-stack">
+            <span class="tech-badge">CSS</span>
+            <span class="tech-badge">3D-transforms</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Setup Instructions -->
+      <div class="setup-section">
+        <h2>📦 Setup Required</h2>
+
+        <h3>Dependencies (via CDN):</h3>
+        <pre><code>React & ReactDOM: v18
+Framer Motion: v11
+Matter.js: v0.19
+GSAP: v3.12
+OGL: v1.0</code></pre>
+
+        <h3>All component files are ready:</h3>
+        <pre><code>✓ 8 JavaScript files
+✓ 7 CSS files
+✓ 8 HTML usage examples
+✓ packages.txt reference</code></pre>
+
+        <h3>Next Steps:</h3>
+        <p style="margin: 1rem 0; color: #ccc;">
+          Tell me about your presentation structure:<br><br>
+          • How many slides?<br>
+          • Which components per slide?<br>
+          • Navigation style (arrows, scroll, auto)?<br>
+          • Transition effects?<br>
+          • Theme preferences?
+        </p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
