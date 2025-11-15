@@ -203,30 +203,23 @@
 
     .logo-item {
       position: absolute;
-      background: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: grab;
-      transition: box-shadow 0.3s ease;
-      width: 120px;
-      height: 120px;
-    }
-
-    .logo-item:active {
-      cursor: grabbing;
+      cursor: pointer;
+      transition: transform 0.3s ease, filter 0.3s ease;
+      width: 100px;
+      height: 100px;
     }
 
     .logo-item:hover {
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      transform: scale(1.1);
+      filter: drop-shadow(0 4px 8px rgba(76, 98, 186, 0.3));
     }
 
     .logo-item svg {
-      width: 80px;
-      height: 80px;
+      width: 100px;
+      height: 100px;
       object-fit: contain;
     }
 
@@ -257,6 +250,26 @@
       font-weight: 400;
       color: #555;
       direction: rtl;
+    }
+
+    .click-hint {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: #4c62ba;
+      opacity: 0.6;
+      pointer-events: none;
+      z-index: 5;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.8; }
     }
 
     .philosophy-content {
@@ -1059,7 +1072,7 @@
     // FallingLogos Component
     // ============================================
 
-    function FallingLogos({ logos = [], trigger = 'auto' }) {
+    function FallingLogos({ logos = [], trigger = 'auto', onStart }) {
       const containerRef = useRef(null);
       const logoRefs = useRef([]);
       const [effectStarted, setEffectStarted] = useState(false);
@@ -1069,6 +1082,13 @@
           setEffectStarted(true);
         }
       }, [trigger]);
+
+      const handleClick = () => {
+        if (trigger === 'click' && !effectStarted) {
+          setEffectStarted(true);
+          if (onStart) onStart();
+        }
+      };
 
       useEffect(() => {
         if (!effectStarted || !containerRef.current) return;
@@ -1176,7 +1196,12 @@
 
       return h(
         'div',
-        { ref: containerRef, className: 'falling-logos-container' },
+        {
+          ref: containerRef,
+          className: 'falling-logos-container',
+          onClick: handleClick,
+          style: { cursor: trigger === 'click' && !effectStarted ? 'pointer' : 'default' }
+        },
         logos.map((logo, index) =>
           h(
             'div',
@@ -1265,6 +1290,8 @@
     }
 
     function Slide3() {
+      const [showHint, setShowHint] = useState(true);
+
       const logos = [
         {
           x: 15,
@@ -1309,7 +1336,12 @@
         h(
           'div',
           { className: 'fragmentation-container' },
-          h(FallingLogos, { logos, trigger: 'auto' }),
+          h(FallingLogos, {
+            logos,
+            trigger: 'click',
+            onStart: () => setShowHint(false)
+          }),
+          showHint && h('div', { className: 'click-hint' }, 'Click anywhere to see the fragmentation'),
           h(
             'div',
             { className: 'fragmentation-text' },
