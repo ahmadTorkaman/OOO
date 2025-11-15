@@ -202,6 +202,11 @@
     }
 
     /* Override TrueFocus styles for this slide */
+    .slide-philosophy .focus-container {
+      flex-direction: column;
+      gap: 2rem;
+    }
+
     .slide-philosophy .focus-word {
       font-family: 'Montserrat', sans-serif;
       font-size: 5rem;
@@ -904,11 +909,11 @@
             h(TrueFocus, {
               sentence: 'One System • One Tool • One Design',
               separator: '•',
-              manualMode: false,
+              manualMode: true,
               blurAmount: 8,
               borderColor: '#4c62ba',
               glowColor: 'rgba(76, 98, 186, 0.6)',
-              animationDuration: 0.8,
+              animationDuration: 0.6,
               pauseBetweenAnimations: 2
             })
           )
