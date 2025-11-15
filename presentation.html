@@ -47,16 +47,6 @@
       overflow: hidden;
     }
 
-    .metaballs-background {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      opacity: 0.6;
-    }
-
     .hero-content {
       position: relative;
       z-index: 10;
@@ -104,6 +94,18 @@
       height: 100%;
       position: relative;
       overflow: hidden;
+    }
+
+    /* Global MetaBalls Background */
+    .global-metaballs-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0.6;
+      pointer-events: none;
     }
 
     .slide {
@@ -166,16 +168,6 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
-    }
-
-    .philosophy-background {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      opacity: 0.25;
     }
 
     .philosophy-content {
@@ -845,22 +837,6 @@
         { className: 'slide-hero', ref: containerRef },
         h(
           'div',
-          { className: 'metaballs-background' },
-          h(MetaBalls, {
-            color: '#4c62ba',
-            cursorBallColor: '#6a7fc1',
-            cursorBallSize: 2,
-            ballCount: 12,
-            animationSize: 40,
-            enableMouseInteraction: true,
-            enableTransparency: true,
-            hoverSmoothness: 0.05,
-            clumpFactor: 1.2,
-            speed: 0.2
-          })
-        ),
-        h(
-          'div',
           { className: 'hero-content' },
           h(
             'div',
@@ -883,22 +859,6 @@
       return h(
         'div',
         { className: 'slide-philosophy' },
-        h(
-          'div',
-          { className: 'philosophy-background' },
-          h(MetaBalls, {
-            color: '#4c62ba',
-            cursorBallColor: '#8a9fc1',
-            cursorBallSize: 1.5,
-            ballCount: 8,
-            animationSize: 50,
-            enableMouseInteraction: true,
-            enableTransparency: true,
-            hoverSmoothness: 0.03,
-            clumpFactor: 1.5,
-            speed: 0.1
-          })
-        ),
         h(
           'div',
           { className: 'philosophy-content' },
@@ -943,31 +903,53 @@
       }, []);
 
       return h(
-        'div',
-        { className: 'presentation-container' },
-        // Slide 1
+        React.Fragment,
+        null,
+        // Global MetaBalls Background
         h(
           'div',
-          { className: `slide ${currentSlide === 0 ? 'active' : ''}` },
-          h(Slide1)
+          { className: 'global-metaballs-background' },
+          h(MetaBalls, {
+            color: '#4c62ba',
+            cursorBallColor: '#6a7fc1',
+            cursorBallSize: 2,
+            ballCount: 12,
+            animationSize: 40,
+            enableMouseInteraction: true,
+            enableTransparency: true,
+            hoverSmoothness: 0.05,
+            clumpFactor: 1.2,
+            speed: 0.2
+          })
         ),
-        // Slide 2
+        // Presentation Container
         h(
           'div',
-          { className: `slide ${currentSlide === 1 ? 'active' : ''}` },
-          h(Slide2)
-        ),
-        // Navigation Indicators
-        h(
-          'div',
-          { className: 'slide-indicators' },
-          Array.from({ length: totalSlides }).map((_, index) =>
-            h('div', {
-              key: index,
-              className: `indicator ${currentSlide === index ? 'active' : ''}`,
-              onClick: () => setCurrentSlide(index),
-              title: `Slide ${index + 1}`
-            })
+          { className: 'presentation-container' },
+          // Slide 1
+          h(
+            'div',
+            { className: `slide ${currentSlide === 0 ? 'active' : ''}` },
+            h(Slide1)
+          ),
+          // Slide 2
+          h(
+            'div',
+            { className: `slide ${currentSlide === 1 ? 'active' : ''}` },
+            h(Slide2)
+          ),
+          // Navigation Indicators
+          h(
+            'div',
+            { className: 'slide-indicators' },
+            Array.from({ length: totalSlides }).map((_, index) =>
+              h('div', {
+                key: index,
+                className: `indicator ${currentSlide === index ? 'active' : ''}`,
+                onClick: () => setCurrentSlide(index),
+                title: `Slide ${index + 1}`
+              })
+            )
           )
         )
       );
