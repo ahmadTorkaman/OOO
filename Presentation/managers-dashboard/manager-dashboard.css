@@ -11,11 +11,9 @@ body {
 }
 
 #dashboard-container {
-    display: flex;
-    flex-direction: column;
-    padding: var(--space-lg);
-    margin-top: calc(var(--topbar-h) + var(--space-md));
-    height: calc(100vh - var(--topbar-h) - var(--space-md) - var(--space-lg));
+    position: relative;
+    margin-top: var(--topbar-h);
+    height: calc(100vh - var(--topbar-h));
     overflow: hidden;
     width: 100%;
 }
@@ -23,12 +21,48 @@ body {
 /* ===== WIDGET SIDEBAR ===== */
 
 #widget-sidebar {
-    display: none; /* Temporarily hidden */
-    position: relative;
+    position: fixed;
+    left: 0;
+    top: var(--topbar-h);
+    height: calc(100vh - var(--topbar-h));
+    width: 320px;
+    z-index: 200;
     overflow-y: auto;
+    overflow-x: hidden;
+    background: var(--panel);
+    backdrop-filter: var(--glass);
+    border-right: 1px solid var(--border);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+    display: flex;
     flex-direction: column;
     gap: var(--space-md);
     padding: var(--space-lg);
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+/* Hidden state - slide out to the left */
+#widget-sidebar.closed {
+    transform: translateX(-100%);
+}
+
+/* Custom scrollbar for widget sidebar */
+#widget-sidebar::-webkit-scrollbar {
+    width: 8px;
+}
+
+#widget-sidebar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+#widget-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(124, 140, 251, 0.3);
+    border-radius: 4px;
+}
+
+#widget-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(124, 140, 251, 0.5);
 }
 
 .sidebar-header {
@@ -127,10 +161,10 @@ body {
 
 .dashboard-grid {
     position: relative;
-    flex: 1;
     overflow-y: auto;
-    padding: var(--space-md);
-    min-height: 100vh;
+    overflow-x: hidden;
+    padding: var(--space-lg);
+    height: 100%;
     width: 100%;
 }
 
@@ -243,14 +277,50 @@ body {
 
 /* ===== ALERTS SIDEBAR ===== */
 
-.alerts-panel {
-    display: none; /* Temporarily hidden */
-    position: relative;
+#alerts-sidebar {
+    position: fixed;
+    right: 0;
+    top: var(--topbar-h);
+    height: calc(100vh - var(--topbar-h));
+    width: 280px;
+    z-index: 200;
     overflow-y: auto;
+    overflow-x: hidden;
+    background: var(--panel);
+    backdrop-filter: var(--glass);
+    border-left: 1px solid var(--border);
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
     padding: var(--space-lg);
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                margin-right 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.3s ease;
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+/* Hidden state - slide out to the right */
+#alerts-sidebar.closed {
+    transform: translateX(100%);
+}
+
+/* Custom scrollbar for alerts sidebar */
+#alerts-sidebar::-webkit-scrollbar {
+    width: 8px;
+}
+
+#alerts-sidebar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+#alerts-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(124, 140, 251, 0.3);
+    border-radius: 4px;
+}
+
+#alerts-sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(124, 140, 251, 0.5);
+}
+
+.alerts-panel {
+    display: block;
 }
 
 .alerts-panel h3 {
@@ -1576,12 +1646,11 @@ textarea.form-input {
 /* ===== PANEL TOGGLE BUTTONS ===== */
 
 .panel-toggle-btn {
-    display: none; /* Temporarily hidden */
-    position: absolute;
+    position: fixed;
     top: 50%;
     transform: translateY(-50%);
-    width: 32px;
-    height: 64px;
+    width: 36px;
+    height: 72px;
     background: var(--panel);
     backdrop-filter: var(--glass);
     border: 1px solid var(--border);
@@ -1590,36 +1659,49 @@ textarea.form-input {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s ease;
-    z-index: 100;
-    box-shadow: var(--shadow-md);
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 150;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.panel-toggle-btn.visible {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .panel-toggle-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(124, 140, 251, 0.15);
     border-color: var(--primary);
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    transform: translateY(-50%) scale(1.05);
 }
 
 .panel-toggle-btn .icon {
     color: var(--text-on-glass);
+    transition: transform 200ms ease;
 }
 
-/* Left sidebar toggle button */
+.panel-toggle-btn:hover .icon {
+    color: var(--primary);
+}
+
+/* Left sidebar toggle button - on panel edge */
 .panel-toggle-btn.left {
-    right: -16px;
+    right: -18px;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
 
-/* Right alerts toggle button */
+/* Right alerts toggle button - on panel edge */
 .panel-toggle-btn.right {
-    left: -16px;
+    left: -18px;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
 
-/* Show buttons on dashboard grid */
+/* Show buttons on dashboard grid when panels are closed */
 .panel-toggle-btn.show-left {
     left: var(--space-lg);
     border-radius: var(--radius-sm);

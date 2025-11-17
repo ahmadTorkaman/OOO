@@ -25,14 +25,12 @@
         </div>
     </div>
 
-    <!-- Main Dashboard Container -->
-    <div id="dashboard-container">
-        <!-- Sidebar - Widget Library -->
-        <div id="widget-sidebar" class="panel">
-            <button class="panel-toggle-btn left" id="toggleSidebarLeft" title="Hide Sidebar">
-                <i data-lucide="chevron-left" class="icon"></i>
-            </button>
-            <div class="sidebar-header">
+    <!-- Sidebar - Widget Library (Fixed Overlay) -->
+    <div id="widget-sidebar" class="panel">
+        <button class="panel-toggle-btn left" id="toggleSidebarLeft" title="Hide Sidebar">
+            <i data-lucide="chevron-left" class="icon"></i>
+        </button>
+        <div class="sidebar-header">
                 <h3>Available Widgets</h3>
             </div>
             <div class="widget-library">
@@ -151,26 +149,13 @@
             </div>
         </div>
 
-        <!-- Dashboard Grid Area -->
-        <div id="dashboard-grid" class="dashboard-grid">
-            <!-- Show sidebar button (appears when sidebar is collapsed) -->
-            <button class="panel-toggle-btn show-left" id="showSidebarBtn" title="Show Sidebar" style="display: none;">
-                <i data-lucide="chevron-right" class="icon"></i>
-            </button>
-            <!-- Show alerts button (appears when alerts panel is collapsed) -->
-            <button class="panel-toggle-btn show-right" id="showAlertsBtn" title="Show Alerts" style="display: none;">
-                <i data-lucide="chevron-left" class="icon"></i>
-            </button>
-            <!-- Widgets will be added here dynamically -->
-        </div>
-
-        <!-- Alerts Sidebar -->
-        <div id="alerts-sidebar" class="panel alerts-panel">
-            <button class="panel-toggle-btn right" id="toggleAlertsRight" title="Hide Alerts">
-                <i data-lucide="chevron-right" class="icon"></i>
-            </button>
-            <h3>Alerts</h3>
-            <div class="alert-list">
+    <!-- Alerts Sidebar (Fixed Overlay) -->
+    <div id="alerts-sidebar" class="panel">
+        <button class="panel-toggle-btn right" id="toggleAlertsRight" title="Hide Alerts">
+            <i data-lucide="chevron-right" class="icon"></i>
+        </button>
+        <h3>Alerts</h3>
+        <div class="alert-list">
                 <div class="alert-section">
                     <h4 class="alert-urgent">URGENT (5)</h4>
                     <div class="alert-item urgent">
@@ -215,6 +200,21 @@
                     </div>
                 </div>
             </div>
+        </div>
+
+    <!-- Main Dashboard Container -->
+    <div id="dashboard-container">
+        <!-- Dashboard Grid Area -->
+        <div id="dashboard-grid" class="dashboard-grid">
+            <!-- Show sidebar button (appears when sidebar is closed) -->
+            <button class="panel-toggle-btn show-left" id="showSidebarBtn" title="Show Widget Library">
+                <i data-lucide="chevron-right" class="icon"></i>
+            </button>
+            <!-- Show alerts button (appears when alerts panel is closed) -->
+            <button class="panel-toggle-btn show-right" id="showAlertsBtn" title="Show Alerts">
+                <i data-lucide="chevron-left" class="icon"></i>
+            </button>
+            <!-- Widgets will be added here dynamically -->
         </div>
     </div>
 
