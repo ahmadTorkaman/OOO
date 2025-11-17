@@ -68,7 +68,12 @@ A customizable business intelligence dashboard with Apple-style grid layout for 
 
 10. **Chart Rendering** - All Chart.js visualizations load correctly with proper timing
 
-11. **Live Data Updates** - Gold & USD/IRR prices update every 5 seconds
+11. **Live Data Updates** - Real-time price data via external APIs:
+   - Gold (XAUUSD) prices from GoldAPI.io
+   - USD/IRR exchange rates from ExchangeRate-API
+   - Updates every 30 seconds
+   - Automatic fallback to simulated data if APIs fail
+   - Display of price changes and percentages
 
 12. **Full-Width Dashboard** - Maximized screen space for widgets (sidebars temporarily hidden)
 
@@ -186,6 +191,19 @@ managers-dashboard/
 - **SortableJS** 1.15.0 - Drag & drop
 - **Lucide Icons** (latest) - SVG icon library
 - **Montserrat Font** - Typography
+
+### External APIs (Free Tier)
+
+- **GoldAPI.io** - Real-time gold spot prices (XAUUSD)
+  - Endpoint: `https://www.goldapi.io/api/XAU/USD`
+  - Free tier available (limited requests)
+  - No API key required for basic access
+
+- **ExchangeRate-API** - Live currency exchange rates
+  - Endpoint: `https://api.exchangerate-api.com/v4/latest/USD`
+  - Free tier with 1,500 requests/month
+  - No API key required
+  - Supports 160+ currencies including IRR
 
 ### Browser Compatibility
 

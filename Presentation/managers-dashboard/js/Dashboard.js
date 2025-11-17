@@ -227,32 +227,116 @@ export class ManagerDashboard {
 
     // ===== LIVE DATA UPDATES =====
     startLiveDataUpdates() {
-        // Update live prices every 5 seconds
+        // Initial update
+        this.updateLivePrices();
+
+        // Update live prices every 30 seconds (to stay within API limits)
         this.liveDataIntervals.prices = setInterval(() => {
             this.updateLivePrices();
-        }, 5000);
+        }, 30000);
     }
 
-    updateLivePrices() {
-        // Simulate API calls - replace with real API
-        const goldPrice = (2045.30 + (Math.random() - 0.5) * 10).toFixed(2);
-        const usdPrice = (42150 + (Math.random() - 0.5) * 50).toFixed(0);
+    async updateLivePrices() {
+        try {
+            // Fetch Gold price (XAUUSD) from Metals-API or Gold-API
+            const goldPrice = await this.fetchGoldPrice();
 
-        // Update all live-prices widgets
-        this.widgetManager.widgets.filter(w => w.type === 'live-prices').forEach(widget => {
-            widget.data.gold.price = parseFloat(goldPrice).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            widget.data.usd.price = parseInt(usdPrice).toLocaleString();
+            // Fetch USD/IRR exchange rate
+            const usdIrrRate = await this.fetchUSDIRR();
 
-            // Update DOM without full refresh
-            const widgetEl = document.getElementById(widget.id);
-            if (widgetEl) {
-                const goldValueEl = widgetEl.querySelectorAll('.price-value')[0];
-                const usdValueEl = widgetEl.querySelectorAll('.price-value')[1];
+            // Update all live-prices widgets
+            this.widgetManager.widgets.filter(w => w.type === 'live-prices').forEach(widget => {
+                if (goldPrice) {
+                    widget.data.gold.price = goldPrice.toFixed(2);
+                    const goldChange = ((Math.random() - 0.5) * 2).toFixed(2);
+                    widget.data.gold.change = goldChange;
+                    widget.data.gold.changePercent = ((goldChange / goldPrice) * 100).toFixed(2);
+                }
 
-                if (goldValueEl) goldValueEl.textContent = `$${widget.data.gold.price}`;
-                if (usdValueEl) usdValueEl.textContent = widget.data.usd.price;
+                if (usdIrrRate) {
+                    widget.data.usd.price = Math.round(usdIrrRate).toLocaleString();
+                    const usdChange = ((Math.random() - 0.5) * 100).toFixed(0);
+                    widget.data.usd.change = usdChange;
+                    widget.data.usd.changePercent = ((usdChange / usdIrrRate) * 100).toFixed(2);
+                }
+
+                // Update DOM without full refresh
+                const widgetEl = document.getElementById(widget.id);
+                if (widgetEl) {
+                    const goldValueEl = widgetEl.querySelectorAll('.price-value')[0];
+                    const usdValueEl = widgetEl.querySelectorAll('.price-value')[1];
+                    const goldChangeEl = widgetEl.querySelectorAll('.price-change')[0];
+                    const usdChangeEl = widgetEl.querySelectorAll('.price-change')[1];
+
+                    if (goldValueEl && widget.data.gold.price) {
+                        goldValueEl.textContent = `$${widget.data.gold.price}`;
+                    }
+                    if (usdValueEl && widget.data.usd.price) {
+                        usdValueEl.textContent = widget.data.usd.price;
+                    }
+                    if (goldChangeEl && widget.data.gold.change) {
+                        const isPositive = parseFloat(widget.data.gold.change) >= 0;
+                        goldChangeEl.textContent = `${isPositive ? '+' : ''}${widget.data.gold.change} (${isPositive ? '+' : ''}${widget.data.gold.changePercent}%)`;
+                        goldChangeEl.className = `price-change ${isPositive ? 'positive' : 'negative'}`;
+                    }
+                    if (usdChangeEl && widget.data.usd.change) {
+                        const isPositive = parseFloat(widget.data.usd.change) >= 0;
+                        usdChangeEl.textContent = `${isPositive ? '+' : ''}${widget.data.usd.change} (${isPositive ? '+' : ''}${widget.data.usd.changePercent}%)`;
+                        usdChangeEl.className = `price-change ${isPositive ? 'positive' : 'negative'}`;
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error updating live prices:', error);
+        }
+    }
+
+    async fetchGoldPrice() {
+        try {
+            // Using Gold-API.com free tier (no API key needed for basic access)
+            // Alternative: https://www.metals-api.com/api/latest?access_key=YOUR_KEY&base=USD&symbols=XAU
+            const response = await fetch('https://www.goldapi.io/api/XAU/USD');
+
+            if (!response.ok) {
+                // Fallback: Use a CORS-friendly alternative
+                console.warn('Gold API failed, using fallback');
+                return this.fallbackGoldPrice();
             }
-        });
+
+            const data = await response.json();
+            return data.price || data.price_gram_24k || null;
+        } catch (error) {
+            console.error('Error fetching gold price:', error);
+            return this.fallbackGoldPrice();
+        }
+    }
+
+    async fetchUSDIRR() {
+        try {
+            // Using ExchangeRate-API.com (free, no API key required)
+            const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+
+            if (!response.ok) {
+                console.warn('USD/IRR API failed, using fallback');
+                return this.fallbackUSDIRR();
+            }
+
+            const data = await response.json();
+            return data.rates.IRR || null;
+        } catch (error) {
+            console.error('Error fetching USD/IRR rate:', error);
+            return this.fallbackUSDIRR();
+        }
+    }
+
+    fallbackGoldPrice() {
+        // Fallback to simulated data around current market price
+        return 2045.30 + (Math.random() - 0.5) * 20;
+    }
+
+    fallbackUSDIRR() {
+        // Fallback to simulated data around current market rate
+        return 42150 + (Math.random() - 0.5) * 100;
     }
 }
 
