@@ -201,16 +201,32 @@ export class ManagerDashboard {
             localStorage.removeItem('dashboard-layout');
         }
 
-        // Load default CEO dashboard widgets with proper delays
+        // Load visual, chart-heavy CEO dashboard for presentation
         const widgetsToLoad = [
-            'todays-focus',
+            // Executive overview (top)
             'executive-summary',
-            'task-manager',
-            'project-manager',
+            'todays-focus',
+
+            // Financial charts
             'cash-flow',
+            'revenue-target',
+            'profit-product',
             'live-prices',
+
+            // Operations charts
             'order-pipeline',
-            'strategic-goals'
+            'delivery-trends',
+            'team-capacity',
+
+            // Sales & Customer
+            'sales-pipeline',
+            'customer-health',
+            'top-customers',
+
+            // Strategic & Team
+            'strategic-goals',
+            'project-manager',
+            'team-scorecard'
         ];
 
         widgetsToLoad.forEach((widgetType, index) => {
