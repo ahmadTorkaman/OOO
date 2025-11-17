@@ -4,6 +4,9 @@ export class Currency {
     constructor() {
         this.currentCurrency = localStorage.getItem('dashboard-currency') || 'USD';
         this.usdToIrrRate = 1125000; // Current exchange rate
+
+        // Set initial data attribute for CSS styling
+        document.documentElement.setAttribute('data-currency', this.currentCurrency);
     }
 
     getCurrency() {
@@ -18,6 +21,9 @@ export class Currency {
 
         this.currentCurrency = currency;
         localStorage.setItem('dashboard-currency', currency);
+
+        // Set data attribute for CSS styling
+        document.documentElement.setAttribute('data-currency', currency);
 
         // Dispatch currency change event
         window.dispatchEvent(new CustomEvent('currencyChanged', { detail: { currency } }));
