@@ -24,15 +24,28 @@
                 <span class="slider"></span>
             </label>
         </div>
-        <div class="language-toggle">
-            <button id="languageToggle" class="lang-btn" title="Toggle Language">
-                <span id="currentLang">EN</span>
+        <div class="settings-toggle">
+            <button id="settingsToggle" class="settings-btn" title="Settings">
+                <i data-lucide="settings" style="width:16px;height:16px;"></i>
             </button>
         </div>
-        <div class="currency-toggle">
-            <button id="currencyToggle" class="currency-btn" title="Toggle Currency">
-                <span id="currentCurrency">$</span>
-            </button>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settings-panel" class="settings-panel">
+        <div class="settings-section">
+            <label class="settings-label">Language</label>
+            <div class="settings-options">
+                <button class="settings-option active" data-lang="en">EN</button>
+                <button class="settings-option" data-lang="fa">FA</button>
+            </div>
+        </div>
+        <div class="settings-section">
+            <label class="settings-label">Currency</label>
+            <div class="settings-options">
+                <button class="settings-option active" data-currency="USD">$</button>
+                <button class="settings-option" data-currency="IRR">ریال</button>
+            </div>
         </div>
     </div>
 

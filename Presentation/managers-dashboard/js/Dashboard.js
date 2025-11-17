@@ -18,9 +18,8 @@ export class ManagerDashboard {
     }
 
     init() {
-        // Initialize language first
-        this.setupLanguageToggle();
-        this.setupCurrencyToggle();
+        // Initialize settings panel first
+        this.setupSettingsPanel();
 
         // Initialize managers
         this.gridLayoutManager = new GridLayoutManager(this);
@@ -48,23 +47,89 @@ export class ManagerDashboard {
         });
     }
 
-    // ===== LANGUAGE TOGGLE =====
-    setupLanguageToggle() {
-        const langToggle = document.getElementById('languageToggle');
-        const langSpan = document.getElementById('currentLang');
+    // ===== SETTINGS PANEL =====
+    setupSettingsPanel() {
+        const settingsToggle = document.getElementById('settingsToggle');
+        const settingsPanel = document.getElementById('settings-panel');
 
         // Initialize language on page load
         const currentLang = translator.getLanguage();
-        langSpan.textContent = currentLang.toUpperCase();
         document.documentElement.setAttribute('dir', currentLang === 'fa' ? 'rtl' : 'ltr');
         document.documentElement.setAttribute('lang', currentLang === 'fa' ? 'fa' : 'en');
 
-        // Toggle language
-        langToggle.addEventListener('click', () => {
-            const newLang = translator.getLanguage() === 'en' ? 'fa' : 'en';
-            translator.setLanguage(newLang);
-            langSpan.textContent = newLang.toUpperCase();
-            console.log('Language changed to:', newLang);
+        // Initialize currency on page load
+        const currentCurrency = currency.getCurrency();
+
+        // Update active states
+        this.updateSettingsActiveStates(currentLang, currentCurrency);
+
+        // Toggle settings panel
+        settingsToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            settingsPanel.classList.toggle('open');
+            settingsToggle.classList.toggle('active');
+        });
+
+        // Close panel when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!settingsPanel.contains(e.target) && !settingsToggle.contains(e.target)) {
+                settingsPanel.classList.remove('open');
+                settingsToggle.classList.remove('active');
+            }
+        });
+
+        // Language options
+        const langOptions = settingsPanel.querySelectorAll('[data-lang]');
+        langOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const newLang = option.dataset.lang;
+                translator.setLanguage(newLang);
+
+                // Update active states
+                langOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+
+                console.log('Language changed to:', newLang);
+            });
+        });
+
+        // Currency options
+        const currencyOptions = settingsPanel.querySelectorAll('[data-currency]');
+        currencyOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const newCurrency = option.dataset.currency;
+                currency.setCurrency(newCurrency);
+
+                // Update active states
+                currencyOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+
+                console.log('Currency changed to:', newCurrency);
+            });
+        });
+    }
+
+    updateSettingsActiveStates(lang, curr) {
+        const settingsPanel = document.getElementById('settings-panel');
+
+        // Update language active state
+        const langOptions = settingsPanel.querySelectorAll('[data-lang]');
+        langOptions.forEach(option => {
+            if (option.dataset.lang === lang) {
+                option.classList.add('active');
+            } else {
+                option.classList.remove('active');
+            }
+        });
+
+        // Update currency active state
+        const currencyOptions = settingsPanel.querySelectorAll('[data-currency]');
+        currencyOptions.forEach(option => {
+            if (option.dataset.currency === curr) {
+                option.classList.add('active');
+            } else {
+                option.classList.remove('active');
+            }
         });
     }
 
@@ -171,24 +236,6 @@ export class ManagerDashboard {
         if (userName) {
             userName.textContent = translator.getLanguage() === 'fa' ? 'پیشخوان مدیرعامل' : 'CEO Dashboard';
         }
-    }
-
-    // ===== CURRENCY TOGGLE =====
-    setupCurrencyToggle() {
-        const currencyToggle = document.getElementById('currencyToggle');
-        const currencySpan = document.getElementById('currentCurrency');
-
-        // Initialize currency on page load
-        const currentCurrency = currency.getCurrency();
-        currencySpan.textContent = currentCurrency === 'USD' ? '$' : 'ریال';
-
-        // Toggle currency
-        currencyToggle.addEventListener('click', () => {
-            const newCurrency = currency.getCurrency() === 'USD' ? 'IRR' : 'USD';
-            currency.setCurrency(newCurrency);
-            currencySpan.textContent = newCurrency === 'USD' ? '$' : 'ریال';
-            console.log('Currency changed to:', newCurrency);
-        });
     }
 
     handleCurrencyChange() {
