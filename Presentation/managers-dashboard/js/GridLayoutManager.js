@@ -294,6 +294,8 @@ export class GridLayoutManager {
 
     pushWidgets(movingItem, targetX, targetY) {
         // This is the "overkill" feature - intelligent widget pushing
+        // Returns true if push succeeded, false if it would cause invalid layout
+
         const pushed = new Set();
         const queue = [{ item: movingItem, x: targetX, y: targetY }];
         const moves = new Map(); // id -> {x, y}
@@ -301,8 +303,8 @@ export class GridLayoutManager {
         while (queue.length > 0) {
             const { item, x, y } = queue.shift();
 
-            // Find widgets that would collide
-            const collisions = this.findCollisions(x, y, item.w, item.h, item.id);
+            // Find widgets that would collide (check against current + planned positions)
+            const collisions = this.findCollisionsWithMoves(x, y, item.w, item.h, item.id, moves);
 
             for (const collision of collisions) {
                 if (pushed.has(collision.id)) continue;
@@ -317,19 +319,20 @@ export class GridLayoutManager {
                 const newX = collision.x + pushDir.dx;
                 const newY = collision.y + pushDir.dy;
 
-                // Check if push is valid
+                // Check if push is valid (within bounds)
                 if (newX >= 0 && newX + collision.w <= this.cols && newY >= 0) {
                     pushed.add(collision.id);
                     moves.set(collision.id, { x: newX, y: newY });
                     queue.push({ item: collision, x: newX, y: newY });
                 } else {
-                    // Can't push - return null to indicate invalid move
-                    return null;
+                    // Can't push - return false to indicate invalid move
+                    // Don't modify layout - caller should rollback
+                    return false;
                 }
             }
         }
 
-        // Apply all moves
+        // All pushes are valid - apply moves to layout
         moves.forEach((pos, id) => {
             const layoutItem = this.layout.find(item => item.id === id);
             if (layoutItem) {
@@ -339,6 +342,29 @@ export class GridLayoutManager {
         });
 
         return true;
+    }
+
+    findCollisionsWithMoves(x, y, w, h, excludeId, plannedMoves) {
+        // Find collisions considering both current layout and planned moves
+        const collisions = [];
+
+        for (const item of this.layout) {
+            if (item.id === excludeId) continue;
+
+            // Get effective position (planned move or current position)
+            const effectiveX = plannedMoves.has(item.id) ? plannedMoves.get(item.id).x : item.x;
+            const effectiveY = plannedMoves.has(item.id) ? plannedMoves.get(item.id).y : item.y;
+
+            if (this.checkCollision(x, y, w, h, effectiveX, effectiveY, item.w, item.h)) {
+                collisions.push({
+                    ...item,
+                    x: effectiveX,
+                    y: effectiveY
+                });
+            }
+        }
+
+        return collisions;
     }
 
     findCollisions(x, y, w, h, excludeId) {
@@ -562,13 +588,30 @@ export class GridLayoutManager {
         const clampedX = Math.max(0, Math.min(this.cols - layout.w, gridX));
         const clampedY = Math.max(0, gridY);
 
+        // Store original position for rollback
+        const originalX = layout.x;
+        const originalY = layout.y;
+
         // Try to place with push behavior
         const canPlace = this.isPositionAvailable(clampedX, clampedY, layout.w, layout.h, layout.id);
 
-        if (canPlace || this.pushWidgets(layout, clampedX, clampedY)) {
+        if (canPlace) {
+            // Direct placement - no conflicts
             layout.x = clampedX;
             layout.y = clampedY;
             this.saveLayout();
+        } else {
+            // Try push behavior
+            const pushResult = this.pushWidgets(layout, clampedX, clampedY);
+            if (pushResult) {
+                // Push succeeded - update position
+                layout.x = clampedX;
+                layout.y = clampedY;
+                this.saveLayout();
+            } else {
+                // Push failed - keep original position
+                console.warn('Cannot place widget - would cause overlap');
+            }
         }
 
         // Clean up
@@ -719,25 +762,36 @@ export class GridLayoutManager {
             const originalW = layout.w;
             const originalH = layout.h;
 
-            // Temporarily update layout for push calculation
-            layout.x = finalX;
-            layout.y = finalY;
-            layout.w = finalW;
-            layout.h = finalH;
-
-            // Check if valid or can push others
+            // Check if valid placement without modifying layout first
             const canPlace = this.isPositionAvailable(finalX, finalY, finalW, finalH, layout.id);
 
-            if (canPlace || this.pushWidgets(layout, finalX, finalY)) {
-                // Success - keep new dimensions
+            if (canPlace) {
+                // Direct placement - no conflicts
+                layout.x = finalX;
+                layout.y = finalY;
+                layout.w = finalW;
+                layout.h = finalH;
                 this.saveLayout();
             } else {
-                // Failed - rollback to original
-                layout.x = originalX;
-                layout.y = originalY;
-                layout.w = originalW;
-                layout.h = originalH;
-                console.warn('Resize blocked - would cause invalid layout');
+                // Try push behavior - temporarily update layout for push calculation
+                layout.x = finalX;
+                layout.y = finalY;
+                layout.w = finalW;
+                layout.h = finalH;
+
+                const pushResult = this.pushWidgets(layout, finalX, finalY);
+
+                if (pushResult) {
+                    // Push succeeded - keep new dimensions
+                    this.saveLayout();
+                } else {
+                    // Push failed - rollback to original
+                    layout.x = originalX;
+                    layout.y = originalY;
+                    layout.w = originalW;
+                    layout.h = originalH;
+                    console.warn('Resize blocked - would cause overlap');
+                }
             }
         }
 
