@@ -70,6 +70,9 @@ export class ManagerDashboard {
         // Update panel headers
         this.updatePanelHeaders();
 
+        // Update widget library
+        this.updateWidgetLibrary();
+
         // Update AI Assistant
         if (this.aiAssistant) {
             this.aiAssistant.updateLanguage();
@@ -78,13 +81,88 @@ export class ManagerDashboard {
 
     updatePanelHeaders() {
         const widgetSidebarHeader = document.querySelector('#widget-sidebar .sidebar-header h3');
-        const alertsSidebarHeader = document.querySelector('#alerts-sidebar .sidebar-header h3');
+        const alertsSidebarHeader = document.querySelector('#alerts-sidebar h3');
 
         if (widgetSidebarHeader) {
             widgetSidebarHeader.textContent = translator.t('widgets-panel');
         }
         if (alertsSidebarHeader) {
             alertsSidebarHeader.textContent = translator.t('alerts-panel');
+        }
+    }
+
+    updateWidgetLibrary() {
+        // Update category headers
+        const categories = document.querySelectorAll('.widget-category h4');
+        const categoryTexts = [
+            translator.t('financial'),
+            translator.t('operational'),
+            translator.t('sales'),
+            translator.t('team'),
+            translator.t('strategic'),
+            translator.t('executive')
+        ];
+        categories.forEach((cat, index) => {
+            if (categoryTexts[index]) {
+                cat.textContent = categoryTexts[index];
+            }
+        });
+
+        // Update widget names
+        const widgetNameMap = {
+            'cash-flow': 'cash-flow',
+            'revenue-target': 'revenue-target',
+            'profit-product': 'profit-product',
+            'accounts-receivable': 'accounts-receivable',
+            'live-prices': 'live-prices',
+            'order-pipeline': 'order-pipeline',
+            'delivery-trends': 'delivery-trends',
+            'bottleneck-map': 'bottleneck-map',
+            'team-capacity': 'team-capacity',
+            'customer-health': 'customer-health',
+            'sales-pipeline': 'sales-pipeline',
+            'top-customers': 'top-customers',
+            'team-scorecard': 'team-scorecard',
+            'overdue-tasks': 'overdue-tasks',
+            'task-manager': 'task-manager',
+            'strategic-goals': 'strategic-goals',
+            'project-manager': 'project-manager',
+            'todays-focus': 'todays-focus',
+            'executive-summary': 'executive-summary'
+        };
+
+        document.querySelectorAll('.widget-item').forEach(item => {
+            const widgetType = item.dataset.widgetType;
+            const nameSpan = item.querySelector('.widget-name');
+            if (nameSpan && widgetNameMap[widgetType]) {
+                nameSpan.textContent = translator.t(widgetNameMap[widgetType]);
+            }
+        });
+
+        // Update quick actions
+        const createTaskBtn = document.getElementById('createTaskBtn');
+        const createProjectBtn = document.getElementById('createProjectBtn');
+        if (createTaskBtn) {
+            createTaskBtn.textContent = translator.getLanguage() === 'fa' ? '+ وظیفه جدید' : '+ New Task';
+        }
+        if (createProjectBtn) {
+            createProjectBtn.textContent = translator.getLanguage() === 'fa' ? '+ پروژه جدید' : '+ New Project';
+        }
+
+        // Update quick actions header
+        const quickActionsHeader = document.querySelector('.sidebar-section h4');
+        if (quickActionsHeader) {
+            quickActionsHeader.textContent = translator.getLanguage() === 'fa' ? 'اقدامات سریع' : 'Quick Actions';
+        }
+
+        // Update topbar elements
+        const tagline = document.querySelector('.tagline');
+        const userName = document.querySelector('.user-name');
+        if (tagline) {
+            tagline.textContent = translator.getLanguage() === 'fa' ? 'مرکز فرماندهی مدیریت' : 'Manager\'s Command Center';
+        }
+        if (userName) {
+            userName.textContent = translator.getLanguage() === 'fa' ? 'پیشخوان مدیرعامل' : 'CEO Dashboard';
         }
     }
 

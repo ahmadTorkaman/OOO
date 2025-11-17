@@ -39,6 +39,7 @@ export class i18n {
                 'sales': 'Sales & Marketing',
                 'executive': 'Executive',
                 'strategic': 'Strategic',
+                'team': 'Team',
 
                 // Widget Titles
                 'cash-flow': 'Cash Flow & Runway',
@@ -240,6 +241,7 @@ export class i18n {
                 'sales': 'فروش و بازاریابی',
                 'executive': 'مدیریت ارشد',
                 'strategic': 'استراتژیک',
+                'team': 'تیم',
 
                 // Widget Titles
                 'cash-flow': 'جریان نقدی و مدت ماندگاری',
