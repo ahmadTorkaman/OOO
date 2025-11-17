@@ -673,6 +673,26 @@ export class WidgetManager {
                 widget.data = this.getWidgetData(widget.type);
             }
 
+            // Update widget header title
+            const widgetEl = document.getElementById(widgetId);
+            if (widgetEl) {
+                const titleEl = widgetEl.querySelector('.widget-title');
+                if (titleEl) {
+                    const widgetConfig = this.getWidgetConfig(widget.type);
+                    const widgetTitle = widget.type === 'custom-chart' && widget.data.customConfig
+                        ? widget.data.customConfig.title
+                        : widgetConfig.title;
+
+                    // Keep the icon, update the text
+                    const icon = titleEl.querySelector('svg');
+                    titleEl.innerHTML = '';
+                    if (icon) {
+                        titleEl.appendChild(icon.cloneNode(true));
+                    }
+                    titleEl.appendChild(document.createTextNode(widgetTitle));
+                }
+            }
+
             const bodyEl = document.getElementById(`${widgetId}-body`);
             if (bodyEl) {
                 bodyEl.innerHTML = this.renderWidgetBody(widget);
