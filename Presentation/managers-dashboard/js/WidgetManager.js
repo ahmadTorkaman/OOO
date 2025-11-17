@@ -338,7 +338,7 @@ export class WidgetManager {
                 ${data.stages.map(stage => `
                     <div class="pipeline-stage">
                         <span class="stage-indicator ${stage.color}"></span>
-                        <span class="stage-label">${stage.label}</span>
+                        <span class="stage-label">${translator.t(stage.labelKey)}</span>
                         <span class="stage-count">${stage.count}</span>
                         <span class="stage-percentage">(${stage.percentage}%)</span>
                     </div>
@@ -375,9 +375,9 @@ export class WidgetManager {
             <table class="widget-table clickable" onclick="dashboard.drillDownManager.show('${widgetId}', 'top-customers')">
                 <thead>
                     <tr>
-                        <th>Customer</th>
-                        <th>Revenue</th>
-                        <th>Status</th>
+                        <th>${translator.t('customer')}</th>
+                        <th>${translator.t('revenue')}</th>
+                        <th>${translator.t('status')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -385,7 +385,7 @@ export class WidgetManager {
                         <tr>
                             <td>${c.name}</td>
                             <td>$${c.revenue.toLocaleString()}</td>
-                            <td><span class="status-badge ${c.status}">${c.statusText}</span></td>
+                            <td><span class="status-badge ${c.status}">${translator.t(c.statusKey)}</span></td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -398,10 +398,10 @@ export class WidgetManager {
             <table class="widget-table clickable" onclick="dashboard.drillDownManager.show('${widgetId}', 'team-scorecard')">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Tasks</th>
-                        <th>Rating</th>
-                        <th>Status</th>
+                        <th>${translator.getLanguage() === 'fa' ? 'نام' : 'Name'}</th>
+                        <th>${translator.t('tasks')}</th>
+                        <th>${translator.t('rating')}</th>
+                        <th>${translator.t('status')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -410,7 +410,7 @@ export class WidgetManager {
                             <td>${m.name}</td>
                             <td>${m.tasks}</td>
                             <td>${m.rating}</td>
-                            <td><span class="status-badge ${m.status}">${m.statusText}</span></td>
+                            <td><span class="status-badge ${m.status}">${translator.t(m.statusKey)}</span></td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -468,12 +468,12 @@ export class WidgetManager {
         return `
             <div class="task-manager-widget">
                 <div class="task-filters">
-                    <button class="filter-btn ${filter === 'all' ? 'active' : ''}" onclick="dashboard.widgetManager.filterTasks('${widgetId}', 'all')">All</button>
-                    <button class="filter-btn ${filter === 'today' ? 'active' : ''}" onclick="dashboard.widgetManager.filterTasks('${widgetId}', 'today')">Today</button>
-                    <button class="filter-btn ${filter === 'week' ? 'active' : ''}" onclick="dashboard.widgetManager.filterTasks('${widgetId}', 'week')">This Week</button>
+                    <button class="filter-btn ${filter === 'all' ? 'active' : ''}" onclick="dashboard.widgetManager.filterTasks('${widgetId}', 'all')">${translator.t('filter-all')}</button>
+                    <button class="filter-btn ${filter === 'today' ? 'active' : ''}" onclick="dashboard.widgetManager.filterTasks('${widgetId}', 'today')">${translator.t('filter-today')}</button>
+                    <button class="filter-btn ${filter === 'week' ? 'active' : ''}" onclick="dashboard.widgetManager.filterTasks('${widgetId}', 'week')">${translator.t('filter-week')}</button>
                 </div>
                 <div class="task-list">
-                    ${tasks.length === 0 ? '<p class="no-tasks">No tasks yet. Create one below!</p>' :
+                    ${tasks.length === 0 ? `<p class="no-tasks">${translator.t('no-tasks')}</p>` :
                         tasks.map(task => `
                             <div class="task-item ${task.completed ? 'completed' : ''}" onclick="dashboard.widgetManager.toggleTask('${widgetId}', ${task.id})">
                                 <input type="checkbox" ${task.completed ? 'checked' : ''} onclick="event.stopPropagation(); dashboard.widgetManager.toggleTask('${widgetId}', ${task.id})">
@@ -481,13 +481,13 @@ export class WidgetManager {
                                     <div class="task-title">${task.title}</div>
                                     <div class="task-meta">
                                         ${task.dueDate ? `<span class="task-due ${this.isOverdue(task.dueDate) ? 'overdue' : ''}">${this.formatDueDate(task.dueDate)}</span>` : ''}
-                                        ${task.priority ? `<span class="task-priority priority-${task.priority}">${task.priority}</span>` : ''}
+                                        ${task.priority ? `<span class="task-priority priority-${task.priority}">${translator.t(task.priority)}</span>` : ''}
                                     </div>
                                 </div>
                             </div>
                         `).join('')}
                 </div>
-                <button class="btn-primary btn-sm add-task-btn" onclick="dashboard.modalManager.showTaskModal('${widgetId}')">+ Add Task</button>
+                <button class="btn-primary btn-sm add-task-btn" onclick="dashboard.modalManager.showTaskModal('${widgetId}')">+ ${translator.t('add-task')}</button>
             </div>
         `;
     }
@@ -501,11 +501,11 @@ export class WidgetManager {
         const today = new Date();
         const diff = Math.ceil((date - today) / (1000 * 60 * 60 * 24));
 
-        if (diff === 0) return 'Today';
-        if (diff === 1) return 'Tomorrow';
-        if (diff === -1) return 'Yesterday';
-        if (diff < 0) return `${Math.abs(diff)} days ago`;
-        return `In ${diff} days`;
+        if (diff === 0) return translator.t('due-today');
+        if (diff === 1) return translator.t('due-tomorrow');
+        if (diff === -1) return translator.t('due-yesterday');
+        if (diff < 0) return `${Math.abs(diff)} ${translator.t('days-ago')}`;
+        return `${translator.t('in-days')} ${diff} ${translator.t('days')}`;
     }
 
     filterTasks(widgetId, filter) {
@@ -551,7 +551,7 @@ export class WidgetManager {
                     <div class="project-card ${project.status}" onclick="dashboard.drillDownManager.show('${widgetId}', 'project-manager', '${project.id}')">
                         <div class="project-header">
                             <h4 class="project-title">${project.name}</h4>
-                            <span class="project-status-badge ${project.status}">${project.statusText}</span>
+                            <span class="project-status-badge ${project.status}">${translator.t(project.statusKey)}</span>
                         </div>
                         <div class="progress-bar-container">
                             <div class="progress-bar">
@@ -566,7 +566,7 @@ export class WidgetManager {
                                     <span class="checkpoint-name">${cp.name}</span>
                                 </div>
                             `).join('')}
-                            ${project.checkpoints.length > 3 ? `<div class="checkpoint-more">+ ${project.checkpoints.length - 3} more</div>` : ''}
+                            ${project.checkpoints.length > 3 ? `<div class="checkpoint-more">+ ${project.checkpoints.length - 3} ${translator.getLanguage() === 'fa' ? 'مورد دیگر' : 'more'}</div>` : ''}
                         </div>
                     </div>
                 `).join('')}
@@ -580,14 +580,14 @@ export class WidgetManager {
         return `
             <div class="todays-focus-widget">
                 <div class="focus-section">
-                    <h4>${IconHelper.icon('target', '', 16)} Top Priorities</h4>
+                    <h4>${IconHelper.icon('target', '', 16)} ${translator.t('top-priorities')}</h4>
                     <ol class="priority-list">
                         ${focus.priorities.map(p => `<li class="priority-${p.urgency}">${p.text}</li>`).join('')}
                     </ol>
                 </div>
 
                 <div class="focus-section">
-                    <h4>${IconHelper.icon('zap', '', 16)} Urgent Decisions</h4>
+                    <h4>${IconHelper.icon('zap', '', 16)} ${translator.t('urgent-decisions')}</h4>
                     <ul class="decision-list">
                         ${focus.decisions.map(d => `
                             <li>
@@ -599,7 +599,7 @@ export class WidgetManager {
                 </div>
 
                 <div class="focus-section">
-                    <h4>${IconHelper.icon('calendar', '', 16)} Today's Meetings</h4>
+                    <h4>${IconHelper.icon('calendar', '', 16)} ${translator.t('todays-meetings')}</h4>
                     <div class="meetings-list">
                         ${focus.meetings.map(m => `
                             <div class="meeting-item">
@@ -629,8 +629,8 @@ export class WidgetManager {
                     <div class="summary-metric ${metric.status}">
                         <div class="metric-icon">${IconHelper.icon(metric.icon, '', 32)}</div>
                         <div class="metric-info">
-                            <div class="metric-title">${metric.title}</div>
-                            <div class="metric-detail">${metric.detail}</div>
+                            <div class="metric-title">${translator.t(metric.titleKey)}</div>
+                            <div class="metric-detail">${translator.t(metric.detailKey)}</div>
                         </div>
                         <div class="metric-status-indicator ${metric.status}"></div>
                     </div>
@@ -715,10 +715,10 @@ export class WidgetManager {
             }),
             'order-pipeline': () => ({
                 stages: [
-                    { label: 'On Track', count: 45, percentage: 67, color: 'green' },
-                    { label: 'At Risk', count: 15, percentage: 22, color: 'yellow' },
-                    { label: 'Overdue', count: 8, percentage: 11, color: 'red' },
-                    { label: 'Blocked', count: 3, percentage: 4, color: 'gray' }
+                    { label: 'On Track', labelKey: 'on-track-status', count: 45, percentage: 67, color: 'green' },
+                    { label: 'At Risk', labelKey: 'at-risk', count: 15, percentage: 22, color: 'yellow' },
+                    { label: 'Overdue', labelKey: 'overdue-status', count: 8, percentage: 11, color: 'red' },
+                    { label: 'Blocked', labelKey: 'blocked', count: 3, percentage: 4, color: 'gray' }
                 ]
             }),
             'delivery-trends': () => ({
@@ -743,17 +743,17 @@ export class WidgetManager {
             }),
             'top-customers': () => ({
                 customers: [
-                    { name: 'Client A', revenue: 450000, status: 'success', statusText: 'Active' },
-                    { name: 'Client B', revenue: 320000, status: 'warning', statusText: 'At Risk' },
-                    { name: 'Client C', revenue: 280000, status: 'success', statusText: 'Active' }
+                    { name: 'Client A', revenue: 450000, status: 'success', statusText: 'Active', statusKey: 'active' },
+                    { name: 'Client B', revenue: 320000, status: 'warning', statusText: 'At Risk', statusKey: 'at-risk' },
+                    { name: 'Client C', revenue: 280000, status: 'success', statusText: 'Active', statusKey: 'active' }
                 ]
             }),
             'team-scorecard': () => ({
                 team: [
-                    { name: 'Sarah', tasks: 12, rating: '4.8', status: 'success', statusText: 'On Track' },
-                    { name: 'Mike', tasks: 8, rating: '4.9', status: 'success', statusText: 'On Track' },
-                    { name: 'John', tasks: 3, rating: '3.2', status: 'warning', statusText: 'Needs Support' },
-                    { name: 'Alex', tasks: 5, rating: '4.1', status: 'danger', statusText: 'Overdue' }
+                    { name: 'Sarah', tasks: 12, rating: '4.8', status: 'success', statusText: 'On Track', statusKey: 'on-track-status' },
+                    { name: 'Mike', tasks: 8, rating: '4.9', status: 'success', statusText: 'On Track', statusKey: 'on-track-status' },
+                    { name: 'John', tasks: 3, rating: '3.2', status: 'warning', statusText: 'Needs Support', statusKey: 'needs-support' },
+                    { name: 'Alex', tasks: 5, rating: '4.1', status: 'danger', statusText: 'Overdue', statusKey: 'overdue-status' }
                 ]
             }),
             'overdue-tasks': () => ({
@@ -799,76 +799,79 @@ export class WidgetManager {
                 projects: [
                     {
                         id: 'proj-1',
-                        name: 'Tehran Showroom Launch',
+                        name: translator.getLanguage() === 'fa' ? 'راه‌اندازی نمایشگاه تهران' : 'Tehran Showroom Launch',
                         progress: 67,
                         status: 'at-risk',
                         statusText: 'At Risk',
+                        statusKey: 'at-risk',
                         checkpoints: [
-                            { name: 'Site selection & lease', status: 'completed' },
-                            { name: 'Architect finalized', status: 'completed' },
-                            { name: 'Interior design', status: 'in-progress' },
-                            { name: 'Permits pending', status: 'blocked' },
-                            { name: 'Grand opening', status: 'pending' }
+                            { name: translator.getLanguage() === 'fa' ? 'انتخاب محل و اجاره' : 'Site selection & lease', status: 'completed' },
+                            { name: translator.getLanguage() === 'fa' ? 'نهایی شدن معمار' : 'Architect finalized', status: 'completed' },
+                            { name: translator.getLanguage() === 'fa' ? 'طراحی داخلی' : 'Interior design', status: 'in-progress' },
+                            { name: translator.getLanguage() === 'fa' ? 'مجوزها در انتظار' : 'Permits pending', status: 'blocked' },
+                            { name: translator.getLanguage() === 'fa' ? 'افتتاحیه بزرگ' : 'Grand opening', status: 'pending' }
                         ]
                     },
                     {
                         id: 'proj-2',
-                        name: 'New Product Line - Executive Desks',
+                        name: translator.getLanguage() === 'fa' ? 'خط تولید جدید - میزهای مدیریتی' : 'New Product Line - Executive Desks',
                         progress: 85,
                         status: 'on-track',
                         statusText: 'On Track',
+                        statusKey: 'on-track-status',
                         checkpoints: [
-                            { name: 'Market research', status: 'completed' },
-                            { name: 'Prototype design', status: 'completed' },
-                            { name: 'Supplier contracts', status: 'completed' },
-                            { name: 'First production run', status: 'in-progress' },
-                            { name: 'Marketing campaign', status: 'pending' }
+                            { name: translator.getLanguage() === 'fa' ? 'تحقیقات بازار' : 'Market research', status: 'completed' },
+                            { name: translator.getLanguage() === 'fa' ? 'طراحی نمونه اولیه' : 'Prototype design', status: 'completed' },
+                            { name: translator.getLanguage() === 'fa' ? 'قراردادهای تامین‌کننده' : 'Supplier contracts', status: 'completed' },
+                            { name: translator.getLanguage() === 'fa' ? 'اولین دوره تولید' : 'First production run', status: 'in-progress' },
+                            { name: translator.getLanguage() === 'fa' ? 'کمپین بازاریابی' : 'Marketing campaign', status: 'pending' }
                         ]
                     },
                     {
                         id: 'proj-3',
-                        name: 'ERP System Implementation',
+                        name: translator.getLanguage() === 'fa' ? 'پیاده‌سازی سیستم ERP' : 'ERP System Implementation',
                         progress: 40,
                         status: 'behind',
                         statusText: 'Behind Schedule',
+                        statusKey: 'behind-schedule',
                         checkpoints: [
-                            { name: 'Vendor selection', status: 'completed' },
-                            { name: 'Requirements gathering', status: 'completed' },
-                            { name: 'Data migration (stalled - 3 weeks)', status: 'blocked' },
-                            { name: 'Staff training', status: 'pending' },
-                            { name: 'Go-live', status: 'pending' }
+                            { name: translator.getLanguage() === 'fa' ? 'انتخاب فروشنده' : 'Vendor selection', status: 'completed' },
+                            { name: translator.getLanguage() === 'fa' ? 'جمع‌آوری نیازمندی‌ها' : 'Requirements gathering', status: 'completed' },
+                            { name: translator.getLanguage() === 'fa' ? 'انتقال داده (متوقف - ۳ هفته)' : 'Data migration (stalled - 3 weeks)', status: 'blocked' },
+                            { name: translator.getLanguage() === 'fa' ? 'آموزش کارکنان' : 'Staff training', status: 'pending' },
+                            { name: translator.getLanguage() === 'fa' ? 'راه‌اندازی' : 'Go-live', status: 'pending' }
                         ]
                     }
                 ]
             }),
             'todays-focus': () => ({
                 priorities: [
-                    { text: 'Approve $2M equipment financing by EOD', urgency: 'urgent' },
-                    { text: 'Call Client B about $45K overdue payment', urgency: 'urgent' },
-                    { text: 'Review & approve Tehran showroom design', urgency: 'high' }
+                    { text: translator.getLanguage() === 'fa' ? 'تایید تامین مالی تجهیزات ۲ میلیون دلاری تا پایان روز' : 'Approve $2M equipment financing by EOD', urgency: 'urgent' },
+                    { text: translator.getLanguage() === 'fa' ? 'تماس با مشتری B درباره پرداخت معوقه ۴۵ هزار دلاری' : 'Call Client B about $45K overdue payment', urgency: 'urgent' },
+                    { text: translator.getLanguage() === 'fa' ? 'بررسی و تایید طراحی نمایشگاه تهران' : 'Review & approve Tehran showroom design', urgency: 'high' }
                 ],
                 decisions: [
-                    { title: 'Equipment financing terms', deadline: 'Today 5 PM' },
-                    { title: 'Hire 2 production staff vs outsource', deadline: 'Tomorrow' },
-                    { title: 'Approve cost reduction plan', deadline: 'This Week' }
+                    { title: translator.getLanguage() === 'fa' ? 'شرایط تامین مالی تجهیزات' : 'Equipment financing terms', deadline: translator.getLanguage() === 'fa' ? 'امروز ساعت ۱۷' : 'Today 5 PM' },
+                    { title: translator.getLanguage() === 'fa' ? 'استخدام ۲ نفر پرسنل تولید یا برون‌سپاری' : 'Hire 2 production staff vs outsource', deadline: translator.getLanguage() === 'fa' ? 'فردا' : 'Tomorrow' },
+                    { title: translator.getLanguage() === 'fa' ? 'تایید طرح کاهش هزینه' : 'Approve cost reduction plan', deadline: translator.getLanguage() === 'fa' ? 'این هفته' : 'This Week' }
                 ],
                 meetings: [
-                    { time: '10:00 AM', title: 'Weekly exec team standup' },
-                    { time: '2:00 PM', title: 'CFO - Cash flow review' },
-                    { time: '4:00 PM', title: 'Sales pipeline review' }
+                    { time: '10:00', title: translator.getLanguage() === 'fa' ? 'جلسه هفتگی تیم اجرایی' : 'Weekly exec team standup' },
+                    { time: '14:00', title: translator.getLanguage() === 'fa' ? 'CFO - بررسی جریان نقدی' : 'CFO - Cash flow review' },
+                    { time: '16:00', title: translator.getLanguage() === 'fa' ? 'بررسی قیف فروش' : 'Sales pipeline review' }
                 ],
                 metrics: [
-                    { label: 'Revenue', value: '$1.7M / $2M', status: 'warning' },
-                    { label: 'Cash Runway', value: '45 days', status: 'danger' },
-                    { label: 'Orders', value: '45 on track', status: 'success' }
+                    { label: translator.getLanguage() === 'fa' ? 'درآمد' : 'Revenue', value: '$1.7M / $2M', status: 'warning' },
+                    { label: translator.getLanguage() === 'fa' ? 'مدت ماندگاری نقدینگی' : 'Cash Runway', value: translator.getLanguage() === 'fa' ? '۴۵ روز' : '45 days', status: 'danger' },
+                    { label: translator.getLanguage() === 'fa' ? 'سفارشات' : 'Orders', value: translator.getLanguage() === 'fa' ? '۴۵ در مسیر' : '45 on track', status: 'success' }
                 ]
             }),
             'executive-summary': () => ({
                 metrics: [
-                    { icon: 'dollar-sign', title: 'Revenue', detail: 'On Track (85% of target)', status: 'success' },
-                    { icon: 'clock', title: 'Delivery', detail: 'Behind Target (+2 days)', status: 'danger' },
-                    { icon: 'wallet', title: 'Cash', detail: 'Warning (45 days runway)', status: 'warning' },
-                    { icon: 'users', title: 'Team', detail: 'Performing Well (4.6/5)', status: 'success' }
+                    { icon: 'dollar-sign', title: 'Revenue', titleKey: 'revenue-metric', detail: 'On Track (85% of target)', detailKey: 'revenue-detail', status: 'success' },
+                    { icon: 'clock', title: 'Delivery', titleKey: 'delivery-metric', detail: 'Behind Target (+2 days)', detailKey: 'delivery-detail', status: 'danger' },
+                    { icon: 'wallet', title: 'Cash', titleKey: 'cash-metric', detail: 'Warning (45 days runway)', detailKey: 'cash-detail', status: 'warning' },
+                    { icon: 'users', title: 'Team', titleKey: 'team-metric', detail: 'Performing Well (4.6/5)', detailKey: 'team-detail', status: 'success' }
                 ]
             })
         };
