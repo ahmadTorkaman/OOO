@@ -401,10 +401,17 @@ export class GridLayoutManager {
     }
 
     compactLayout() {
-        // Move widgets up to fill gaps (like iOS home screen)
+        // First resolve any existing overlaps
+        this.resolveOverlaps();
+
+        // Then move widgets up to fill gaps (like iOS home screen)
         let moved = true;
-        while (moved) {
+        let iterations = 0;
+        const maxIterations = 20;
+
+        while (moved && iterations < maxIterations) {
             moved = false;
+            iterations++;
 
             // Sort by y position (top to bottom)
             const sorted = [...this.layout].sort((a, b) => a.y - b.y || a.x - b.x);
@@ -427,8 +434,11 @@ export class GridLayoutManager {
             }
         }
 
-        // Validate no overlaps after compaction
-        this.validateNoOverlaps();
+        // Final validation
+        const isValid = this.validateNoOverlaps();
+        if (!isValid) {
+            console.warn('Layout still has overlaps after compaction');
+        }
 
         this.saveLayout();
     }
@@ -452,6 +462,56 @@ export class GridLayoutManager {
             }
         }
         return true;
+    }
+
+    resolveOverlaps() {
+        // Automatically resolve all overlaps by moving widgets to available positions
+        let maxIterations = 50; // Prevent infinite loops
+        let iteration = 0;
+
+        while (iteration < maxIterations) {
+            let foundOverlap = false;
+            iteration++;
+
+            // Check for overlaps
+            for (let i = 0; i < this.layout.length; i++) {
+                for (let j = i + 1; j < this.layout.length; j++) {
+                    const item1 = this.layout[i];
+                    const item2 = this.layout[j];
+
+                    if (this.checkCollision(
+                        item1.x, item1.y, item1.w, item1.h,
+                        item2.x, item2.y, item2.w, item2.h
+                    )) {
+                        foundOverlap = true;
+                        console.warn(`Resolving overlap between ${item1.id} and ${item2.id}`);
+
+                        // Move item2 to next available position
+                        const newPos = this.findNextAvailablePosition(item2.w, item2.h);
+                        if (newPos) {
+                            item2.x = newPos.x;
+                            item2.y = newPos.y;
+                            console.log(`Moved ${item2.id} to (${newPos.x}, ${newPos.y})`);
+                        } else {
+                            // If no position found, move down
+                            item2.y = item1.y + item1.h;
+                            console.log(`Moved ${item2.id} below ${item1.id}`);
+                        }
+                        break;
+                    }
+                }
+                if (foundOverlap) break;
+            }
+
+            // If no overlaps found, we're done
+            if (!foundOverlap) {
+                console.log(`Layout resolved after ${iteration} iterations`);
+                return true;
+            }
+        }
+
+        console.error(`Failed to resolve overlaps after ${maxIterations} iterations`);
+        return false;
     }
 
     // ===== DRAG AND DROP =====
@@ -592,27 +652,15 @@ export class GridLayoutManager {
         const originalX = layout.x;
         const originalY = layout.y;
 
-        // Try to place with push behavior
-        const canPlace = this.isPositionAvailable(clampedX, clampedY, layout.w, layout.h, layout.id);
+        // Try to place widget at new position
+        layout.x = clampedX;
+        layout.y = clampedY;
 
-        if (canPlace) {
-            // Direct placement - no conflicts
-            layout.x = clampedX;
-            layout.y = clampedY;
-            this.saveLayout();
-        } else {
-            // Try push behavior
-            const pushResult = this.pushWidgets(layout, clampedX, clampedY);
-            if (pushResult) {
-                // Push succeeded - update position
-                layout.x = clampedX;
-                layout.y = clampedY;
-                this.saveLayout();
-            } else {
-                // Push failed - keep original position
-                console.warn('Cannot place widget - would cause overlap');
-            }
-        }
+        // Resolve any overlaps that may have occurred
+        this.resolveOverlaps();
+
+        // Compact layout to fill gaps
+        this.compactLayout();
 
         // Clean up
         element.classList.remove('dragging');
@@ -762,37 +810,17 @@ export class GridLayoutManager {
             const originalW = layout.w;
             const originalH = layout.h;
 
-            // Check if valid placement without modifying layout first
-            const canPlace = this.isPositionAvailable(finalX, finalY, finalW, finalH, layout.id);
+            // Apply new dimensions
+            layout.x = finalX;
+            layout.y = finalY;
+            layout.w = finalW;
+            layout.h = finalH;
 
-            if (canPlace) {
-                // Direct placement - no conflicts
-                layout.x = finalX;
-                layout.y = finalY;
-                layout.w = finalW;
-                layout.h = finalH;
-                this.saveLayout();
-            } else {
-                // Try push behavior - temporarily update layout for push calculation
-                layout.x = finalX;
-                layout.y = finalY;
-                layout.w = finalW;
-                layout.h = finalH;
+            // Resolve any overlaps that may have occurred
+            this.resolveOverlaps();
 
-                const pushResult = this.pushWidgets(layout, finalX, finalY);
-
-                if (pushResult) {
-                    // Push succeeded - keep new dimensions
-                    this.saveLayout();
-                } else {
-                    // Push failed - rollback to original
-                    layout.x = originalX;
-                    layout.y = originalY;
-                    layout.w = originalW;
-                    layout.h = originalH;
-                    console.warn('Resize blocked - would cause overlap');
-                }
-            }
+            // Compact layout to fill gaps
+            this.compactLayout();
         }
 
         // Clean up
