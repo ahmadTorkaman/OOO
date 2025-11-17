@@ -232,6 +232,76 @@ html[data-theme] body {
 
 #topbar input:checked + .slider { background: var(--primary); }
 #topbar input:checked + .slider:before { transform: translateX(19px); }
+
+/* Language Toggle */
+.language-toggle {
+  margin-left: var(--space-sm);
+}
+
+.lang-btn {
+  padding: 6px 14px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: var(--radius);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.lang-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.lang-btn:active {
+  transform: translateY(0);
+}
+
+/* RTL Support */
+[dir="rtl"] {
+  direction: rtl;
+}
+
+[dir="rtl"] #topbar {
+  direction: ltr; /* Keep topbar LTR to maintain layout */
+}
+
+[dir="rtl"] .panel {
+  text-align: right;
+}
+
+[dir="rtl"] .widget-header {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .widget-controls {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .kpi-trend,
+[dir="rtl"] .price-change {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .ai-chat-message {
+  text-align: right;
+}
+
+[dir="rtl"] .ai-chat-message.user {
+  align-items: flex-start;
+}
+
+[dir="rtl"] .ai-chat-message.assistant {
+  align-items: flex-end;
+}
+
+[dir="rtl"] .message-options {
+  flex-direction: row-reverse;
+}
+
 /* ===== LAYOUT SYSTEM ===== */
 
 /* Main Container */

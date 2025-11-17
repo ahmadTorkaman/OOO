@@ -5,6 +5,7 @@ import { DrillDownManager } from './DrillDownManager.js';
 import { IconHelper } from './IconHelper.js';
 import { GridLayoutManager } from './GridLayoutManager.js';
 import { AIAssistant } from './AIAssistant.js';
+import { translator } from './i18n.js';
 
 export class ManagerDashboard {
     constructor() {
@@ -16,6 +17,9 @@ export class ManagerDashboard {
     }
 
     init() {
+        // Initialize language first
+        this.setupLanguageToggle();
+
         // Initialize managers
         this.gridLayoutManager = new GridLayoutManager(this);
         this.widgetManager = new WidgetManager(this);
@@ -30,6 +34,58 @@ export class ManagerDashboard {
         this.setupQuickActions();
         this.loadDefaultWidgets();
         this.startLiveDataUpdates();
+
+        // Listen for language changes
+        window.addEventListener('languageChanged', () => {
+            this.handleLanguageChange();
+        });
+    }
+
+    // ===== LANGUAGE TOGGLE =====
+    setupLanguageToggle() {
+        const langToggle = document.getElementById('languageToggle');
+        const langSpan = document.getElementById('currentLang');
+
+        // Initialize language on page load
+        const currentLang = translator.getLanguage();
+        langSpan.textContent = currentLang.toUpperCase();
+        document.documentElement.setAttribute('dir', currentLang === 'fa' ? 'rtl' : 'ltr');
+        document.documentElement.setAttribute('lang', currentLang === 'fa' ? 'fa' : 'en');
+
+        // Toggle language
+        langToggle.addEventListener('click', () => {
+            const newLang = translator.getLanguage() === 'en' ? 'fa' : 'en';
+            translator.setLanguage(newLang);
+            langSpan.textContent = newLang.toUpperCase();
+            console.log('Language changed to:', newLang);
+        });
+    }
+
+    handleLanguageChange() {
+        // Refresh all widgets to show translated content
+        this.widgetManager.widgets.forEach(widget => {
+            this.widgetManager.refreshWidget(widget.id);
+        });
+
+        // Update panel headers
+        this.updatePanelHeaders();
+
+        // Update AI Assistant
+        if (this.aiAssistant) {
+            this.aiAssistant.updateLanguage();
+        }
+    }
+
+    updatePanelHeaders() {
+        const widgetSidebarHeader = document.querySelector('#widget-sidebar .sidebar-header h3');
+        const alertsSidebarHeader = document.querySelector('#alerts-sidebar .sidebar-header h3');
+
+        if (widgetSidebarHeader) {
+            widgetSidebarHeader.textContent = translator.t('widgets-panel');
+        }
+        if (alertsSidebarHeader) {
+            alertsSidebarHeader.textContent = translator.t('alerts-panel');
+        }
     }
 
     // ===== THEME TOGGLE =====

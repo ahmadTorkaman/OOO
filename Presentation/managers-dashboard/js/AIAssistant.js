@@ -1,5 +1,6 @@
 // AI Assistant Module - Claude-style chat interface
 import { IconHelper } from './IconHelper.js';
+import { translator } from './i18n.js';
 
 export class AIAssistant {
     constructor(dashboard) {
@@ -130,6 +131,32 @@ export class AIAssistant {
         } else {
             panel.classList.add('closed');
             button.classList.remove('hidden');
+        }
+    }
+
+    updateLanguage() {
+        // Update AI Assistant title and status
+        const titleEl = document.querySelector('.ai-chat-title h3');
+        const statusEl = document.querySelector('.ai-status');
+        const inputEl = document.getElementById('ai-chat-input');
+        const button = document.getElementById('ai-assistant-btn');
+
+        if (titleEl) titleEl.textContent = translator.t('ai-assistant');
+        if (statusEl) statusEl.textContent = translator.getLanguage() === 'fa' ? 'آماده کمک' : 'Ready to help';
+        if (inputEl) inputEl.placeholder = translator.t('ai-type-message');
+        if (button) button.title = translator.t('ai-assistant');
+
+        // Re-render welcome message if it's still visible
+        const welcomeMsg = document.querySelector('.ai-welcome-message');
+        if (welcomeMsg) {
+            welcomeMsg.innerHTML = `
+                <p>👋 ${translator.getLanguage() === 'fa' ? 'سلام! من کلود، دستیار هوش مصنوعی شما هستم.' : 'Hi! I\'m Claude, your AI assistant.'}</p>
+                <p>${translator.getLanguage() === 'fa' ? 'می‌توانم به شما در تحلیل داده‌های پیشخوان و ایجاد نمودارهای سفارشی کمک کنم.' : 'I can help you analyze your dashboard data and create custom charts.'}</p>
+                <div class="ai-suggestions">
+                    <button class="ai-suggestion-chip" data-action="create-chart">📊 ${translator.t('ai-option-chart')}</button>
+                    <button class="ai-suggestion-chip" data-action="analyze-data">📈 ${translator.t('ai-option-analysis')}</button>
+                </div>
+            `;
         }
     }
 

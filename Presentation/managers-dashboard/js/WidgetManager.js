@@ -1,5 +1,6 @@
 // Widget Manager - Handles widget lifecycle and rendering
 import { IconHelper } from './IconHelper.js';
+import { translator } from './i18n.js';
 
 export class WidgetManager {
     constructor(dashboard) {
@@ -202,26 +203,26 @@ export class WidgetManager {
 
     getWidgetConfig(type) {
         const configs = {
-            'cash-flow': { title: 'Cash Flow & Runway', icon: 'dollar-sign', hasChart: true, drillDown: true },
-            'revenue-target': { title: 'Revenue vs Target', icon: 'target', hasChart: true, drillDown: true },
-            'profit-product': { title: 'Profit by Product', icon: 'bar-chart', hasChart: true, drillDown: true },
-            'accounts-receivable': { title: 'Accounts Receivable', icon: 'refresh-cw', hasChart: true, drillDown: true },
-            'live-prices': { title: 'Live Market Prices', icon: 'coins', hasChart: true, drillDown: false },
-            'order-pipeline': { title: 'Order Pipeline', icon: 'layout', hasChart: false, drillDown: true },
-            'delivery-trends': { title: 'Delivery Time Trends', icon: 'arrow-up-right', hasChart: true, drillDown: true },
-            'bottleneck-map': { title: 'Bottleneck Heatmap', icon: 'alert-triangle', hasChart: false, drillDown: true },
-            'team-capacity': { title: 'Team Capacity', icon: 'users', hasChart: true, drillDown: true },
-            'customer-health': { title: 'Customer Health Score', icon: 'smile', hasChart: true, drillDown: true },
-            'sales-pipeline': { title: 'Sales Pipeline', icon: 'funnel', hasChart: true, drillDown: true },
-            'top-customers': { title: 'Top Customers', icon: 'star', hasChart: false, drillDown: true },
-            'team-scorecard': { title: 'Team Performance', icon: 'circle-dot', hasChart: false, drillDown: true },
-            'overdue-tasks': { title: 'Overdue Tasks', icon: 'alert-circle', hasChart: false, drillDown: true },
-            'strategic-goals': { title: 'Strategic Goals Q4 2024', icon: 'crosshair', hasChart: false, drillDown: true },
-            'task-manager': { title: 'My Tasks', icon: 'check-circle', hasChart: false, drillDown: true },
-            'project-manager': { title: 'Active Projects', icon: 'bar-chart-2', hasChart: false, drillDown: true },
-            'todays-focus': { title: "Today's Focus", icon: 'target', hasChart: false, drillDown: false },
-            'executive-summary': { title: 'Executive Summary', icon: 'trending-up', hasChart: false, drillDown: true },
-            'custom-chart': { title: 'Custom Chart', icon: 'bar-chart-3', hasChart: true, drillDown: false }
+            'cash-flow': { title: translator.t('cash-flow'), icon: 'dollar-sign', hasChart: true, drillDown: true },
+            'revenue-target': { title: translator.t('revenue-target'), icon: 'target', hasChart: true, drillDown: true },
+            'profit-product': { title: translator.t('profit-product'), icon: 'bar-chart', hasChart: true, drillDown: true },
+            'accounts-receivable': { title: translator.t('accounts-receivable'), icon: 'refresh-cw', hasChart: true, drillDown: true },
+            'live-prices': { title: translator.t('live-prices'), icon: 'coins', hasChart: true, drillDown: false },
+            'order-pipeline': { title: translator.t('order-pipeline'), icon: 'layout', hasChart: false, drillDown: true },
+            'delivery-trends': { title: translator.t('delivery-trends'), icon: 'arrow-up-right', hasChart: true, drillDown: true },
+            'bottleneck-map': { title: translator.t('bottleneck-map'), icon: 'alert-triangle', hasChart: false, drillDown: true },
+            'team-capacity': { title: translator.t('team-capacity'), icon: 'users', hasChart: true, drillDown: true },
+            'customer-health': { title: translator.t('customer-health'), icon: 'smile', hasChart: true, drillDown: true },
+            'sales-pipeline': { title: translator.t('sales-pipeline'), icon: 'funnel', hasChart: true, drillDown: true },
+            'top-customers': { title: translator.t('top-customers'), icon: 'star', hasChart: false, drillDown: true },
+            'team-scorecard': { title: translator.t('team-scorecard'), icon: 'circle-dot', hasChart: false, drillDown: true },
+            'overdue-tasks': { title: translator.t('overdue-tasks'), icon: 'alert-circle', hasChart: false, drillDown: true },
+            'strategic-goals': { title: translator.t('strategic-goals'), icon: 'crosshair', hasChart: false, drillDown: true },
+            'task-manager': { title: translator.t('task-manager'), icon: 'check-circle', hasChart: false, drillDown: true },
+            'project-manager': { title: translator.t('project-manager'), icon: 'bar-chart-2', hasChart: false, drillDown: true },
+            'todays-focus': { title: translator.t('todays-focus'), icon: 'target', hasChart: false, drillDown: false },
+            'executive-summary': { title: translator.t('executive-summary'), icon: 'trending-up', hasChart: false, drillDown: true },
+            'custom-chart': { title: translator.t('custom-chart'), icon: 'bar-chart-3', hasChart: true, drillDown: false }
         };
         return configs[type] || { title: 'Widget', icon: 'diamond', hasChart: false, drillDown: false };
     }
@@ -268,12 +269,12 @@ export class WidgetManager {
     renderCashFlowWidget(data, widgetId) {
         return `
             <div class="kpi-card clickable" onclick="dashboard.drillDownManager.show('${widgetId}', 'cash-flow')">
-                <div class="kpi-label">Current Cash Balance</div>
+                <div class="kpi-label">${translator.t('current-cash-balance')}</div>
                 <div class="kpi-value">$${data.balance.toLocaleString()}</div>
                 <div class="kpi-trend ${data.trend >= 0 ? 'positive' : 'negative'}">
-                    ${IconHelper.trendIcon(data.trend >= 0)} ${Math.abs(data.trend)}% from last month
+                    ${IconHelper.trendIcon(data.trend >= 0)} ${Math.abs(data.trend)}% ${translator.t('from-last-month')}
                 </div>
-                <div class="kpi-label" style="margin-top: 12px;">Runway: ${data.runway} days</div>
+                <div class="kpi-label" style="margin-top: 12px;">${translator.t('runway')}: ${data.runway} ${translator.t('days')}</div>
             </div>
             <canvas id="chart-${data.chartId}" class="chart-container"></canvas>
         `;
@@ -282,11 +283,11 @@ export class WidgetManager {
     renderRevenueTargetWidget(data, widgetId) {
         return `
             <div class="kpi-card clickable" onclick="dashboard.drillDownManager.show('${widgetId}', 'revenue-target')">
-                <div class="kpi-label">Monthly Revenue</div>
+                <div class="kpi-label">${translator.t('monthly-revenue')}</div>
                 <div class="kpi-value">$${data.actual.toLocaleString()}</div>
-                <div class="kpi-label">Target: $${data.target.toLocaleString()} (${data.percentage}%)</div>
+                <div class="kpi-label">${translator.t('target')}: $${data.target.toLocaleString()} (${data.percentage}%)</div>
                 <div class="kpi-trend ${data.onTrack ? 'positive' : 'negative'}">
-                    ${data.onTrack ? 'On Track' : 'Behind'}
+                    ${data.onTrack ? translator.t('on-track') : translator.t('behind')}
                 </div>
             </div>
             <canvas id="chart-${data.chartId}" class="chart-container"></canvas>
@@ -300,9 +301,9 @@ export class WidgetManager {
     renderARWidget(data, widgetId) {
         return `
             <div class="kpi-card clickable" onclick="dashboard.drillDownManager.show('${widgetId}', 'accounts-receivable')">
-                <div class="kpi-label">Total AR</div>
+                <div class="kpi-label">${translator.t('total-ar')}</div>
                 <div class="kpi-value">$${data.total.toLocaleString()}</div>
-                <div class="kpi-label" style="color: #e74c3c;">Overdue: $${data.overdue.toLocaleString()}</div>
+                <div class="kpi-label" style="color: #e74c3c;">${translator.t('overdue')}: $${data.overdue.toLocaleString()}</div>
             </div>
             <canvas id="chart-${data.chartId}" class="chart-container"></canvas>
         `;
@@ -312,18 +313,18 @@ export class WidgetManager {
         return `
             <div class="price-cards">
                 <div class="price-card">
-                    <div class="price-label">Gold (oz)</div>
+                    <div class="price-label">${translator.t('gold-oz')}</div>
                     <div class="price-value" id="gold-price-${widgetId}">$${data.gold.price}</div>
                     <div class="price-change ${data.gold.change >= 0 ? 'up' : 'down'}" id="gold-change-${widgetId}">
-                        ${IconHelper.trendIcon(data.gold.change >= 0)} ${Math.abs(data.gold.change)}% (24h)
+                        ${IconHelper.trendIcon(data.gold.change >= 0)} ${Math.abs(data.gold.change)}% (${translator.t('24h')})
                     </div>
                     <canvas id="chart-gold-${widgetId}" class="price-sparkline"></canvas>
                 </div>
                 <div class="price-card">
-                    <div class="price-label">USD to IRR</div>
+                    <div class="price-label">${translator.t('usd-to-irr')}</div>
                     <div class="price-value" id="usd-price-${widgetId}">${data.usd.price}</div>
                     <div class="price-change ${data.usd.change >= 0 ? 'up' : 'down'}" id="usd-change-${widgetId}">
-                        ${IconHelper.trendIcon(data.usd.change >= 0)} ${Math.abs(data.usd.change)}% (24h)
+                        ${IconHelper.trendIcon(data.usd.change >= 0)} ${Math.abs(data.usd.change)}% (${translator.t('24h')})
                     </div>
                     <canvas id="chart-usd-${widgetId}" class="price-sparkline"></canvas>
                 </div>
@@ -349,9 +350,9 @@ export class WidgetManager {
     renderDeliveryTrendsWidget(data, widgetId) {
         return `
             <div class="kpi-card clickable" onclick="dashboard.drillDownManager.show('${widgetId}', 'delivery-trends')">
-                <div class="kpi-label">Average Delivery Time</div>
-                <div class="kpi-value">${data.current} days</div>
-                <div class="kpi-label">Target: ${data.target} days</div>
+                <div class="kpi-label">${translator.t('average-delivery-time')}</div>
+                <div class="kpi-value">${data.current} ${translator.t('days')}</div>
+                <div class="kpi-label">${translator.t('target')}: ${data.target} ${translator.t('days')}</div>
             </div>
             <canvas id="chart-${data.chartId}" class="chart-container"></canvas>
         `;
