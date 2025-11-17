@@ -4,6 +4,7 @@ import { ModalManager } from './ModalManager.js';
 import { DrillDownManager } from './DrillDownManager.js';
 import { IconHelper } from './IconHelper.js';
 import { GridLayoutManager } from './GridLayoutManager.js';
+import { AIAssistant } from './AIAssistant.js';
 
 export class ManagerDashboard {
     constructor() {
@@ -20,6 +21,7 @@ export class ManagerDashboard {
         this.widgetManager = new WidgetManager(this);
         this.modalManager = new ModalManager(this);
         this.drillDownManager = new DrillDownManager(this);
+        this.aiAssistant = new AIAssistant(this);
 
         // Setup core functionality
         this.setupThemeToggle();

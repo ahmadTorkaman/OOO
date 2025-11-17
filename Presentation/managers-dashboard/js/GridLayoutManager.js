@@ -113,6 +113,11 @@ export class GridLayoutManager {
                 minW: 1, minH: 2, maxW: 3, maxH: 4,
                 defaultW: 2, defaultH: 2,
                 resizable: true
+            },
+            'custom-chart': {
+                minW: 2, minH: 2, maxW: 6, maxH: 4,
+                defaultW: 3, defaultH: 3,
+                resizable: true
             }
         };
 

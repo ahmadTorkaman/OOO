@@ -41,6 +41,44 @@ export class WidgetManager {
         return widget;
     }
 
+    addCustomChartWidget(chartConfig) {
+        const widgetId = `widget-${Date.now()}`;
+        const chartId = `custom-${Date.now()}`;
+
+        const widget = {
+            id: widgetId,
+            type: 'custom-chart',
+            data: {
+                chartId: chartId,
+                customConfig: chartConfig
+            },
+            config: {}
+        };
+
+        this.widgets.push(widget);
+
+        // Add to grid layout manager - custom charts are 3x3
+        const layoutItem = this.dashboard.gridLayoutManager.addWidget(widgetId, 'custom-chart');
+        if (!layoutItem) {
+            console.warn('Could not add custom chart widget to grid layout');
+            this.widgets.pop();
+            return null;
+        }
+
+        this.renderWidget(widget);
+
+        // Position widget according to grid layout - wait for DOM and chart render
+        setTimeout(() => {
+            const widgetEl = document.getElementById(widgetId);
+            if (widgetEl) {
+                this.dashboard.gridLayoutManager.positionWidget(widgetEl, layoutItem);
+                console.log(`Positioned custom chart widget ${widgetId} at (${layoutItem.x}, ${layoutItem.y})`);
+            }
+        }, 250);
+
+        return widget;
+    }
+
     renderWidget(widget) {
         const dashboardGrid = document.getElementById('dashboard-grid');
         const widgetEl = document.createElement('div');
@@ -51,11 +89,16 @@ export class WidgetManager {
         const widgetConfig = this.getWidgetConfig(widget.type);
         const hasCustomization = this.hasCustomization(widget.type);
 
+        // Custom chart widgets use their config title
+        const widgetTitle = widget.type === 'custom-chart' && widget.data.customConfig
+            ? widget.data.customConfig.title
+            : widgetConfig.title;
+
         widgetEl.innerHTML = `
             <div class="widget-header">
                 <div class="widget-title">
                     ${IconHelper.widgetIcon(widgetConfig.icon)}
-                    ${widgetConfig.title}
+                    ${widgetTitle}
                 </div>
                 <div class="widget-controls">
                     ${hasCustomization ? `<button class="widget-btn customize" data-widget-id="${widget.id}" title="Customize">${this.getSettingsIcon()}</button>` : ''}
@@ -177,7 +220,8 @@ export class WidgetManager {
             'task-manager': { title: 'My Tasks', icon: 'check-circle', hasChart: false, drillDown: true },
             'project-manager': { title: 'Active Projects', icon: 'bar-chart-2', hasChart: false, drillDown: true },
             'todays-focus': { title: "Today's Focus", icon: 'target', hasChart: false, drillDown: false },
-            'executive-summary': { title: 'Executive Summary', icon: 'trending-up', hasChart: false, drillDown: true }
+            'executive-summary': { title: 'Executive Summary', icon: 'trending-up', hasChart: false, drillDown: true },
+            'custom-chart': { title: 'Custom Chart', icon: 'bar-chart-3', hasChart: true, drillDown: false }
         };
         return configs[type] || { title: 'Widget', icon: 'diamond', hasChart: false, drillDown: false };
     }
@@ -212,7 +256,8 @@ export class WidgetManager {
             'task-manager': this.renderTaskManagerWidget,
             'project-manager': this.renderProjectManagerWidget,
             'todays-focus': this.renderTodaysFocusWidget,
-            'executive-summary': this.renderExecutiveSummaryWidget
+            'executive-summary': this.renderExecutiveSummaryWidget,
+            'custom-chart': this.renderCustomChartWidget
         };
 
         const renderer = renderers[widget.type];
@@ -591,6 +636,10 @@ export class WidgetManager {
                 `).join('')}
             </div>
         `;
+    }
+
+    renderCustomChartWidget(data, widgetId) {
+        return `<canvas id="chart-${data.chartId}" class="chart-container" style="height: 100%;"></canvas>`;
     }
 
     // Continued in next part...
@@ -1016,7 +1065,71 @@ export class WidgetManager {
                     }]
                 },
                 options: this.getChartOptions()
-            })
+            }),
+            'custom-chart': () => {
+                if (!widget.data.customConfig) return null;
+
+                const config = widget.data.customConfig;
+
+                // Build chart config based on chartType
+                if (config.chartType === 'stacked-bar') {
+                    return {
+                        type: 'bar',
+                        data: config.data,
+                        options: {
+                            ...this.getChartOptions(),
+                            plugins: {
+                                ...this.getChartOptions().plugins,
+                                legend: {
+                                    display: true,
+                                    labels: {
+                                        color: '#e6e8ee',
+                                        font: { size: 11 }
+                                    }
+                                }
+                            },
+                            scales: {
+                                ...this.getChartOptions().scales,
+                                x: {
+                                    stacked: true,
+                                    ticks: { color: '#a5adbf', font: { size: 10 } },
+                                    grid: { color: 'rgba(255,255,255,0.05)' }
+                                },
+                                y: {
+                                    stacked: true,
+                                    ticks: { color: '#a5adbf', font: { size: 10 } },
+                                    grid: { color: 'rgba(255,255,255,0.05)' }
+                                }
+                            }
+                        }
+                    };
+                } else if (config.chartType === 'grouped-bar') {
+                    return {
+                        type: 'bar',
+                        data: config.data,
+                        options: {
+                            ...this.getChartOptions(),
+                            plugins: {
+                                ...this.getChartOptions().plugins,
+                                legend: {
+                                    display: true,
+                                    labels: {
+                                        color: '#e6e8ee',
+                                        font: { size: 11 }
+                                    }
+                                }
+                            }
+                        }
+                    };
+                }
+
+                // Default fallback
+                return {
+                    type: 'bar',
+                    data: config.data,
+                    options: this.getChartOptions()
+                };
+            }
         };
 
         const configFn = configs[widget.type];
