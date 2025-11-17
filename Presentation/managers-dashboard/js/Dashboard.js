@@ -6,6 +6,7 @@ import { IconHelper } from './IconHelper.js';
 import { GridLayoutManager } from './GridLayoutManager.js';
 import { AIAssistant } from './AIAssistant.js';
 import { translator } from './i18n.js';
+import { currency } from './Currency.js';
 
 export class ManagerDashboard {
     constructor() {
@@ -19,6 +20,7 @@ export class ManagerDashboard {
     init() {
         // Initialize language first
         this.setupLanguageToggle();
+        this.setupCurrencyToggle();
 
         // Initialize managers
         this.gridLayoutManager = new GridLayoutManager(this);
@@ -38,6 +40,11 @@ export class ManagerDashboard {
         // Listen for language changes
         window.addEventListener('languageChanged', () => {
             this.handleLanguageChange();
+        });
+
+        // Listen for currency changes
+        window.addEventListener('currencyChanged', () => {
+            this.handleCurrencyChange();
         });
     }
 
@@ -164,6 +171,31 @@ export class ManagerDashboard {
         if (userName) {
             userName.textContent = translator.getLanguage() === 'fa' ? 'پیشخوان مدیرعامل' : 'CEO Dashboard';
         }
+    }
+
+    // ===== CURRENCY TOGGLE =====
+    setupCurrencyToggle() {
+        const currencyToggle = document.getElementById('currencyToggle');
+        const currencySpan = document.getElementById('currentCurrency');
+
+        // Initialize currency on page load
+        const currentCurrency = currency.getCurrency();
+        currencySpan.textContent = currentCurrency === 'USD' ? '$' : 'ریال';
+
+        // Toggle currency
+        currencyToggle.addEventListener('click', () => {
+            const newCurrency = currency.getCurrency() === 'USD' ? 'IRR' : 'USD';
+            currency.setCurrency(newCurrency);
+            currencySpan.textContent = newCurrency === 'USD' ? '$' : 'ریال';
+            console.log('Currency changed to:', newCurrency);
+        });
+    }
+
+    handleCurrencyChange() {
+        // Refresh all widgets to show updated currency
+        this.widgetManager.widgets.forEach(widget => {
+            this.widgetManager.refreshWidget(widget.id);
+        });
     }
 
     // ===== THEME TOGGLE =====

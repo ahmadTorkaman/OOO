@@ -1,6 +1,7 @@
 // Widget Manager - Handles widget lifecycle and rendering
 import { IconHelper } from './IconHelper.js';
 import { translator } from './i18n.js';
+import { currency } from './Currency.js';
 
 export class WidgetManager {
     constructor(dashboard) {
@@ -270,7 +271,7 @@ export class WidgetManager {
         return `
             <div class="kpi-card clickable" onclick="dashboard.drillDownManager.show('${widgetId}', 'cash-flow')">
                 <div class="kpi-label">${translator.t('current-cash-balance')}</div>
-                <div class="kpi-value">$${data.balance.toLocaleString()}</div>
+                <div class="kpi-value">${currency.format(data.balance)}</div>
                 <div class="kpi-trend ${data.trend >= 0 ? 'positive' : 'negative'}">
                     ${IconHelper.trendIcon(data.trend >= 0)} ${Math.abs(data.trend)}% ${translator.t('from-last-month')}
                 </div>
@@ -284,8 +285,8 @@ export class WidgetManager {
         return `
             <div class="kpi-card clickable" onclick="dashboard.drillDownManager.show('${widgetId}', 'revenue-target')">
                 <div class="kpi-label">${translator.t('monthly-revenue')}</div>
-                <div class="kpi-value">$${data.actual.toLocaleString()}</div>
-                <div class="kpi-label">${translator.t('target')}: $${data.target.toLocaleString()} (${data.percentage}%)</div>
+                <div class="kpi-value">${currency.format(data.actual)}</div>
+                <div class="kpi-label">${translator.t('target')}: ${currency.format(data.target)} (${data.percentage}%)</div>
                 <div class="kpi-trend ${data.onTrack ? 'positive' : 'negative'}">
                     ${data.onTrack ? translator.t('on-track') : translator.t('behind')}
                 </div>
@@ -302,19 +303,27 @@ export class WidgetManager {
         return `
             <div class="kpi-card clickable" onclick="dashboard.drillDownManager.show('${widgetId}', 'accounts-receivable')">
                 <div class="kpi-label">${translator.t('total-ar')}</div>
-                <div class="kpi-value">$${data.total.toLocaleString()}</div>
-                <div class="kpi-label" style="color: #e74c3c;">${translator.t('overdue')}: $${data.overdue.toLocaleString()}</div>
+                <div class="kpi-value">${currency.format(data.total)}</div>
+                <div class="kpi-label" style="color: #e74c3c;">${translator.t('overdue')}: ${currency.format(data.overdue)}</div>
             </div>
             <canvas id="chart-${data.chartId}" class="chart-container"></canvas>
         `;
     }
 
     renderLivePricesWidget(data, widgetId) {
+        const goldPriceFormatted = currency.getCurrency() === 'USD'
+            ? `$${data.gold.price}`
+            : `${Math.round(parseFloat(data.gold.price.replace(/,/g, '')) * currency.getExchangeRate()).toLocaleString('fa-IR')} ریال`;
+
+        const usdPriceFormatted = currency.getCurrency() === 'USD'
+            ? data.usd.price
+            : data.usd.price;
+
         return `
             <div class="price-cards">
                 <div class="price-card">
                     <div class="price-label">${translator.t('gold-oz')}</div>
-                    <div class="price-value" id="gold-price-${widgetId}">$${data.gold.price}</div>
+                    <div class="price-value" id="gold-price-${widgetId}">${goldPriceFormatted}</div>
                     <div class="price-change ${data.gold.change >= 0 ? 'up' : 'down'}" id="gold-change-${widgetId}">
                         ${IconHelper.trendIcon(data.gold.change >= 0)} ${Math.abs(data.gold.change)}% (${translator.t('24h')})
                     </div>
@@ -322,7 +331,7 @@ export class WidgetManager {
                 </div>
                 <div class="price-card">
                     <div class="price-label">${translator.t('usd-to-irr')}</div>
-                    <div class="price-value" id="usd-price-${widgetId}">${data.usd.price}</div>
+                    <div class="price-value" id="usd-price-${widgetId}">${usdPriceFormatted}</div>
                     <div class="price-change ${data.usd.change >= 0 ? 'up' : 'down'}" id="usd-change-${widgetId}">
                         ${IconHelper.trendIcon(data.usd.change >= 0)} ${Math.abs(data.usd.change)}% (${translator.t('24h')})
                     </div>
@@ -384,7 +393,7 @@ export class WidgetManager {
                     ${data.customers.map(c => `
                         <tr>
                             <td>${c.name}</td>
-                            <td>$${c.revenue.toLocaleString()}</td>
+                            <td>${currency.format(c.revenue)}</td>
                             <td><span class="status-badge ${c.status}">${translator.t(c.statusKey)}</span></td>
                         </tr>
                     `).join('')}
@@ -730,8 +739,8 @@ export class WidgetManager {
                 chartId: chartId
             }),
             'live-prices': () => ({
-                gold: { price: '2,045.30', change: 0.8 },
-                usd: { price: '42,150', change: 0.2 }
+                gold: { price: '4,084.095', change: 0.8 },
+                usd: { price: '1,125,000', change: 0.2 }
             }),
             'order-pipeline': () => ({
                 stages: [
@@ -881,7 +890,7 @@ export class WidgetManager {
                     { time: '16:00', title: translator.getLanguage() === 'fa' ? 'بررسی قیف فروش' : 'Sales pipeline review' }
                 ],
                 metrics: [
-                    { label: translator.getLanguage() === 'fa' ? 'درآمد' : 'Revenue', value: '$1.7M / $2M', status: 'warning' },
+                    { label: translator.getLanguage() === 'fa' ? 'درآمد' : 'Revenue', value: currency.getCurrency() === 'USD' ? '$1.7M / $2M' : '۱.۹ میلیارد / ۲.۲ میلیارد ریال', status: 'warning' },
                     { label: translator.getLanguage() === 'fa' ? 'مدت ماندگاری نقدینگی' : 'Cash Runway', value: translator.getLanguage() === 'fa' ? '۴۵ روز' : '45 days', status: 'danger' },
                     { label: translator.getLanguage() === 'fa' ? 'سفارشات' : 'Orders', value: translator.getLanguage() === 'fa' ? '۴۵ در مسیر' : '45 on track', status: 'success' }
                 ]
