@@ -1,5 +1,7 @@
 // Widget Manager - Handles widget lifecycle and rendering
 import { IconHelper } from './IconHelper.js';
+import { translator } from './i18n.js';
+import { currency } from './Currency.js';
 
 export class WidgetManager {
     constructor(dashboard) {
@@ -41,6 +43,44 @@ export class WidgetManager {
         return widget;
     }
 
+    addCustomChartWidget(chartConfig) {
+        const widgetId = `widget-${Date.now()}`;
+        const chartId = `custom-${Date.now()}`;
+
+        const widget = {
+            id: widgetId,
+            type: 'custom-chart',
+            data: {
+                chartId: chartId,
+                customConfig: chartConfig
+            },
+            config: {}
+        };
+
+        this.widgets.push(widget);
+
+        // Add to grid layout manager - custom charts are 3x3
+        const layoutItem = this.dashboard.gridLayoutManager.addWidget(widgetId, 'custom-chart');
+        if (!layoutItem) {
+            console.warn('Could not add custom chart widget to grid layout');
+            this.widgets.pop();
+            return null;
+        }
+
+        this.renderWidget(widget);
+
+        // Position widget according to grid layout - wait for DOM and chart render
+        setTimeout(() => {
+            const widgetEl = document.getElementById(widgetId);
+            if (widgetEl) {
+                this.dashboard.gridLayoutManager.positionWidget(widgetEl, layoutItem);
+                console.log(`Positioned custom chart widget ${widgetId} at (${layoutItem.x}, ${layoutItem.y})`);
+            }
+        }, 250);
+
+        return widget;
+    }
+
     renderWidget(widget) {
         const dashboardGrid = document.getElementById('dashboard-grid');
         const widgetEl = document.createElement('div');
@@ -51,11 +91,16 @@ export class WidgetManager {
         const widgetConfig = this.getWidgetConfig(widget.type);
         const hasCustomization = this.hasCustomization(widget.type);
 
+        // Custom chart widgets use their config title
+        const widgetTitle = widget.type === 'custom-chart' && widget.data.customConfig
+            ? widget.data.customConfig.title
+            : widgetConfig.title;
+
         widgetEl.innerHTML = `
             <div class="widget-header">
                 <div class="widget-title">
                     ${IconHelper.widgetIcon(widgetConfig.icon)}
-                    ${widgetConfig.title}
+                    ${widgetTitle}
                 </div>
                 <div class="widget-controls">
                     ${hasCustomization ? `<button class="widget-btn customize" data-widget-id="${widget.id}" title="Customize">${this.getSettingsIcon()}</button>` : ''}
@@ -144,9 +189,10 @@ export class WidgetManager {
     }
 
     getSettingsIcon() {
+        // Lucide "settings" icon (gear)
         return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M12 1v6m0 6v6m-6-6h6m6 0h6m-4.22-4.22l-4.24 4.24m0 4.24l4.24 4.24m-8.48 0l4.24-4.24m0-4.24l-4.24-4.24"></path>
+            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+            <circle cx="12" cy="12" r="3"/>
         </svg>`;
     }
 
@@ -159,25 +205,26 @@ export class WidgetManager {
 
     getWidgetConfig(type) {
         const configs = {
-            'cash-flow': { title: 'Cash Flow & Runway', icon: 'dollar-sign', hasChart: true, drillDown: true },
-            'revenue-target': { title: 'Revenue vs Target', icon: 'target', hasChart: true, drillDown: true },
-            'profit-product': { title: 'Profit by Product', icon: 'bar-chart', hasChart: true, drillDown: true },
-            'accounts-receivable': { title: 'Accounts Receivable', icon: 'refresh-cw', hasChart: true, drillDown: true },
-            'live-prices': { title: 'Live Market Prices', icon: 'coins', hasChart: true, drillDown: false },
-            'order-pipeline': { title: 'Order Pipeline', icon: 'layout', hasChart: false, drillDown: true },
-            'delivery-trends': { title: 'Delivery Time Trends', icon: 'arrow-up-right', hasChart: true, drillDown: true },
-            'bottleneck-map': { title: 'Bottleneck Heatmap', icon: 'alert-triangle', hasChart: false, drillDown: true },
-            'team-capacity': { title: 'Team Capacity', icon: 'users', hasChart: true, drillDown: true },
-            'customer-health': { title: 'Customer Health Score', icon: 'smile', hasChart: true, drillDown: true },
-            'sales-pipeline': { title: 'Sales Pipeline', icon: 'funnel', hasChart: true, drillDown: true },
-            'top-customers': { title: 'Top Customers', icon: 'star', hasChart: false, drillDown: true },
-            'team-scorecard': { title: 'Team Performance', icon: 'circle-dot', hasChart: false, drillDown: true },
-            'overdue-tasks': { title: 'Overdue Tasks', icon: 'alert-circle', hasChart: false, drillDown: true },
-            'strategic-goals': { title: 'Strategic Goals Q4 2024', icon: 'crosshair', hasChart: false, drillDown: true },
-            'task-manager': { title: 'My Tasks', icon: 'check-circle', hasChart: false, drillDown: true },
-            'project-manager': { title: 'Active Projects', icon: 'bar-chart-2', hasChart: false, drillDown: true },
-            'todays-focus': { title: "Today's Focus", icon: 'target', hasChart: false, drillDown: false },
-            'executive-summary': { title: 'Executive Summary', icon: 'trending-up', hasChart: false, drillDown: true }
+            'cash-flow': { title: translator.t('cash-flow'), icon: 'dollar-sign', hasChart: true, drillDown: true },
+            'revenue-target': { title: translator.t('revenue-target'), icon: 'target', hasChart: true, drillDown: true },
+            'profit-product': { title: translator.t('profit-product'), icon: 'bar-chart', hasChart: true, drillDown: true },
+            'accounts-receivable': { title: translator.t('accounts-receivable'), icon: 'refresh-cw', hasChart: true, drillDown: true },
+            'live-prices': { title: translator.t('live-prices'), icon: 'coins', hasChart: true, drillDown: false },
+            'order-pipeline': { title: translator.t('order-pipeline'), icon: 'layout', hasChart: false, drillDown: true },
+            'delivery-trends': { title: translator.t('delivery-trends'), icon: 'arrow-up-right', hasChart: true, drillDown: true },
+            'bottleneck-map': { title: translator.t('bottleneck-map'), icon: 'alert-triangle', hasChart: false, drillDown: true },
+            'team-capacity': { title: translator.t('team-capacity'), icon: 'users', hasChart: true, drillDown: true },
+            'customer-health': { title: translator.t('customer-health'), icon: 'smile', hasChart: true, drillDown: true },
+            'sales-pipeline': { title: translator.t('sales-pipeline'), icon: 'funnel', hasChart: true, drillDown: true },
+            'top-customers': { title: translator.t('top-customers'), icon: 'star', hasChart: false, drillDown: true },
+            'team-scorecard': { title: translator.t('team-scorecard'), icon: 'circle-dot', hasChart: false, drillDown: true },
+            'overdue-tasks': { title: translator.t('overdue-tasks'), icon: 'alert-circle', hasChart: false, drillDown: true },
+            'strategic-goals': { title: translator.t('strategic-goals'), icon: 'crosshair', hasChart: false, drillDown: true },
+            'task-manager': { title: translator.t('task-manager'), icon: 'check-circle', hasChart: false, drillDown: true },
+            'project-manager': { title: translator.t('project-manager'), icon: 'bar-chart-2', hasChart: false, drillDown: true },
+            'todays-focus': { title: translator.t('todays-focus'), icon: 'target', hasChart: false, drillDown: false },
+            'executive-summary': { title: translator.t('executive-summary'), icon: 'trending-up', hasChart: false, drillDown: true },
+            'custom-chart': { title: translator.t('custom-chart'), icon: 'bar-chart-3', hasChart: true, drillDown: false }
         };
         return configs[type] || { title: 'Widget', icon: 'diamond', hasChart: false, drillDown: false };
     }
@@ -212,7 +259,8 @@ export class WidgetManager {
             'task-manager': this.renderTaskManagerWidget,
             'project-manager': this.renderProjectManagerWidget,
             'todays-focus': this.renderTodaysFocusWidget,
-            'executive-summary': this.renderExecutiveSummaryWidget
+            'executive-summary': this.renderExecutiveSummaryWidget,
+            'custom-chart': this.renderCustomChartWidget
         };
 
         const renderer = renderers[widget.type];
@@ -223,12 +271,12 @@ export class WidgetManager {
     renderCashFlowWidget(data, widgetId) {
         return `
             <div class="kpi-card clickable" onclick="dashboard.drillDownManager.show('${widgetId}', 'cash-flow')">
-                <div class="kpi-label">Current Cash Balance</div>
-                <div class="kpi-value">$${data.balance.toLocaleString()}</div>
+                <div class="kpi-label">${translator.t('current-cash-balance')}</div>
+                <div class="kpi-value">${currency.format(data.balance)}</div>
                 <div class="kpi-trend ${data.trend >= 0 ? 'positive' : 'negative'}">
-                    ${IconHelper.trendIcon(data.trend >= 0)} ${Math.abs(data.trend)}% from last month
+                    ${IconHelper.trendIcon(data.trend >= 0)} ${Math.abs(data.trend)}% ${translator.t('from-last-month')}
                 </div>
-                <div class="kpi-label" style="margin-top: 12px;">Runway: ${data.runway} days</div>
+                <div class="kpi-label" style="margin-top: 12px;">${translator.t('runway')}: ${data.runway} ${translator.t('days')}</div>
             </div>
             <canvas id="chart-${data.chartId}" class="chart-container"></canvas>
         `;
@@ -237,11 +285,11 @@ export class WidgetManager {
     renderRevenueTargetWidget(data, widgetId) {
         return `
             <div class="kpi-card clickable" onclick="dashboard.drillDownManager.show('${widgetId}', 'revenue-target')">
-                <div class="kpi-label">Monthly Revenue</div>
-                <div class="kpi-value">$${data.actual.toLocaleString()}</div>
-                <div class="kpi-label">Target: $${data.target.toLocaleString()} (${data.percentage}%)</div>
+                <div class="kpi-label">${translator.t('monthly-revenue')}</div>
+                <div class="kpi-value">${currency.format(data.actual)}</div>
+                <div class="kpi-label">${translator.t('target')}: ${currency.format(data.target)} (${data.percentage}%)</div>
                 <div class="kpi-trend ${data.onTrack ? 'positive' : 'negative'}">
-                    ${data.onTrack ? 'On Track' : 'Behind'}
+                    ${data.onTrack ? translator.t('on-track') : translator.t('behind')}
                 </div>
             </div>
             <canvas id="chart-${data.chartId}" class="chart-container"></canvas>
@@ -255,30 +303,38 @@ export class WidgetManager {
     renderARWidget(data, widgetId) {
         return `
             <div class="kpi-card clickable" onclick="dashboard.drillDownManager.show('${widgetId}', 'accounts-receivable')">
-                <div class="kpi-label">Total AR</div>
-                <div class="kpi-value">$${data.total.toLocaleString()}</div>
-                <div class="kpi-label" style="color: #e74c3c;">Overdue: $${data.overdue.toLocaleString()}</div>
+                <div class="kpi-label">${translator.t('total-ar')}</div>
+                <div class="kpi-value">${currency.format(data.total)}</div>
+                <div class="kpi-label" style="color: #e74c3c;">${translator.t('overdue')}: ${currency.format(data.overdue)}</div>
             </div>
             <canvas id="chart-${data.chartId}" class="chart-container"></canvas>
         `;
     }
 
     renderLivePricesWidget(data, widgetId) {
+        const goldPriceFormatted = currency.getCurrency() === 'USD'
+            ? `$${data.gold.price}`
+            : `${Math.round(parseFloat(data.gold.price.replace(/,/g, '')) * currency.getExchangeRate()).toLocaleString('fa-IR')} ریال`;
+
+        const usdPriceFormatted = currency.getCurrency() === 'USD'
+            ? data.usd.price
+            : data.usd.price;
+
         return `
             <div class="price-cards">
                 <div class="price-card">
-                    <div class="price-label">Gold (oz)</div>
-                    <div class="price-value" id="gold-price-${widgetId}">$${data.gold.price}</div>
+                    <div class="price-label">${translator.t('gold-oz')}</div>
+                    <div class="price-value" id="gold-price-${widgetId}">${goldPriceFormatted}</div>
                     <div class="price-change ${data.gold.change >= 0 ? 'up' : 'down'}" id="gold-change-${widgetId}">
-                        ${IconHelper.trendIcon(data.gold.change >= 0)} ${Math.abs(data.gold.change)}% (24h)
+                        ${IconHelper.trendIcon(data.gold.change >= 0)} ${Math.abs(data.gold.change)}% (${translator.t('24h')})
                     </div>
                     <canvas id="chart-gold-${widgetId}" class="price-sparkline"></canvas>
                 </div>
                 <div class="price-card">
-                    <div class="price-label">USD to IRR</div>
-                    <div class="price-value" id="usd-price-${widgetId}">${data.usd.price}</div>
+                    <div class="price-label">${translator.t('usd-to-irr')}</div>
+                    <div class="price-value" id="usd-price-${widgetId}">${usdPriceFormatted}</div>
                     <div class="price-change ${data.usd.change >= 0 ? 'up' : 'down'}" id="usd-change-${widgetId}">
-                        ${IconHelper.trendIcon(data.usd.change >= 0)} ${Math.abs(data.usd.change)}% (24h)
+                        ${IconHelper.trendIcon(data.usd.change >= 0)} ${Math.abs(data.usd.change)}% (${translator.t('24h')})
                     </div>
                     <canvas id="chart-usd-${widgetId}" class="price-sparkline"></canvas>
                 </div>
@@ -292,7 +348,7 @@ export class WidgetManager {
                 ${data.stages.map(stage => `
                     <div class="pipeline-stage">
                         <span class="stage-indicator ${stage.color}"></span>
-                        <span class="stage-label">${stage.label}</span>
+                        <span class="stage-label">${translator.t(stage.labelKey)}</span>
                         <span class="stage-count">${stage.count}</span>
                         <span class="stage-percentage">(${stage.percentage}%)</span>
                     </div>
@@ -304,9 +360,9 @@ export class WidgetManager {
     renderDeliveryTrendsWidget(data, widgetId) {
         return `
             <div class="kpi-card clickable" onclick="dashboard.drillDownManager.show('${widgetId}', 'delivery-trends')">
-                <div class="kpi-label">Average Delivery Time</div>
-                <div class="kpi-value">${data.current} days</div>
-                <div class="kpi-label">Target: ${data.target} days</div>
+                <div class="kpi-label">${translator.t('average-delivery-time')}</div>
+                <div class="kpi-value">${data.current} ${translator.t('days')}</div>
+                <div class="kpi-label">${translator.t('target')}: ${data.target} ${translator.t('days')}</div>
             </div>
             <canvas id="chart-${data.chartId}" class="chart-container"></canvas>
         `;
@@ -329,17 +385,17 @@ export class WidgetManager {
             <table class="widget-table clickable" onclick="dashboard.drillDownManager.show('${widgetId}', 'top-customers')">
                 <thead>
                     <tr>
-                        <th>Customer</th>
-                        <th>Revenue</th>
-                        <th>Status</th>
+                        <th>${translator.t('customer')}</th>
+                        <th>${translator.t('revenue')}</th>
+                        <th>${translator.t('status')}</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${data.customers.map(c => `
                         <tr>
                             <td>${c.name}</td>
-                            <td>$${c.revenue.toLocaleString()}</td>
-                            <td><span class="status-badge ${c.status}">${c.statusText}</span></td>
+                            <td>${currency.format(c.revenue)}</td>
+                            <td><span class="status-badge ${c.status}">${translator.t(c.statusKey)}</span></td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -352,10 +408,10 @@ export class WidgetManager {
             <table class="widget-table clickable" onclick="dashboard.drillDownManager.show('${widgetId}', 'team-scorecard')">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Tasks</th>
-                        <th>Rating</th>
-                        <th>Status</th>
+                        <th>${translator.getLanguage() === 'fa' ? 'نام' : 'Name'}</th>
+                        <th>${translator.t('tasks')}</th>
+                        <th>${translator.t('rating')}</th>
+                        <th>${translator.t('status')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -364,7 +420,7 @@ export class WidgetManager {
                             <td>${m.name}</td>
                             <td>${m.tasks}</td>
                             <td>${m.rating}</td>
-                            <td><span class="status-badge ${m.status}">${m.statusText}</span></td>
+                            <td><span class="status-badge ${m.status}">${translator.t(m.statusKey)}</span></td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -422,12 +478,12 @@ export class WidgetManager {
         return `
             <div class="task-manager-widget">
                 <div class="task-filters">
-                    <button class="filter-btn ${filter === 'all' ? 'active' : ''}" onclick="dashboard.widgetManager.filterTasks('${widgetId}', 'all')">All</button>
-                    <button class="filter-btn ${filter === 'today' ? 'active' : ''}" onclick="dashboard.widgetManager.filterTasks('${widgetId}', 'today')">Today</button>
-                    <button class="filter-btn ${filter === 'week' ? 'active' : ''}" onclick="dashboard.widgetManager.filterTasks('${widgetId}', 'week')">This Week</button>
+                    <button class="filter-btn ${filter === 'all' ? 'active' : ''}" onclick="dashboard.widgetManager.filterTasks('${widgetId}', 'all')">${translator.t('filter-all')}</button>
+                    <button class="filter-btn ${filter === 'today' ? 'active' : ''}" onclick="dashboard.widgetManager.filterTasks('${widgetId}', 'today')">${translator.t('filter-today')}</button>
+                    <button class="filter-btn ${filter === 'week' ? 'active' : ''}" onclick="dashboard.widgetManager.filterTasks('${widgetId}', 'week')">${translator.t('filter-week')}</button>
                 </div>
                 <div class="task-list">
-                    ${tasks.length === 0 ? '<p class="no-tasks">No tasks yet. Create one below!</p>' :
+                    ${tasks.length === 0 ? `<p class="no-tasks">${translator.t('no-tasks')}</p>` :
                         tasks.map(task => `
                             <div class="task-item ${task.completed ? 'completed' : ''}" onclick="dashboard.widgetManager.toggleTask('${widgetId}', ${task.id})">
                                 <input type="checkbox" ${task.completed ? 'checked' : ''} onclick="event.stopPropagation(); dashboard.widgetManager.toggleTask('${widgetId}', ${task.id})">
@@ -435,13 +491,13 @@ export class WidgetManager {
                                     <div class="task-title">${task.title}</div>
                                     <div class="task-meta">
                                         ${task.dueDate ? `<span class="task-due ${this.isOverdue(task.dueDate) ? 'overdue' : ''}">${this.formatDueDate(task.dueDate)}</span>` : ''}
-                                        ${task.priority ? `<span class="task-priority priority-${task.priority}">${task.priority}</span>` : ''}
+                                        ${task.priority ? `<span class="task-priority priority-${task.priority}">${translator.t(task.priority)}</span>` : ''}
                                     </div>
                                 </div>
                             </div>
                         `).join('')}
                 </div>
-                <button class="btn-primary btn-sm add-task-btn" onclick="dashboard.modalManager.showTaskModal('${widgetId}')">+ Add Task</button>
+                <button class="btn-primary btn-sm add-task-btn" onclick="dashboard.modalManager.showTaskModal('${widgetId}')">+ ${translator.t('add-task')}</button>
             </div>
         `;
     }
@@ -455,11 +511,11 @@ export class WidgetManager {
         const today = new Date();
         const diff = Math.ceil((date - today) / (1000 * 60 * 60 * 24));
 
-        if (diff === 0) return 'Today';
-        if (diff === 1) return 'Tomorrow';
-        if (diff === -1) return 'Yesterday';
-        if (diff < 0) return `${Math.abs(diff)} days ago`;
-        return `In ${diff} days`;
+        if (diff === 0) return translator.t('due-today');
+        if (diff === 1) return translator.t('due-tomorrow');
+        if (diff === -1) return translator.t('due-yesterday');
+        if (diff < 0) return `${Math.abs(diff)} ${translator.t('days-ago')}`;
+        return `${translator.t('in-days')} ${diff} ${translator.t('days')}`;
     }
 
     filterTasks(widgetId, filter) {
@@ -505,7 +561,7 @@ export class WidgetManager {
                     <div class="project-card ${project.status}" onclick="dashboard.drillDownManager.show('${widgetId}', 'project-manager', '${project.id}')">
                         <div class="project-header">
                             <h4 class="project-title">${project.name}</h4>
-                            <span class="project-status-badge ${project.status}">${project.statusText}</span>
+                            <span class="project-status-badge ${project.status}">${translator.t(project.statusKey)}</span>
                         </div>
                         <div class="progress-bar-container">
                             <div class="progress-bar">
@@ -520,7 +576,7 @@ export class WidgetManager {
                                     <span class="checkpoint-name">${cp.name}</span>
                                 </div>
                             `).join('')}
-                            ${project.checkpoints.length > 3 ? `<div class="checkpoint-more">+ ${project.checkpoints.length - 3} more</div>` : ''}
+                            ${project.checkpoints.length > 3 ? `<div class="checkpoint-more">+ ${project.checkpoints.length - 3} ${translator.getLanguage() === 'fa' ? 'مورد دیگر' : 'more'}</div>` : ''}
                         </div>
                     </div>
                 `).join('')}
@@ -534,14 +590,14 @@ export class WidgetManager {
         return `
             <div class="todays-focus-widget">
                 <div class="focus-section">
-                    <h4>${IconHelper.icon('target', '', 16)} Top Priorities</h4>
+                    <h4>${IconHelper.icon('target', '', 16)} ${translator.t('top-priorities')}</h4>
                     <ol class="priority-list">
                         ${focus.priorities.map(p => `<li class="priority-${p.urgency}">${p.text}</li>`).join('')}
                     </ol>
                 </div>
 
                 <div class="focus-section">
-                    <h4>${IconHelper.icon('zap', '', 16)} Urgent Decisions</h4>
+                    <h4>${IconHelper.icon('zap', '', 16)} ${translator.t('urgent-decisions')}</h4>
                     <ul class="decision-list">
                         ${focus.decisions.map(d => `
                             <li>
@@ -553,7 +609,7 @@ export class WidgetManager {
                 </div>
 
                 <div class="focus-section">
-                    <h4>${IconHelper.icon('calendar', '', 16)} Today's Meetings</h4>
+                    <h4>${IconHelper.icon('calendar', '', 16)} ${translator.t('todays-meetings')}</h4>
                     <div class="meetings-list">
                         ${focus.meetings.map(m => `
                             <div class="meeting-item">
@@ -583,14 +639,18 @@ export class WidgetManager {
                     <div class="summary-metric ${metric.status}">
                         <div class="metric-icon">${IconHelper.icon(metric.icon, '', 32)}</div>
                         <div class="metric-info">
-                            <div class="metric-title">${metric.title}</div>
-                            <div class="metric-detail">${metric.detail}</div>
+                            <div class="metric-title">${translator.t(metric.titleKey)}</div>
+                            <div class="metric-detail">${translator.t(metric.detailKey)}</div>
                         </div>
                         <div class="metric-status-indicator ${metric.status}"></div>
                     </div>
                 `).join('')}
             </div>
         `;
+    }
+
+    renderCustomChartWidget(data, widgetId) {
+        return `<canvas id="chart-${data.chartId}" class="chart-container" style="height: 100%;"></canvas>`;
     }
 
     // Continued in next part...
@@ -621,6 +681,26 @@ export class WidgetManager {
             // Don't regenerate data for task-manager, keep existing tasks
             if (widget.type !== 'task-manager') {
                 widget.data = this.getWidgetData(widget.type);
+            }
+
+            // Update widget header title
+            const widgetEl = document.getElementById(widgetId);
+            if (widgetEl) {
+                const titleEl = widgetEl.querySelector('.widget-title');
+                if (titleEl) {
+                    const widgetConfig = this.getWidgetConfig(widget.type);
+                    const widgetTitle = widget.type === 'custom-chart' && widget.data.customConfig
+                        ? widget.data.customConfig.title
+                        : widgetConfig.title;
+
+                    // Keep the icon, update the text
+                    const icon = titleEl.querySelector('svg');
+                    titleEl.innerHTML = '';
+                    if (icon) {
+                        titleEl.appendChild(icon.cloneNode(true));
+                    }
+                    titleEl.appendChild(document.createTextNode(widgetTitle));
+                }
             }
 
             const bodyEl = document.getElementById(`${widgetId}-body`);
@@ -660,15 +740,15 @@ export class WidgetManager {
                 chartId: chartId
             }),
             'live-prices': () => ({
-                gold: { price: '2,045.30', change: 0.8 },
-                usd: { price: '42,150', change: 0.2 }
+                gold: { price: '4,084.095', change: 0.8 },
+                usd: { price: '1,125,000', change: 0.2 }
             }),
             'order-pipeline': () => ({
                 stages: [
-                    { label: 'On Track', count: 45, percentage: 67, color: 'green' },
-                    { label: 'At Risk', count: 15, percentage: 22, color: 'yellow' },
-                    { label: 'Overdue', count: 8, percentage: 11, color: 'red' },
-                    { label: 'Blocked', count: 3, percentage: 4, color: 'gray' }
+                    { label: 'On Track', labelKey: 'on-track-status', count: 45, percentage: 67, color: 'green' },
+                    { label: 'At Risk', labelKey: 'at-risk', count: 15, percentage: 22, color: 'yellow' },
+                    { label: 'Overdue', labelKey: 'overdue-status', count: 8, percentage: 11, color: 'red' },
+                    { label: 'Blocked', labelKey: 'blocked', count: 3, percentage: 4, color: 'gray' }
                 ]
             }),
             'delivery-trends': () => ({
@@ -693,17 +773,17 @@ export class WidgetManager {
             }),
             'top-customers': () => ({
                 customers: [
-                    { name: 'Client A', revenue: 450000, status: 'success', statusText: 'Active' },
-                    { name: 'Client B', revenue: 320000, status: 'warning', statusText: 'At Risk' },
-                    { name: 'Client C', revenue: 280000, status: 'success', statusText: 'Active' }
+                    { name: 'Client A', revenue: 450000, status: 'success', statusText: 'Active', statusKey: 'active' },
+                    { name: 'Client B', revenue: 320000, status: 'warning', statusText: 'At Risk', statusKey: 'at-risk' },
+                    { name: 'Client C', revenue: 280000, status: 'success', statusText: 'Active', statusKey: 'active' }
                 ]
             }),
             'team-scorecard': () => ({
                 team: [
-                    { name: 'Sarah', tasks: 12, rating: '4.8', status: 'success', statusText: 'On Track' },
-                    { name: 'Mike', tasks: 8, rating: '4.9', status: 'success', statusText: 'On Track' },
-                    { name: 'John', tasks: 3, rating: '3.2', status: 'warning', statusText: 'Needs Support' },
-                    { name: 'Alex', tasks: 5, rating: '4.1', status: 'danger', statusText: 'Overdue' }
+                    { name: 'Sarah', tasks: 12, rating: '4.8', status: 'success', statusText: 'On Track', statusKey: 'on-track-status' },
+                    { name: 'Mike', tasks: 8, rating: '4.9', status: 'success', statusText: 'On Track', statusKey: 'on-track-status' },
+                    { name: 'John', tasks: 3, rating: '3.2', status: 'warning', statusText: 'Needs Support', statusKey: 'needs-support' },
+                    { name: 'Alex', tasks: 5, rating: '4.1', status: 'danger', statusText: 'Overdue', statusKey: 'overdue-status' }
                 ]
             }),
             'overdue-tasks': () => ({
@@ -749,76 +829,79 @@ export class WidgetManager {
                 projects: [
                     {
                         id: 'proj-1',
-                        name: 'Tehran Showroom Launch',
+                        name: translator.getLanguage() === 'fa' ? 'راه‌اندازی نمایشگاه تهران' : 'Tehran Showroom Launch',
                         progress: 67,
                         status: 'at-risk',
                         statusText: 'At Risk',
+                        statusKey: 'at-risk',
                         checkpoints: [
-                            { name: 'Site selection & lease', status: 'completed' },
-                            { name: 'Architect finalized', status: 'completed' },
-                            { name: 'Interior design', status: 'in-progress' },
-                            { name: 'Permits pending', status: 'blocked' },
-                            { name: 'Grand opening', status: 'pending' }
+                            { name: translator.getLanguage() === 'fa' ? 'انتخاب محل و اجاره' : 'Site selection & lease', status: 'completed' },
+                            { name: translator.getLanguage() === 'fa' ? 'نهایی شدن معمار' : 'Architect finalized', status: 'completed' },
+                            { name: translator.getLanguage() === 'fa' ? 'طراحی داخلی' : 'Interior design', status: 'in-progress' },
+                            { name: translator.getLanguage() === 'fa' ? 'مجوزها در انتظار' : 'Permits pending', status: 'blocked' },
+                            { name: translator.getLanguage() === 'fa' ? 'افتتاحیه بزرگ' : 'Grand opening', status: 'pending' }
                         ]
                     },
                     {
                         id: 'proj-2',
-                        name: 'New Product Line - Executive Desks',
+                        name: translator.getLanguage() === 'fa' ? 'خط تولید جدید - میزهای مدیریتی' : 'New Product Line - Executive Desks',
                         progress: 85,
                         status: 'on-track',
                         statusText: 'On Track',
+                        statusKey: 'on-track-status',
                         checkpoints: [
-                            { name: 'Market research', status: 'completed' },
-                            { name: 'Prototype design', status: 'completed' },
-                            { name: 'Supplier contracts', status: 'completed' },
-                            { name: 'First production run', status: 'in-progress' },
-                            { name: 'Marketing campaign', status: 'pending' }
+                            { name: translator.getLanguage() === 'fa' ? 'تحقیقات بازار' : 'Market research', status: 'completed' },
+                            { name: translator.getLanguage() === 'fa' ? 'طراحی نمونه اولیه' : 'Prototype design', status: 'completed' },
+                            { name: translator.getLanguage() === 'fa' ? 'قراردادهای تامین‌کننده' : 'Supplier contracts', status: 'completed' },
+                            { name: translator.getLanguage() === 'fa' ? 'اولین دوره تولید' : 'First production run', status: 'in-progress' },
+                            { name: translator.getLanguage() === 'fa' ? 'کمپین بازاریابی' : 'Marketing campaign', status: 'pending' }
                         ]
                     },
                     {
                         id: 'proj-3',
-                        name: 'ERP System Implementation',
+                        name: translator.getLanguage() === 'fa' ? 'پیاده‌سازی سیستم ERP' : 'ERP System Implementation',
                         progress: 40,
                         status: 'behind',
                         statusText: 'Behind Schedule',
+                        statusKey: 'behind-schedule',
                         checkpoints: [
-                            { name: 'Vendor selection', status: 'completed' },
-                            { name: 'Requirements gathering', status: 'completed' },
-                            { name: 'Data migration (stalled - 3 weeks)', status: 'blocked' },
-                            { name: 'Staff training', status: 'pending' },
-                            { name: 'Go-live', status: 'pending' }
+                            { name: translator.getLanguage() === 'fa' ? 'انتخاب فروشنده' : 'Vendor selection', status: 'completed' },
+                            { name: translator.getLanguage() === 'fa' ? 'جمع‌آوری نیازمندی‌ها' : 'Requirements gathering', status: 'completed' },
+                            { name: translator.getLanguage() === 'fa' ? 'انتقال داده (متوقف - ۳ هفته)' : 'Data migration (stalled - 3 weeks)', status: 'blocked' },
+                            { name: translator.getLanguage() === 'fa' ? 'آموزش کارکنان' : 'Staff training', status: 'pending' },
+                            { name: translator.getLanguage() === 'fa' ? 'راه‌اندازی' : 'Go-live', status: 'pending' }
                         ]
                     }
                 ]
             }),
             'todays-focus': () => ({
                 priorities: [
-                    { text: 'Approve $2M equipment financing by EOD', urgency: 'urgent' },
-                    { text: 'Call Client B about $45K overdue payment', urgency: 'urgent' },
-                    { text: 'Review & approve Tehran showroom design', urgency: 'high' }
+                    { text: translator.getLanguage() === 'fa' ? 'تایید تامین مالی تجهیزات ۲ میلیون دلاری تا پایان روز' : 'Approve $2M equipment financing by EOD', urgency: 'urgent' },
+                    { text: translator.getLanguage() === 'fa' ? 'تماس با مشتری B درباره پرداخت معوقه ۴۵ هزار دلاری' : 'Call Client B about $45K overdue payment', urgency: 'urgent' },
+                    { text: translator.getLanguage() === 'fa' ? 'بررسی و تایید طراحی نمایشگاه تهران' : 'Review & approve Tehran showroom design', urgency: 'high' }
                 ],
                 decisions: [
-                    { title: 'Equipment financing terms', deadline: 'Today 5 PM' },
-                    { title: 'Hire 2 production staff vs outsource', deadline: 'Tomorrow' },
-                    { title: 'Approve cost reduction plan', deadline: 'This Week' }
+                    { title: translator.getLanguage() === 'fa' ? 'شرایط تامین مالی تجهیزات' : 'Equipment financing terms', deadline: translator.getLanguage() === 'fa' ? 'امروز ساعت ۱۷' : 'Today 5 PM' },
+                    { title: translator.getLanguage() === 'fa' ? 'استخدام ۲ نفر پرسنل تولید یا برون‌سپاری' : 'Hire 2 production staff vs outsource', deadline: translator.getLanguage() === 'fa' ? 'فردا' : 'Tomorrow' },
+                    { title: translator.getLanguage() === 'fa' ? 'تایید طرح کاهش هزینه' : 'Approve cost reduction plan', deadline: translator.getLanguage() === 'fa' ? 'این هفته' : 'This Week' }
                 ],
                 meetings: [
-                    { time: '10:00 AM', title: 'Weekly exec team standup' },
-                    { time: '2:00 PM', title: 'CFO - Cash flow review' },
-                    { time: '4:00 PM', title: 'Sales pipeline review' }
+                    { time: '10:00', title: translator.getLanguage() === 'fa' ? 'جلسه هفتگی تیم اجرایی' : 'Weekly exec team standup' },
+                    { time: '14:00', title: translator.getLanguage() === 'fa' ? 'CFO - بررسی جریان نقدی' : 'CFO - Cash flow review' },
+                    { time: '16:00', title: translator.getLanguage() === 'fa' ? 'بررسی قیف فروش' : 'Sales pipeline review' }
                 ],
                 metrics: [
-                    { label: 'Revenue', value: '$1.7M / $2M', status: 'warning' },
-                    { label: 'Cash Runway', value: '45 days', status: 'danger' },
-                    { label: 'Orders', value: '45 on track', status: 'success' }
+                    { label: translator.getLanguage() === 'fa' ? 'درآمد' : 'Revenue', value: currency.getCurrency() === 'USD' ? '$1.7M / $2M' : '۱.۹ میلیارد / ۲.۲ میلیارد ریال', status: 'warning' },
+                    { label: translator.getLanguage() === 'fa' ? 'مدت ماندگاری نقدینگی' : 'Cash Runway', value: translator.getLanguage() === 'fa' ? '۴۵ روز' : '45 days', status: 'danger' },
+                    { label: translator.getLanguage() === 'fa' ? 'سفارشات' : 'Orders', value: translator.getLanguage() === 'fa' ? '۴۵ در مسیر' : '45 on track', status: 'success' }
                 ]
             }),
             'executive-summary': () => ({
                 metrics: [
-                    { icon: 'dollar-sign', title: 'Revenue', detail: 'On Track (85% of target)', status: 'success' },
-                    { icon: 'clock', title: 'Delivery', detail: 'Behind Target (+2 days)', status: 'danger' },
-                    { icon: 'wallet', title: 'Cash', detail: 'Warning (45 days runway)', status: 'warning' },
-                    { icon: 'users', title: 'Team', detail: 'Performing Well (4.6/5)', status: 'success' }
+                    { icon: 'dollar-sign', title: 'Revenue', titleKey: 'revenue-metric', detail: 'On Track (85% of target)', detailKey: 'revenue-detail', status: 'success' },
+                    { icon: 'clock', title: 'Delivery', titleKey: 'delivery-metric', detail: 'Behind Target (+2 days)', detailKey: 'delivery-detail', status: 'danger' },
+                    { icon: 'wallet', title: 'Cash', titleKey: 'cash-metric', detail: 'Warning (45 days runway)', detailKey: 'cash-detail', status: 'warning' },
+                    { icon: 'users', title: 'Team', titleKey: 'team-metric', detail: 'Performing Well (4.6/5)', detailKey: 'team-detail', status: 'success' }
                 ]
             })
         };
@@ -1016,7 +1099,71 @@ export class WidgetManager {
                     }]
                 },
                 options: this.getChartOptions()
-            })
+            }),
+            'custom-chart': () => {
+                if (!widget.data.customConfig) return null;
+
+                const config = widget.data.customConfig;
+
+                // Build chart config based on chartType
+                if (config.chartType === 'stacked-bar') {
+                    return {
+                        type: 'bar',
+                        data: config.data,
+                        options: {
+                            ...this.getChartOptions(),
+                            plugins: {
+                                ...this.getChartOptions().plugins,
+                                legend: {
+                                    display: true,
+                                    labels: {
+                                        color: '#e6e8ee',
+                                        font: { size: 11 }
+                                    }
+                                }
+                            },
+                            scales: {
+                                ...this.getChartOptions().scales,
+                                x: {
+                                    stacked: true,
+                                    ticks: { color: '#a5adbf', font: { size: 10 } },
+                                    grid: { color: 'rgba(255,255,255,0.05)' }
+                                },
+                                y: {
+                                    stacked: true,
+                                    ticks: { color: '#a5adbf', font: { size: 10 } },
+                                    grid: { color: 'rgba(255,255,255,0.05)' }
+                                }
+                            }
+                        }
+                    };
+                } else if (config.chartType === 'grouped-bar') {
+                    return {
+                        type: 'bar',
+                        data: config.data,
+                        options: {
+                            ...this.getChartOptions(),
+                            plugins: {
+                                ...this.getChartOptions().plugins,
+                                legend: {
+                                    display: true,
+                                    labels: {
+                                        color: '#e6e8ee',
+                                        font: { size: 11 }
+                                    }
+                                }
+                            }
+                        }
+                    };
+                }
+
+                // Default fallback
+                return {
+                    type: 'bar',
+                    data: config.data,
+                    options: this.getChartOptions()
+                };
+            }
         };
 
         const configFn = configs[widget.type];

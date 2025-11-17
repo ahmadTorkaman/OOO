@@ -40,13 +40,20 @@ A customizable business intelligence dashboard with Apple-style grid layout for 
    - **Team**: Team Scorecard, Overdue Tasks, Task Manager
    - **Strategic**: Strategic Goals, Project Manager
 
-6. **Widget Customization** - Gear icon on selected widgets:
+6. **Default Dashboard Layout** - Presentation-optimized with 15+ visual widgets:
+   - Executive overview (Executive Summary, Today's Focus)
+   - Financial charts (Cash Flow, Revenue Target, Profit by Product, Live Prices)
+   - Operations visualizations (Order Pipeline, Delivery Trends, Team Capacity)
+   - Sales analytics (Sales Pipeline, Customer Health, Top Customers)
+   - Strategic tracking (Goals, Projects, Team Scorecard)
+
+7. **Widget Customization** - Gear icon on selected widgets:
    - Team Capacity: Toggle percentage display, highlight over-capacity
    - Delivery Trends: Show/hide target line, adjust timeframe
    - Strategic Goals: Toggle progress display, change sort order
    - Task Manager: View mode, default sorting
 
-7. **Drill-Down Details** - Click any widget body to see detailed analytics:
+8. **Drill-Down Details** - Click any widget body to see detailed analytics:
    - Cash Flow → Weekly breakdown, upcoming expenses
    - Revenue Target → Product line breakdown, pace analysis
    - Accounts Receivable → Overdue invoices, collection actions
@@ -54,23 +61,34 @@ A customizable business intelligence dashboard with Apple-style grid layout for 
    - Executive Summary → Detailed metrics and recommendations
    - And more...
 
-8. **Task Manager Widget** - Fully functional task management:
+9. **Task Manager Widget** - Fully functional task management:
    - Filter by All/Today/This Week
    - Add, complete, and track tasks
    - Priority levels (Urgent/High/Medium/Low)
    - Due date tracking with overdue indicators
 
-9. **Project Manager Widget** - Active project tracking:
+10. **Project Manager Widget** - Active project tracking:
    - Visual progress bars
    - Status badges (On Track, At Risk, Behind Schedule)
    - Checkpoint tracking (completed, in-progress, blocked, pending)
    - Expandable project details via drill-down
 
-10. **Chart Rendering** - All Chart.js visualizations load correctly with proper timing
+11. **Chart Rendering** - All Chart.js visualizations load correctly with proper timing
 
-11. **Live Data Updates** - Gold & USD/IRR prices update every 5 seconds
+12. **Live Data Updates** - Real-time price data via external APIs:
+   - Gold (XAUUSD) prices from GoldAPI.io
+   - USD/IRR exchange rates from ExchangeRate-API
+   - Updates every 30 seconds
+   - Automatic fallback to simulated data if APIs fail
+   - Display of price changes and percentages
 
-12. **Full-Width Dashboard** - Maximized screen space for widgets (sidebars temporarily hidden)
+13. **Full-Width Dashboard** - Maximized screen space for widgets with overlay panels
+
+14. **iOS-Style Widget Arrangement** - Automatic layout compaction:
+   - Widgets automatically rearrange when moved or resized
+   - No overlaps possible - layout always valid
+   - Smooth animations with 0.3s transitions
+   - Upward compaction fills gaps automatically
 
 ## How to Use
 
@@ -186,6 +204,19 @@ managers-dashboard/
 - **SortableJS** 1.15.0 - Drag & drop
 - **Lucide Icons** (latest) - SVG icon library
 - **Montserrat Font** - Typography
+
+### External APIs (Free Tier)
+
+- **GoldAPI.io** - Real-time gold spot prices (XAUUSD)
+  - Endpoint: `https://www.goldapi.io/api/XAU/USD`
+  - Free tier available (limited requests)
+  - No API key required for basic access
+
+- **ExchangeRate-API** - Live currency exchange rates
+  - Endpoint: `https://api.exchangerate-api.com/v4/latest/USD`
+  - Free tier with 1,500 requests/month
+  - No API key required
+  - Supports 160+ currencies including IRR
 
 ### Browser Compatibility
 

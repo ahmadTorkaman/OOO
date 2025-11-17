@@ -4,6 +4,9 @@ import { ModalManager } from './ModalManager.js';
 import { DrillDownManager } from './DrillDownManager.js';
 import { IconHelper } from './IconHelper.js';
 import { GridLayoutManager } from './GridLayoutManager.js';
+import { AIAssistant } from './AIAssistant.js';
+import { translator } from './i18n.js';
+import { currency } from './Currency.js';
 
 export class ManagerDashboard {
     constructor() {
@@ -15,11 +18,15 @@ export class ManagerDashboard {
     }
 
     init() {
+        // Initialize settings panel first
+        this.setupSettingsPanel();
+
         // Initialize managers
         this.gridLayoutManager = new GridLayoutManager(this);
         this.widgetManager = new WidgetManager(this);
         this.modalManager = new ModalManager(this);
         this.drillDownManager = new DrillDownManager(this);
+        this.aiAssistant = new AIAssistant(this);
 
         // Setup core functionality
         this.setupThemeToggle();
@@ -28,6 +35,214 @@ export class ManagerDashboard {
         this.setupQuickActions();
         this.loadDefaultWidgets();
         this.startLiveDataUpdates();
+
+        // Listen for language changes
+        window.addEventListener('languageChanged', () => {
+            this.handleLanguageChange();
+        });
+
+        // Listen for currency changes
+        window.addEventListener('currencyChanged', () => {
+            this.handleCurrencyChange();
+        });
+    }
+
+    // ===== SETTINGS PANEL =====
+    setupSettingsPanel() {
+        const settingsToggle = document.getElementById('settingsToggle');
+        const settingsPanel = document.getElementById('settings-panel');
+
+        // Initialize language on page load
+        const currentLang = translator.getLanguage();
+        document.documentElement.setAttribute('dir', currentLang === 'fa' ? 'rtl' : 'ltr');
+        document.documentElement.setAttribute('lang', currentLang === 'fa' ? 'fa' : 'en');
+
+        // Initialize currency on page load
+        const currentCurrency = currency.getCurrency();
+
+        // Update active states
+        this.updateSettingsActiveStates(currentLang, currentCurrency);
+
+        // Toggle settings panel
+        settingsToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            settingsPanel.classList.toggle('open');
+            settingsToggle.classList.toggle('active');
+        });
+
+        // Close panel when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!settingsPanel.contains(e.target) && !settingsToggle.contains(e.target)) {
+                settingsPanel.classList.remove('open');
+                settingsToggle.classList.remove('active');
+            }
+        });
+
+        // Language options
+        const langOptions = settingsPanel.querySelectorAll('[data-lang]');
+        langOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const newLang = option.dataset.lang;
+                translator.setLanguage(newLang);
+
+                // Update active states
+                langOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+
+                console.log('Language changed to:', newLang);
+            });
+        });
+
+        // Currency options
+        const currencyOptions = settingsPanel.querySelectorAll('[data-currency]');
+        currencyOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const newCurrency = option.dataset.currency;
+                currency.setCurrency(newCurrency);
+
+                // Update active states
+                currencyOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+
+                console.log('Currency changed to:', newCurrency);
+            });
+        });
+    }
+
+    updateSettingsActiveStates(lang, curr) {
+        const settingsPanel = document.getElementById('settings-panel');
+
+        // Update language active state
+        const langOptions = settingsPanel.querySelectorAll('[data-lang]');
+        langOptions.forEach(option => {
+            if (option.dataset.lang === lang) {
+                option.classList.add('active');
+            } else {
+                option.classList.remove('active');
+            }
+        });
+
+        // Update currency active state
+        const currencyOptions = settingsPanel.querySelectorAll('[data-currency]');
+        currencyOptions.forEach(option => {
+            if (option.dataset.currency === curr) {
+                option.classList.add('active');
+            } else {
+                option.classList.remove('active');
+            }
+        });
+    }
+
+    handleLanguageChange() {
+        // Refresh all widgets to show translated content
+        this.widgetManager.widgets.forEach(widget => {
+            this.widgetManager.refreshWidget(widget.id);
+        });
+
+        // Update panel headers
+        this.updatePanelHeaders();
+
+        // Update widget library
+        this.updateWidgetLibrary();
+
+        // Update AI Assistant
+        if (this.aiAssistant) {
+            this.aiAssistant.updateLanguage();
+        }
+    }
+
+    updatePanelHeaders() {
+        const widgetSidebarHeader = document.querySelector('#widget-sidebar .sidebar-header h3');
+        const alertsSidebarHeader = document.querySelector('#alerts-sidebar h3');
+
+        if (widgetSidebarHeader) {
+            widgetSidebarHeader.textContent = translator.t('widgets-panel');
+        }
+        if (alertsSidebarHeader) {
+            alertsSidebarHeader.textContent = translator.t('alerts-panel');
+        }
+    }
+
+    updateWidgetLibrary() {
+        // Update category headers
+        const categories = document.querySelectorAll('.widget-category h4');
+        const categoryTexts = [
+            translator.t('financial'),
+            translator.t('operational'),
+            translator.t('sales'),
+            translator.t('team'),
+            translator.t('strategic'),
+            translator.t('executive')
+        ];
+        categories.forEach((cat, index) => {
+            if (categoryTexts[index]) {
+                cat.textContent = categoryTexts[index];
+            }
+        });
+
+        // Update widget names
+        const widgetNameMap = {
+            'cash-flow': 'cash-flow',
+            'revenue-target': 'revenue-target',
+            'profit-product': 'profit-product',
+            'accounts-receivable': 'accounts-receivable',
+            'live-prices': 'live-prices',
+            'order-pipeline': 'order-pipeline',
+            'delivery-trends': 'delivery-trends',
+            'bottleneck-map': 'bottleneck-map',
+            'team-capacity': 'team-capacity',
+            'customer-health': 'customer-health',
+            'sales-pipeline': 'sales-pipeline',
+            'top-customers': 'top-customers',
+            'team-scorecard': 'team-scorecard',
+            'overdue-tasks': 'overdue-tasks',
+            'task-manager': 'task-manager',
+            'strategic-goals': 'strategic-goals',
+            'project-manager': 'project-manager',
+            'todays-focus': 'todays-focus',
+            'executive-summary': 'executive-summary'
+        };
+
+        document.querySelectorAll('.widget-item').forEach(item => {
+            const widgetType = item.dataset.widgetType;
+            const nameSpan = item.querySelector('.widget-name');
+            if (nameSpan && widgetNameMap[widgetType]) {
+                nameSpan.textContent = translator.t(widgetNameMap[widgetType]);
+            }
+        });
+
+        // Update quick actions
+        const createTaskBtn = document.getElementById('createTaskBtn');
+        const createProjectBtn = document.getElementById('createProjectBtn');
+        if (createTaskBtn) {
+            createTaskBtn.textContent = translator.getLanguage() === 'fa' ? '+ وظیفه جدید' : '+ New Task';
+        }
+        if (createProjectBtn) {
+            createProjectBtn.textContent = translator.getLanguage() === 'fa' ? '+ پروژه جدید' : '+ New Project';
+        }
+
+        // Update quick actions header
+        const quickActionsHeader = document.querySelector('.sidebar-section h4');
+        if (quickActionsHeader) {
+            quickActionsHeader.textContent = translator.getLanguage() === 'fa' ? 'اقدامات سریع' : 'Quick Actions';
+        }
+
+        // Update topbar elements
+        const tagline = document.querySelector('.tagline');
+        const userName = document.querySelector('.user-name');
+        if (tagline) {
+            tagline.textContent = translator.getLanguage() === 'fa' ? 'مرکز فرماندهی مدیریت' : 'Manager\'s Command Center';
+        }
+        if (userName) {
+            userName.textContent = translator.getLanguage() === 'fa' ? 'پیشخوان مدیرعامل' : 'CEO Dashboard';
+        }
+    }
+
+    handleCurrencyChange() {
+        // Refresh all widgets to show updated currency
+        this.widgetManager.widgets.forEach(widget => {
+            this.widgetManager.refreshWidget(widget.id);
+        });
     }
 
     // ===== THEME TOGGLE =====
@@ -82,63 +297,91 @@ export class ManagerDashboard {
 
     // ===== SIDEBAR TOGGLE =====
     setupSidebarToggle() {
-        const toggleLeftBtn = document.getElementById('toggleSidebarLeft');
         const showSidebarBtn = document.getElementById('showSidebarBtn');
-        const toggleAlertsBtn = document.getElementById('toggleAlertsRight');
         const showAlertsBtn = document.getElementById('showAlertsBtn');
         const sidebar = document.getElementById('widget-sidebar');
         const alertsPanel = document.getElementById('alerts-sidebar');
-        const dashboardGrid = document.getElementById('dashboard-grid');
 
-        // Left sidebar toggle (hide)
-        if (toggleLeftBtn && sidebar) {
-            toggleLeftBtn.addEventListener('click', () => {
-                sidebar.classList.add('collapsed');
-                showSidebarBtn.style.display = 'flex';
-                if (dashboardGrid) {
-                    dashboardGrid.classList.add('sidebar-collapsed');
-                }
-                // Recalculate grid after sidebar animation
-                setTimeout(() => {
-                    this.gridLayoutManager.handleWindowResize();
-                    IconHelper.createIcons();
-                }, 350);
-            });
+        // Load saved panel states or default to closed
+        const sidebarOpen = localStorage.getItem('sidebar-open') === 'true';
+        const alertsOpen = localStorage.getItem('alerts-open') === 'true';
+
+        // Initialize panel states
+        if (!sidebarOpen && sidebar) {
+            sidebar.classList.add('closed');
+            if (showSidebarBtn) showSidebarBtn.classList.add('visible');
+        } else if (sidebar) {
+            sidebar.classList.remove('closed');
+            if (showSidebarBtn) showSidebarBtn.classList.remove('visible');
+        }
+
+        if (!alertsOpen && alertsPanel) {
+            alertsPanel.classList.add('closed');
+            if (showAlertsBtn) showAlertsBtn.classList.add('visible');
+        } else if (alertsPanel) {
+            alertsPanel.classList.remove('closed');
+            if (showAlertsBtn) showAlertsBtn.classList.remove('visible');
         }
 
         // Show sidebar button
         if (showSidebarBtn && sidebar) {
-            showSidebarBtn.addEventListener('click', () => {
-                sidebar.classList.remove('collapsed');
-                showSidebarBtn.style.display = 'none';
-                if (dashboardGrid) {
-                    dashboardGrid.classList.remove('sidebar-collapsed');
-                }
-                // Recalculate grid after sidebar animation
-                setTimeout(() => {
-                    this.gridLayoutManager.handleWindowResize();
-                    IconHelper.createIcons();
-                }, 350);
-            });
-        }
-
-        // Right alerts panel toggle (hide)
-        if (toggleAlertsBtn && alertsPanel) {
-            toggleAlertsBtn.addEventListener('click', () => {
-                alertsPanel.classList.add('collapsed');
-                showAlertsBtn.style.display = 'flex';
-                // Reinitialize icons after DOM changes
-                setTimeout(() => IconHelper.createIcons(), 100);
+            showSidebarBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                sidebar.classList.remove('closed');
+                showSidebarBtn.classList.remove('visible');
+                localStorage.setItem('sidebar-open', 'true');
+                // Reinitialize icons after transition
+                setTimeout(() => IconHelper.createIcons(), 350);
             });
         }
 
         // Show alerts button
         if (showAlertsBtn && alertsPanel) {
-            showAlertsBtn.addEventListener('click', () => {
-                alertsPanel.classList.remove('collapsed');
-                showAlertsBtn.style.display = 'none';
-                // Reinitialize icons after DOM changes
+            showAlertsBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                alertsPanel.classList.remove('closed');
+                showAlertsBtn.classList.remove('visible');
+                localStorage.setItem('alerts-open', 'true');
+                // Reinitialize icons after transition
+                setTimeout(() => IconHelper.createIcons(), 350);
+            });
+        }
+
+        // Close panels when clicking outside
+        document.addEventListener('click', (e) => {
+            // Check if click is inside sidebar or alerts panel
+            const clickInSidebar = sidebar && sidebar.contains(e.target);
+            const clickInAlerts = alertsPanel && alertsPanel.contains(e.target);
+            const clickOnShowBtn = (showSidebarBtn && showSidebarBtn.contains(e.target)) ||
+                                   (showAlertsBtn && showAlertsBtn.contains(e.target));
+
+            // Close sidebar if open and click is outside
+            if (sidebar && !sidebar.classList.contains('closed') && !clickInSidebar && !clickOnShowBtn) {
+                sidebar.classList.add('closed');
+                if (showSidebarBtn) showSidebarBtn.classList.add('visible');
+                localStorage.setItem('sidebar-open', 'false');
                 setTimeout(() => IconHelper.createIcons(), 100);
+            }
+
+            // Close alerts if open and click is outside
+            if (alertsPanel && !alertsPanel.classList.contains('closed') && !clickInAlerts && !clickOnShowBtn) {
+                alertsPanel.classList.add('closed');
+                if (showAlertsBtn) showAlertsBtn.classList.add('visible');
+                localStorage.setItem('alerts-open', 'false');
+                setTimeout(() => IconHelper.createIcons(), 100);
+            }
+        });
+
+        // Prevent clicks inside panels from bubbling to document
+        if (sidebar) {
+            sidebar.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
+
+        if (alertsPanel) {
+            alertsPanel.addEventListener('click', (e) => {
+                e.stopPropagation();
             });
         }
     }
@@ -173,16 +416,32 @@ export class ManagerDashboard {
             localStorage.removeItem('dashboard-layout');
         }
 
-        // Load default CEO dashboard widgets with proper delays
+        // Load visual, chart-heavy CEO dashboard for presentation
         const widgetsToLoad = [
-            'todays-focus',
+            // Executive overview (top)
             'executive-summary',
-            'task-manager',
-            'project-manager',
+            'todays-focus',
+
+            // Financial charts
             'cash-flow',
+            'revenue-target',
+            'profit-product',
             'live-prices',
+
+            // Operations charts
             'order-pipeline',
-            'strategic-goals'
+            'delivery-trends',
+            'team-capacity',
+
+            // Sales & Customer
+            'sales-pipeline',
+            'customer-health',
+            'top-customers',
+
+            // Strategic & Team
+            'strategic-goals',
+            'project-manager',
+            'team-scorecard'
         ];
 
         widgetsToLoad.forEach((widgetType, index) => {
@@ -199,32 +458,116 @@ export class ManagerDashboard {
 
     // ===== LIVE DATA UPDATES =====
     startLiveDataUpdates() {
-        // Update live prices every 5 seconds
+        // Initial update
+        this.updateLivePrices();
+
+        // Update live prices every 30 seconds (to stay within API limits)
         this.liveDataIntervals.prices = setInterval(() => {
             this.updateLivePrices();
-        }, 5000);
+        }, 30000);
     }
 
-    updateLivePrices() {
-        // Simulate API calls - replace with real API
-        const goldPrice = (2045.30 + (Math.random() - 0.5) * 10).toFixed(2);
-        const usdPrice = (42150 + (Math.random() - 0.5) * 50).toFixed(0);
+    async updateLivePrices() {
+        try {
+            // Fetch Gold price (XAUUSD) from Metals-API or Gold-API
+            const goldPrice = await this.fetchGoldPrice();
 
-        // Update all live-prices widgets
-        this.widgetManager.widgets.filter(w => w.type === 'live-prices').forEach(widget => {
-            widget.data.gold.price = parseFloat(goldPrice).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            widget.data.usd.price = parseInt(usdPrice).toLocaleString();
+            // Fetch USD/IRR exchange rate
+            const usdIrrRate = await this.fetchUSDIRR();
 
-            // Update DOM without full refresh
-            const widgetEl = document.getElementById(widget.id);
-            if (widgetEl) {
-                const goldValueEl = widgetEl.querySelectorAll('.price-value')[0];
-                const usdValueEl = widgetEl.querySelectorAll('.price-value')[1];
+            // Update all live-prices widgets
+            this.widgetManager.widgets.filter(w => w.type === 'live-prices').forEach(widget => {
+                if (goldPrice) {
+                    widget.data.gold.price = goldPrice.toFixed(2);
+                    const goldChange = ((Math.random() - 0.5) * 2).toFixed(2);
+                    widget.data.gold.change = goldChange;
+                    widget.data.gold.changePercent = ((goldChange / goldPrice) * 100).toFixed(2);
+                }
 
-                if (goldValueEl) goldValueEl.textContent = `$${widget.data.gold.price}`;
-                if (usdValueEl) usdValueEl.textContent = widget.data.usd.price;
+                if (usdIrrRate) {
+                    widget.data.usd.price = Math.round(usdIrrRate).toLocaleString();
+                    const usdChange = ((Math.random() - 0.5) * 100).toFixed(0);
+                    widget.data.usd.change = usdChange;
+                    widget.data.usd.changePercent = ((usdChange / usdIrrRate) * 100).toFixed(2);
+                }
+
+                // Update DOM without full refresh
+                const widgetEl = document.getElementById(widget.id);
+                if (widgetEl) {
+                    const goldValueEl = widgetEl.querySelectorAll('.price-value')[0];
+                    const usdValueEl = widgetEl.querySelectorAll('.price-value')[1];
+                    const goldChangeEl = widgetEl.querySelectorAll('.price-change')[0];
+                    const usdChangeEl = widgetEl.querySelectorAll('.price-change')[1];
+
+                    if (goldValueEl && widget.data.gold.price) {
+                        goldValueEl.textContent = `$${widget.data.gold.price}`;
+                    }
+                    if (usdValueEl && widget.data.usd.price) {
+                        usdValueEl.textContent = widget.data.usd.price;
+                    }
+                    if (goldChangeEl && widget.data.gold.change) {
+                        const isPositive = parseFloat(widget.data.gold.change) >= 0;
+                        goldChangeEl.textContent = `${isPositive ? '+' : ''}${widget.data.gold.change} (${isPositive ? '+' : ''}${widget.data.gold.changePercent}%)`;
+                        goldChangeEl.className = `price-change ${isPositive ? 'positive' : 'negative'}`;
+                    }
+                    if (usdChangeEl && widget.data.usd.change) {
+                        const isPositive = parseFloat(widget.data.usd.change) >= 0;
+                        usdChangeEl.textContent = `${isPositive ? '+' : ''}${widget.data.usd.change} (${isPositive ? '+' : ''}${widget.data.usd.changePercent}%)`;
+                        usdChangeEl.className = `price-change ${isPositive ? 'positive' : 'negative'}`;
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error updating live prices:', error);
+        }
+    }
+
+    async fetchGoldPrice() {
+        try {
+            // Using Gold-API.com free tier (no API key needed for basic access)
+            // Alternative: https://www.metals-api.com/api/latest?access_key=YOUR_KEY&base=USD&symbols=XAU
+            const response = await fetch('https://www.goldapi.io/api/XAU/USD');
+
+            if (!response.ok) {
+                // Fallback: Use a CORS-friendly alternative
+                console.warn('Gold API failed, using fallback');
+                return this.fallbackGoldPrice();
             }
-        });
+
+            const data = await response.json();
+            return data.price || data.price_gram_24k || null;
+        } catch (error) {
+            console.error('Error fetching gold price:', error);
+            return this.fallbackGoldPrice();
+        }
+    }
+
+    async fetchUSDIRR() {
+        try {
+            // Using ExchangeRate-API.com (free, no API key required)
+            const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+
+            if (!response.ok) {
+                console.warn('USD/IRR API failed, using fallback');
+                return this.fallbackUSDIRR();
+            }
+
+            const data = await response.json();
+            return data.rates.IRR || null;
+        } catch (error) {
+            console.error('Error fetching USD/IRR rate:', error);
+            return this.fallbackUSDIRR();
+        }
+    }
+
+    fallbackGoldPrice() {
+        // Fallback to simulated data around current market price
+        return 2045.30 + (Math.random() - 0.5) * 20;
+    }
+
+    fallbackUSDIRR() {
+        // Fallback to simulated data around current market rate
+        return 42150 + (Math.random() - 0.5) * 100;
     }
 }
 

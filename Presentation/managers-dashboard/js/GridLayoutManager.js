@@ -113,6 +113,11 @@ export class GridLayoutManager {
                 minW: 1, minH: 2, maxW: 3, maxH: 4,
                 defaultW: 2, defaultH: 2,
                 resizable: true
+            },
+            'custom-chart': {
+                minW: 2, minH: 2, maxW: 6, maxH: 4,
+                defaultW: 3, defaultH: 3,
+                resizable: true
             }
         };
 
@@ -239,10 +244,10 @@ export class GridLayoutManager {
         const index = this.layout.findIndex(item => item.id === widgetId);
         if (index !== -1) {
             this.layout.splice(index, 1);
-            this.saveLayout();
 
-            // Trigger compact if needed
-            this.compactLayout();
+            // iOS-style: compact upward after removal
+            this.compactLayoutUpward();
+            this.saveLayout();
         }
     }
 
@@ -290,141 +295,131 @@ export class GridLayoutManager {
         );
     }
 
-    // ===== iOS-STYLE PUSH BEHAVIOR =====
+    // ===== iOS-STYLE AUTOMATIC ARRANGEMENT =====
 
-    pushWidgets(movingItem, targetX, targetY) {
-        // This is the "overkill" feature - intelligent widget pushing
-        const pushed = new Set();
-        const queue = [{ item: movingItem, x: targetX, y: targetY }];
-        const moves = new Map(); // id -> {x, y}
+    /**
+     * iOS-style widget placement algorithm
+     * Simply places widget and moves any overlapping widgets down
+     */
+    placeWidgetWithAutoArrange(widgetId, targetX, targetY) {
+        const widget = this.layout.find(item => item.id === widgetId);
+        if (!widget) return false;
 
-        while (queue.length > 0) {
-            const { item, x, y } = queue.shift();
+        // Set widget to target position
+        widget.x = targetX;
+        widget.y = targetY;
 
-            // Find widgets that would collide
-            const collisions = this.findCollisions(x, y, item.w, item.h, item.id);
+        // Move any overlapping widgets out of the way
+        this.moveOverlappingWidgets(widget);
 
-            for (const collision of collisions) {
-                if (pushed.has(collision.id)) continue;
-
-                // Calculate push direction
-                const pushDir = this.calculatePushDirection(
-                    x, y, item.w, item.h,
-                    collision.x, collision.y, collision.w, collision.h
-                );
-
-                // Calculate new position for pushed widget
-                const newX = collision.x + pushDir.dx;
-                const newY = collision.y + pushDir.dy;
-
-                // Check if push is valid
-                if (newX >= 0 && newX + collision.w <= this.cols && newY >= 0) {
-                    pushed.add(collision.id);
-                    moves.set(collision.id, { x: newX, y: newY });
-                    queue.push({ item: collision, x: newX, y: newY });
-                } else {
-                    // Can't push - return null to indicate invalid move
-                    return null;
-                }
-            }
-        }
-
-        // Apply all moves
-        moves.forEach((pos, id) => {
-            const layoutItem = this.layout.find(item => item.id === id);
-            if (layoutItem) {
-                layoutItem.x = pos.x;
-                layoutItem.y = pos.y;
-            }
-        });
+        // Compact everything upward (iOS behavior)
+        this.compactLayoutUpward();
 
         return true;
     }
 
-    findCollisions(x, y, w, h, excludeId) {
-        const collisions = [];
-        for (const item of this.layout) {
-            if (item.id === excludeId) continue;
+    /**
+     * Moves widgets that overlap with the given widget
+     * Finds next available position for each overlapping widget
+     */
+    moveOverlappingWidgets(movedWidget) {
+        let hasChanges = true;
+        let iterations = 0;
+        const maxIterations = 20;
 
-            if (this.checkCollision(x, y, w, h, item.x, item.y, item.w, item.h)) {
-                collisions.push(item);
+        while (hasChanges && iterations < maxIterations) {
+            hasChanges = false;
+            iterations++;
+
+            for (const widget of this.layout) {
+                if (widget.id === movedWidget.id) continue;
+
+                // Check if this widget overlaps with the moved widget
+                if (this.checkCollision(
+                    widget.x, widget.y, widget.w, widget.h,
+                    movedWidget.x, movedWidget.y, movedWidget.w, movedWidget.h
+                )) {
+                    // Move this widget down below the moved widget
+                    widget.y = movedWidget.y + movedWidget.h;
+                    hasChanges = true;
+
+                    console.log(`Moved ${widget.id} down to avoid overlap with ${movedWidget.id}`);
+                }
+            }
+
+            // Check for cascading overlaps
+            for (let i = 0; i < this.layout.length; i++) {
+                for (let j = i + 1; j < this.layout.length; j++) {
+                    const w1 = this.layout[i];
+                    const w2 = this.layout[j];
+
+                    if (this.checkCollision(w1.x, w1.y, w1.w, w1.h, w2.x, w2.y, w2.w, w2.h)) {
+                        // Move the lower one down
+                        if (w2.y >= w1.y) {
+                            w2.y = w1.y + w1.h;
+                        } else {
+                            w1.y = w2.y + w2.h;
+                        }
+                        hasChanges = true;
+                    }
+                }
             }
         }
-        return collisions;
     }
 
-    calculatePushDirection(x1, y1, w1, h1, x2, y2, w2, h2) {
-        // Calculate overlap amounts in each direction
-        const overlapLeft = (x1 + w1) - x2;
-        const overlapRight = (x2 + w2) - x1;
-        const overlapTop = (y1 + h1) - y2;
-        const overlapBottom = (y2 + h2) - y1;
-
-        // Find minimum overlap direction
-        const overlaps = [
-            { dx: -overlapLeft, dy: 0, amount: overlapLeft },  // Push left
-            { dx: overlapRight, dy: 0, amount: overlapRight }, // Push right
-            { dx: 0, dy: -overlapTop, amount: overlapTop },    // Push up
-            { dx: 0, dy: overlapBottom, amount: overlapBottom } // Push down
-        ];
-
-        // Sort by smallest overlap (easiest push)
-        overlaps.sort((a, b) => a.amount - b.amount);
-
-        return overlaps[0];
-    }
-
-    compactLayout() {
-        // Move widgets up to fill gaps (like iOS home screen)
+    /**
+     * Compact layout upward - exactly like iOS
+     * Each widget tries to move up as far as possible without overlapping
+     */
+    compactLayoutUpward() {
         let moved = true;
-        while (moved) {
+        let iterations = 0;
+        const maxIterations = 30;
+
+        while (moved && iterations < maxIterations) {
             moved = false;
+            iterations++;
 
-            // Sort by y position (top to bottom)
-            const sorted = [...this.layout].sort((a, b) => a.y - b.y || a.x - b.x);
+            // Sort widgets by Y position (top to bottom), then X (left to right)
+            const sortedWidgets = [...this.layout].sort((a, b) => {
+                if (a.y !== b.y) return a.y - b.y;
+                return a.x - b.x;
+            });
 
-            for (const item of sorted) {
-                // Try to move widget up
-                let newY = item.y;
-                while (newY > 0) {
-                    if (this.isPositionAvailable(item.x, newY - 1, item.w, item.h, item.id)) {
-                        newY--;
+            for (const widget of sortedWidgets) {
+                // Try to move widget up one cell at a time
+                while (widget.y > 0) {
+                    if (this.canPlaceAt(widget.x, widget.y - 1, widget.w, widget.h, widget.id)) {
+                        widget.y--;
                         moved = true;
                     } else {
                         break;
                     }
                 }
-
-                if (newY !== item.y) {
-                    item.y = newY;
-                }
             }
         }
 
-        // Validate no overlaps after compaction
-        this.validateNoOverlaps();
-
-        this.saveLayout();
+        console.log(`Layout compacted in ${iterations} iterations`);
     }
 
-    validateNoOverlaps() {
-        // Check all widgets for overlaps
-        for (let i = 0; i < this.layout.length; i++) {
-            for (let j = i + 1; j < this.layout.length; j++) {
-                const item1 = this.layout[i];
-                const item2 = this.layout[j];
+    /**
+     * Check if a widget can be placed at a specific position
+     */
+    canPlaceAt(x, y, w, h, excludeId = null) {
+        // Check bounds
+        if (x < 0 || x + w > this.cols || y < 0) {
+            return false;
+        }
 
-                if (this.checkCollision(
-                    item1.x, item1.y, item1.w, item1.h,
-                    item2.x, item2.y, item2.w, item2.h
-                )) {
-                    console.error(`OVERLAP DETECTED: ${item1.id} and ${item2.id}!`);
-                    console.error(`  ${item1.id}: (${item1.x},${item1.y}) ${item1.w}x${item1.h}`);
-                    console.error(`  ${item2.id}: (${item2.x},${item2.y}) ${item2.w}x${item2.h}`);
-                    return false;
-                }
+        // Check collisions with other widgets
+        for (const widget of this.layout) {
+            if (excludeId && widget.id === excludeId) continue;
+
+            if (this.checkCollision(x, y, w, h, widget.x, widget.y, widget.w, widget.h)) {
+                return false;
             }
         }
+
         return true;
     }
 
@@ -562,14 +557,11 @@ export class GridLayoutManager {
         const clampedX = Math.max(0, Math.min(this.cols - layout.w, gridX));
         const clampedY = Math.max(0, gridY);
 
-        // Try to place with push behavior
-        const canPlace = this.isPositionAvailable(clampedX, clampedY, layout.w, layout.h, layout.id);
+        // iOS-style placement: place widget and auto-arrange others
+        this.placeWidgetWithAutoArrange(layout.id, clampedX, clampedY);
 
-        if (canPlace || this.pushWidgets(layout, clampedX, clampedY)) {
-            layout.x = clampedX;
-            layout.y = clampedY;
-            this.saveLayout();
-        }
+        // Save layout
+        this.saveLayout();
 
         // Clean up
         element.classList.remove('dragging');
@@ -577,7 +569,7 @@ export class GridLayoutManager {
         element.style.pointerEvents = '';
         this.removeDragGhost();
 
-        // Re-render layout
+        // Re-render layout with animation
         this.renderLayout();
 
         this.isDragging = false;
@@ -713,37 +705,22 @@ export class GridLayoutManager {
             const finalW = parseInt(ghost.dataset.w);
             const finalH = parseInt(ghost.dataset.h);
 
-            // Store original dimensions for rollback
-            const originalX = layout.x;
-            const originalY = layout.y;
-            const originalW = layout.w;
-            const originalH = layout.h;
-
-            // Temporarily update layout for push calculation
-            layout.x = finalX;
-            layout.y = finalY;
+            // Apply new dimensions
             layout.w = finalW;
             layout.h = finalH;
 
-            // Check if valid or can push others
-            const canPlace = this.isPositionAvailable(finalX, finalY, finalW, finalH, layout.id);
+            // iOS-style placement: place resized widget and auto-arrange others
+            this.placeWidgetWithAutoArrange(layout.id, finalX, finalY);
 
-            if (canPlace || this.pushWidgets(layout, finalX, finalY)) {
-                // Success - keep new dimensions
-                this.saveLayout();
-            } else {
-                // Failed - rollback to original
-                layout.x = originalX;
-                layout.y = originalY;
-                layout.w = originalW;
-                layout.h = originalH;
-                console.warn('Resize blocked - would cause invalid layout');
-            }
+            // Save layout
+            this.saveLayout();
         }
 
         // Clean up
         element.classList.remove('resizing');
         this.removeResizeGhost();
+
+        // Re-render layout with animation
         this.renderLayout();
 
         this.isResizing = false;
