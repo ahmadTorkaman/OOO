@@ -82,9 +82,7 @@ export class ManagerDashboard {
 
     // ===== SIDEBAR TOGGLE =====
     setupSidebarToggle() {
-        const toggleLeftBtn = document.getElementById('toggleSidebarLeft');
         const showSidebarBtn = document.getElementById('showSidebarBtn');
-        const toggleAlertsBtn = document.getElementById('toggleAlertsRight');
         const showAlertsBtn = document.getElementById('showAlertsBtn');
         const sidebar = document.getElementById('widget-sidebar');
         const alertsPanel = document.getElementById('alerts-sidebar');
@@ -97,68 +95,78 @@ export class ManagerDashboard {
         if (!sidebarOpen && sidebar) {
             sidebar.classList.add('closed');
             if (showSidebarBtn) showSidebarBtn.classList.add('visible');
-            if (toggleLeftBtn) toggleLeftBtn.classList.remove('visible');
         } else if (sidebar) {
             sidebar.classList.remove('closed');
             if (showSidebarBtn) showSidebarBtn.classList.remove('visible');
-            if (toggleLeftBtn) toggleLeftBtn.classList.add('visible');
         }
 
         if (!alertsOpen && alertsPanel) {
             alertsPanel.classList.add('closed');
             if (showAlertsBtn) showAlertsBtn.classList.add('visible');
-            if (toggleAlertsBtn) toggleAlertsBtn.classList.remove('visible');
         } else if (alertsPanel) {
             alertsPanel.classList.remove('closed');
             if (showAlertsBtn) showAlertsBtn.classList.remove('visible');
-            if (toggleAlertsBtn) toggleAlertsBtn.classList.add('visible');
-        }
-
-        // Left sidebar toggle (hide)
-        if (toggleLeftBtn && sidebar) {
-            toggleLeftBtn.addEventListener('click', () => {
-                sidebar.classList.add('closed');
-                toggleLeftBtn.classList.remove('visible');
-                if (showSidebarBtn) showSidebarBtn.classList.add('visible');
-                localStorage.setItem('sidebar-open', 'false');
-                // Reinitialize icons after transition
-                setTimeout(() => IconHelper.createIcons(), 100);
-            });
         }
 
         // Show sidebar button
         if (showSidebarBtn && sidebar) {
-            showSidebarBtn.addEventListener('click', () => {
+            showSidebarBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 sidebar.classList.remove('closed');
                 showSidebarBtn.classList.remove('visible');
-                if (toggleLeftBtn) toggleLeftBtn.classList.add('visible');
                 localStorage.setItem('sidebar-open', 'true');
                 // Reinitialize icons after transition
                 setTimeout(() => IconHelper.createIcons(), 350);
             });
         }
 
-        // Right alerts panel toggle (hide)
-        if (toggleAlertsBtn && alertsPanel) {
-            toggleAlertsBtn.addEventListener('click', () => {
-                alertsPanel.classList.add('closed');
-                toggleAlertsBtn.classList.remove('visible');
-                if (showAlertsBtn) showAlertsBtn.classList.add('visible');
-                localStorage.setItem('alerts-open', 'false');
-                // Reinitialize icons after transition
-                setTimeout(() => IconHelper.createIcons(), 100);
-            });
-        }
-
         // Show alerts button
         if (showAlertsBtn && alertsPanel) {
-            showAlertsBtn.addEventListener('click', () => {
+            showAlertsBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 alertsPanel.classList.remove('closed');
                 showAlertsBtn.classList.remove('visible');
-                if (toggleAlertsBtn) toggleAlertsBtn.classList.add('visible');
                 localStorage.setItem('alerts-open', 'true');
                 // Reinitialize icons after transition
                 setTimeout(() => IconHelper.createIcons(), 350);
+            });
+        }
+
+        // Close panels when clicking outside
+        document.addEventListener('click', (e) => {
+            // Check if click is inside sidebar or alerts panel
+            const clickInSidebar = sidebar && sidebar.contains(e.target);
+            const clickInAlerts = alertsPanel && alertsPanel.contains(e.target);
+            const clickOnShowBtn = (showSidebarBtn && showSidebarBtn.contains(e.target)) ||
+                                   (showAlertsBtn && showAlertsBtn.contains(e.target));
+
+            // Close sidebar if open and click is outside
+            if (sidebar && !sidebar.classList.contains('closed') && !clickInSidebar && !clickOnShowBtn) {
+                sidebar.classList.add('closed');
+                if (showSidebarBtn) showSidebarBtn.classList.add('visible');
+                localStorage.setItem('sidebar-open', 'false');
+                setTimeout(() => IconHelper.createIcons(), 100);
+            }
+
+            // Close alerts if open and click is outside
+            if (alertsPanel && !alertsPanel.classList.contains('closed') && !clickInAlerts && !clickOnShowBtn) {
+                alertsPanel.classList.add('closed');
+                if (showAlertsBtn) showAlertsBtn.classList.add('visible');
+                localStorage.setItem('alerts-open', 'false');
+                setTimeout(() => IconHelper.createIcons(), 100);
+            }
+        });
+
+        // Prevent clicks inside panels from bubbling to document
+        if (sidebar) {
+            sidebar.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
+
+        if (alertsPanel) {
+            alertsPanel.addEventListener('click', (e) => {
+                e.stopPropagation();
             });
         }
     }

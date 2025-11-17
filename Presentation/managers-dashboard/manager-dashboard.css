@@ -1687,29 +1687,13 @@ textarea.form-input {
     color: var(--primary);
 }
 
-/* Left sidebar toggle button - on panel edge */
-.panel-toggle-btn.left {
-    right: -18px;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-}
-
-/* Right alerts toggle button - on panel edge */
-.panel-toggle-btn.right {
-    left: -18px;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-}
-
 /* Show buttons on dashboard grid when panels are closed */
 .panel-toggle-btn.show-left {
     left: var(--space-lg);
-    border-radius: var(--radius-sm);
 }
 
 .panel-toggle-btn.show-right {
     right: var(--space-lg);
-    border-radius: var(--radius-sm);
 }
 
 /* ===== LUCIDE ICONS STYLING ===== */
