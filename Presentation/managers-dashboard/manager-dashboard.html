@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OZONE - Manager's Dashboard</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="manager-dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Topbar -->
+    <div id="topbar">
+        <div class="brand">OZONE</div>
+        <div class="tagline">Manager's Command Center</div>
+        <div class="spacer" style="flex: 1;"></div>
+        <div class="user-info">
+            <span class="user-name">CEO Dashboard</span>
+        </div>
+        <div class="theme-toggle">
+            <label class="switch">
+                <input type="checkbox" id="themeToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Main Dashboard Container -->
+    <div id="dashboard-container">
+        <!-- Sidebar - Widget Library -->
+        <div id="widget-sidebar" class="panel">
+            <button class="panel-toggle-btn left" id="toggleSidebarLeft" title="Hide Sidebar">
+                <i data-lucide="chevron-left" class="icon"></i>
+            </button>
+            <div class="sidebar-header">
+                <h3>Available Widgets</h3>
+            </div>
+            <div class="widget-library">
+                <!-- Financial Widgets -->
+                <div class="widget-category">
+                    <h4>Financial</h4>
+                    <div class="widget-item" data-widget-type="cash-flow" draggable="true">
+                        <i data-lucide="dollar-sign" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Cash Flow & Runway</span>
+                    </div>
+                    <div class="widget-item" data-widget-type="revenue-target" draggable="true">
+                        <i data-lucide="target" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Revenue vs Target</span>
+                    </div>
+                    <div class="widget-item" data-widget-type="profit-product" draggable="true">
+                        <i data-lucide="bar-chart" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Profit by Product</span>
+                    </div>
+                    <div class="widget-item" data-widget-type="accounts-receivable" draggable="true">
+                        <i data-lucide="refresh-cw" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Accounts Receivable</span>
+                    </div>
+                    <div class="widget-item" data-widget-type="live-prices" draggable="true">
+                        <i data-lucide="coins" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Gold & USD/IRR</span>
+                    </div>
+                </div>
+
+                <!-- Operations Widgets -->
+                <div class="widget-category">
+                    <h4>Operations</h4>
+                    <div class="widget-item" data-widget-type="order-pipeline" draggable="true">
+                        <i data-lucide="layout" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Order Status Pipeline</span>
+                    </div>
+                    <div class="widget-item" data-widget-type="delivery-trends" draggable="true">
+                        <i data-lucide="arrow-up-right" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Delivery Time Trends</span>
+                    </div>
+                    <div class="widget-item" data-widget-type="bottleneck-map" draggable="true">
+                        <i data-lucide="alert-triangle" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Bottleneck Heatmap</span>
+                    </div>
+                    <div class="widget-item" data-widget-type="team-capacity" draggable="true">
+                        <i data-lucide="users" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Team Capacity</span>
+                    </div>
+                </div>
+
+                <!-- Customer & Sales -->
+                <div class="widget-category">
+                    <h4>Customer & Sales</h4>
+                    <div class="widget-item" data-widget-type="customer-health" draggable="true">
+                        <i data-lucide="smile" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Customer Health</span>
+                    </div>
+                    <div class="widget-item" data-widget-type="sales-pipeline" draggable="true">
+                        <i data-lucide="funnel" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Sales Pipeline</span>
+                    </div>
+                    <div class="widget-item" data-widget-type="top-customers" draggable="true">
+                        <i data-lucide="star" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Top Customers</span>
+                    </div>
+                </div>
+
+                <!-- Team Performance -->
+                <div class="widget-category">
+                    <h4>Team</h4>
+                    <div class="widget-item" data-widget-type="team-scorecard" draggable="true">
+                        <i data-lucide="circle-dot" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Team Scorecard</span>
+                    </div>
+                    <div class="widget-item" data-widget-type="overdue-tasks" draggable="true">
+                        <i data-lucide="alert-circle" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Overdue Tasks</span>
+                    </div>
+                    <div class="widget-item" data-widget-type="task-manager" draggable="true">
+                        <i data-lucide="check-circle" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Task Manager</span>
+                    </div>
+                </div>
+
+                <!-- Strategic -->
+                <div class="widget-category">
+                    <h4>Strategic</h4>
+                    <div class="widget-item" data-widget-type="strategic-goals" draggable="true">
+                        <i data-lucide="crosshair" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Strategic Goals</span>
+                    </div>
+                    <div class="widget-item" data-widget-type="project-manager" draggable="true">
+                        <i data-lucide="bar-chart-2" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Project Manager</span>
+                    </div>
+                </div>
+
+                <!-- Executive -->
+                <div class="widget-category">
+                    <h4>Executive</h4>
+                    <div class="widget-item" data-widget-type="todays-focus" draggable="true">
+                        <i data-lucide="target" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Today's Focus</span>
+                    </div>
+                    <div class="widget-item" data-widget-type="executive-summary" draggable="true">
+                        <i data-lucide="trending-up" class="icon widget-icon-svg" style="width:20px;height:20px;"></i>
+                        <span class="widget-name">Executive Summary</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task Manager Section -->
+            <div class="sidebar-section">
+                <h4>Quick Actions</h4>
+                <button class="btn-primary btn-sm" id="createTaskBtn">+ New Task</button>
+                <button class="btn-primary btn-sm" id="createProjectBtn">+ New Project</button>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid Area -->
+        <div id="dashboard-grid" class="dashboard-grid">
+            <!-- Show sidebar button (appears when sidebar is collapsed) -->
+            <button class="panel-toggle-btn show-left" id="showSidebarBtn" title="Show Sidebar" style="display: none;">
+                <i data-lucide="chevron-right" class="icon"></i>
+            </button>
+            <!-- Show alerts button (appears when alerts panel is collapsed) -->
+            <button class="panel-toggle-btn show-right" id="showAlertsBtn" title="Show Alerts" style="display: none;">
+                <i data-lucide="chevron-left" class="icon"></i>
+            </button>
+            <!-- Widgets will be added here dynamically -->
+        </div>
+
+        <!-- Alerts Sidebar -->
+        <div id="alerts-sidebar" class="panel alerts-panel">
+            <button class="panel-toggle-btn right" id="toggleAlertsRight" title="Hide Alerts">
+                <i data-lucide="chevron-right" class="icon"></i>
+            </button>
+            <h3>Alerts</h3>
+            <div class="alert-list">
+                <div class="alert-section">
+                    <h4 class="alert-urgent">URGENT (5)</h4>
+                    <div class="alert-item urgent">
+                        <span class="alert-icon">!</span>
+                        <span class="alert-text">Order #4782 - 7 days overdue</span>
+                    </div>
+                    <div class="alert-item urgent">
+                        <span class="alert-icon">!</span>
+                        <span class="alert-text">Cash negative in 12 days</span>
+                    </div>
+                    <div class="alert-item urgent">
+                        <span class="alert-icon">!</span>
+                        <span class="alert-text">Collect $120K AR now</span>
+                    </div>
+                </div>
+
+                <div class="alert-section">
+                    <h4 class="alert-warning">WARNING (8)</h4>
+                    <div class="alert-item warning">
+                        <span class="alert-icon">⚠</span>
+                        <span class="alert-text">Production: 112% capacity</span>
+                    </div>
+                    <div class="alert-item warning">
+                        <span class="alert-icon">⚠</span>
+                        <span class="alert-text">3 customers 90+ days inactive</span>
+                    </div>
+                    <div class="alert-item warning">
+                        <span class="alert-icon">⚠</span>
+                        <span class="alert-text">4 employees over 50hr/week</span>
+                    </div>
+                </div>
+
+                <div class="alert-section">
+                    <h4 class="alert-opportunity">OPPORTUNITIES (3)</h4>
+                    <div class="alert-item opportunity">
+                        <span class="alert-icon">◆</span>
+                        <span class="alert-text">5 proposals need follow-up</span>
+                    </div>
+                    <div class="alert-item opportunity">
+                        <span class="alert-icon">◆</span>
+                        <span class="alert-text">Sarah has 20% free capacity</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Creating Tasks/Projects -->
+    <div id="taskModal" class="modal-overlay" style="display: none;">
+        <div class="modal panel">
+            <div class="modal-header">
+                <h3 id="modalTitle">Create New Task</h3>
+                <button class="btn-close" id="closeModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="taskTitle" class="form-input" placeholder="Enter task/project title">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="taskDescription" class="form-input" rows="3" placeholder="Enter description"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Assignee</label>
+                    <select id="taskAssignee" class="form-select">
+                        <option value="">Select team member</option>
+                        <option value="Sarah">Sarah - Designer</option>
+                        <option value="Mike">Mike - Designer</option>
+                        <option value="John">John - Designer</option>
+                        <option value="Alex">Alex - Engineer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select id="taskPriority" class="form-select">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Due Date</label>
+                    <input type="date" id="taskDueDate" class="form-input">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelTask">Cancel</button>
+                <button class="btn-primary" id="saveTask">Create Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <script type="module" src="js/Dashboard.js"></script>
+</body>
+</html>
