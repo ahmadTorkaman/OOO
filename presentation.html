@@ -1327,7 +1327,7 @@
           mouseBallPos.y += (targetY - mouseBallPos.y) * hoverSmoothness;
           program.uniforms.iMouse.value.set(mouseBallPos.x, mouseBallPos.y, 0);
 
-          renderer.render({ scene: mesh });
+          renderer.render(mesh);
         }
         animationFrameId = requestAnimationFrame(update);
 
