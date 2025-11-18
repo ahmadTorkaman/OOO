@@ -995,8 +995,8 @@
 
   <!-- Main App -->
   <script type="module">
-    // Import OGL dynamically as ESM
-    const OGLModule = await import('https://unpkg.com/ogl@1.0.6/dist/ogl.mjs');
+    // Import OGL from skypack (ESM CDN with proper CORS)
+    const OGLModule = await import('https://cdn.skypack.dev/ogl@1.0.6');
 
     (function() {
       // Use global React from UMD builds
@@ -1006,7 +1006,7 @@
       // Use global variables from UMD builds - check multiple possible names
       const motion = window.Motion?.motion || window.FramerMotion?.motion || window.motion;
 
-      // OGL loaded as ESM module
+      // OGL loaded as ESM module from skypack
       const { Renderer, Program, Mesh, Triangle, Vec3 } = OGLModule;
 
       const Matter = window.Matter;
