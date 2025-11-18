@@ -991,7 +991,7 @@
   <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/framer-motion@11.0.0/dist/framer-motion.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/ogl@1.0.6/dist/ogl.umd.js"></script>
+  <script src="https://unpkg.com/ogl@1.0.6/dist/ogl.umd.js"></script>
   <script src="https://unpkg.com/matter-js@0.19.0/build/matter.min.js"></script>
 
   <!-- Main App -->
@@ -1003,8 +1003,16 @@
 
       // Use global variables from UMD builds - check multiple possible names
       const motion = window.Motion?.motion || window.FramerMotion?.motion || window.motion;
-      const OGL = window.OGL || {};
-      const { Renderer, Program, Mesh, Triangle, Vec3 } = OGL;
+
+      // OGL might expose itself as window.OGL or as individual exports
+      // Try to access it from window.OGL (the UMD export name)
+      const OGLLib = window.OGL || window;
+      const Renderer = OGLLib.Renderer;
+      const Program = OGLLib.Program;
+      const Mesh = OGLLib.Mesh;
+      const Triangle = OGLLib.Triangle;
+      const Vec3 = OGLLib.Vec3;
+
       const Matter = window.Matter;
 
     // ============================================
