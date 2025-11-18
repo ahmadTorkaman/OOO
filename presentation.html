@@ -874,6 +874,35 @@
       padding-right: 0.5rem;
     }
 
+    /* Farsi-only sections with RTL and IRANYekan font */
+    .farsi-section {
+      direction: rtl;
+      text-align: right;
+    }
+
+    .farsi-section h2,
+    .farsi-section h3,
+    .farsi-section p {
+      font-family: iranyekan, 'Segoe UI', Tahoma, sans-serif !important;
+      direction: rtl;
+      text-align: right;
+    }
+
+    .farsi-section h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #2c3e50;
+      line-height: 1.6;
+      letter-spacing: -0.02em;
+    }
+
+    .farsi-section p {
+      font-size: 1.15rem;
+      line-height: 2;
+      color: #34495e;
+      letter-spacing: -0.01em;
+    }
+
     /* Benefits section Persian */
     .benefit-text .persian-text {
       font-family: iranyekan, 'Segoe UI', Tahoma, sans-serif !important;
@@ -2773,7 +2802,7 @@
           // Section 1: Overview
           h(
             'div',
-            { className: 'content-section' },
+            { className: 'content-section farsi-section' },
             h('h2', null, 'پلتفرم یکپارچه'),
             h('p', null, 'اُزون تمام جنبه‌های فرآیند تولید و طراحی شما را در یک پلتفرم یکپارچه گردهم می‌آورد. دیگر نیازی به جابجایی بین ابزارهای مختلف یا از دست دادن داده‌ها نیست.'),
             h('p', null, 'از ایده اولیه تا تحویل نهایی، همه چیز را در یک مکان با شفافیت و کنترل لحظه‌ای مدیریت کنید.')
