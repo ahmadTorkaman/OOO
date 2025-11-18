@@ -980,6 +980,14 @@
       font-weight: 700;
       color: #2c3e50;
       margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .value-flow-header.farsi-section h2 .ozone-brand {
+      font-family: 'Montserrat', sans-serif !important;
+      font-weight: 700;
+      color: #4c62ba;
+      letter-spacing: 0.05em;
     }
 
     .value-flow-header.farsi-section p {
@@ -1762,7 +1770,7 @@
         h(
           'div',
           { className: 'value-flow-header farsi-section' },
-          h('h2', null, 'چگونه اُزون برای همه ارزش می‌آفریند'),
+          h('h2', null, 'چگونه ', h('span', { className: 'ozone-brand' }, 'OZONE'), ' برای همه ارزش می‌آفریند'),
           h('p', null, 'معیارهای شفاف که موفقیت سازمان و رضایت کارکنان را تضمین می‌کنند')
         ),
 
@@ -1794,18 +1802,18 @@
               )
             ),
 
-            // Wire paths from employees to OZONE
+            // Wire paths from employees to OZONE (using OZONE purple-blue gradient)
             // Designer
             h('path', {
               d: 'M 150 100 Q 325 100, 500 300',
               className: 'wire wire-designer',
-              stroke: '#3498db',
+              stroke: 'url(#wireGradient)',
               strokeWidth: '3',
               fill: 'none',
-              opacity: '0.4',
+              opacity: '0.5',
               filter: 'url(#glow)'
             }),
-            h('circle', { className: 'data-packet packet-designer', r: '6', fill: '#3498db' },
+            h('circle', { className: 'data-packet packet-designer', r: '6', fill: '#764ba2' },
               h('animateMotion', {
                 dur: '4s',
                 repeatCount: 'indefinite',
@@ -1817,13 +1825,13 @@
             h('path', {
               d: 'M 150 190 Q 325 190, 500 300',
               className: 'wire wire-engineer',
-              stroke: '#2ecc71',
+              stroke: 'url(#wireGradient)',
               strokeWidth: '3',
               fill: 'none',
-              opacity: '0.4',
+              opacity: '0.5',
               filter: 'url(#glow)'
             }),
-            h('circle', { className: 'data-packet packet-engineer', r: '6', fill: '#2ecc71' },
+            h('circle', { className: 'data-packet packet-engineer', r: '6', fill: '#764ba2' },
               h('animateMotion', {
                 dur: '4.5s',
                 repeatCount: 'indefinite',
@@ -1835,13 +1843,13 @@
             h('path', {
               d: 'M 150 280 Q 325 280, 500 300',
               className: 'wire wire-operator',
-              stroke: '#f39c12',
+              stroke: 'url(#wireGradient)',
               strokeWidth: '3',
               fill: 'none',
-              opacity: '0.4',
+              opacity: '0.5',
               filter: 'url(#glow)'
             }),
-            h('circle', { className: 'data-packet packet-operator', r: '6', fill: '#f39c12' },
+            h('circle', { className: 'data-packet packet-operator', r: '6', fill: '#764ba2' },
               h('animateMotion', {
                 dur: '3.8s',
                 repeatCount: 'indefinite',
@@ -1853,13 +1861,13 @@
             h('path', {
               d: 'M 150 370 Q 325 370, 500 300',
               className: 'wire wire-manager',
-              stroke: '#9b59b6',
+              stroke: 'url(#wireGradient)',
               strokeWidth: '3',
               fill: 'none',
-              opacity: '0.4',
+              opacity: '0.5',
               filter: 'url(#glow)'
             }),
-            h('circle', { className: 'data-packet packet-manager', r: '6', fill: '#9b59b6' },
+            h('circle', { className: 'data-packet packet-manager', r: '6', fill: '#764ba2' },
               h('animateMotion', {
                 dur: '4.2s',
                 repeatCount: 'indefinite',
@@ -1871,13 +1879,13 @@
             h('path', {
               d: 'M 150 460 Q 325 460, 500 300',
               className: 'wire wire-commerce',
-              stroke: '#e74c3c',
+              stroke: 'url(#wireGradient)',
               strokeWidth: '3',
               fill: 'none',
-              opacity: '0.4',
+              opacity: '0.5',
               filter: 'url(#glow)'
             }),
-            h('circle', { className: 'data-packet packet-commerce', r: '6', fill: '#e74c3c' },
+            h('circle', { className: 'data-packet packet-commerce', r: '6', fill: '#764ba2' },
               h('animateMotion', {
                 dur: '3.6s',
                 repeatCount: 'indefinite',
@@ -1889,13 +1897,13 @@
             h('path', {
               d: 'M 150 550 Q 325 550, 500 300',
               className: 'wire wire-sales',
-              stroke: '#16a085',
+              stroke: 'url(#wireGradient)',
               strokeWidth: '3',
               fill: 'none',
-              opacity: '0.4',
+              opacity: '0.5',
               filter: 'url(#glow)'
             }),
-            h('circle', { className: 'data-packet packet-sales', r: '6', fill: '#16a085' },
+            h('circle', { className: 'data-packet packet-sales', r: '6', fill: '#764ba2' },
               h('animateMotion', {
                 dur: '4.8s',
                 repeatCount: 'indefinite',
