@@ -991,13 +991,12 @@
   <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/framer-motion@11.0.0/dist/framer-motion.js"></script>
-  <script src="https://cdn.skypack.dev/ogl@1.0.6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ogl@1.0.6/dist/ogl.umd.js"></script>
   <script src="https://unpkg.com/matter-js@0.19.0/build/matter.min.js"></script>
 
   <!-- Main App -->
-  <script defer>
-    // Wait for all libraries to load
-    window.addEventListener('DOMContentLoaded', () => {
+  <script>
+    (function() {
       // Use global React from UMD builds
       const { useState, useRef, useEffect, useMemo, forwardRef, createElement: h } = window.React;
       const { createRoot } = window.ReactDOM;
@@ -1006,7 +1005,7 @@
       const motion = window.Motion?.motion || window.FramerMotion?.motion || window.motion;
       const OGL = window.OGL || {};
       const { Renderer, Program, Mesh, Triangle, Vec3 } = OGL;
-      // Matter is already global as window.Matter
+      const Matter = window.Matter;
 
     // ============================================
     // MetaBalls Component
@@ -2957,7 +2956,7 @@
     // Render
     const root = createRoot(document.getElementById('root'));
     root.render(h(App));
-    }); // End DOMContentLoaded
+    })(); // End IIFE
   </script>
 </body>
 </html>
