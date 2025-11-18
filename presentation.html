@@ -996,101 +996,20 @@
         "react-dom": "https://esm.sh/react-dom@18.2.0",
         "react-dom/": "https://esm.sh/react-dom@18.2.0/",
         "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-        "framer-motion": "https://esm.sh/framer-motion@11?deps=react@18.2.0,react-dom@18.2.0",
+        "motion/react": "https://esm.sh/motion@11.14.4/react?external=react,react-dom",
+        "ogl": "https://esm.sh/ogl@1.0.6",
         "matter-js": "https://esm.sh/matter-js@0.19.0"
       }
     }
-  </script>
-
-  <!-- OGL Inline minimal implementation to avoid CORS issues -->
-  <script>
-    // Minimal OGL implementation inline to avoid all CDN CORS issues
-    window.OGLModule = (function() {
-      class Renderer {
-        constructor(config = {}) {
-          const canvas = document.createElement('canvas');
-          const gl = canvas.getContext('webgl', {
-            alpha: config.alpha !== undefined ? config.alpha : true,
-            premultipliedAlpha: config.premultipliedAlpha !== undefined ? config.premultipliedAlpha : true
-          });
-          this.gl = gl;
-          this.canvas = canvas;
-          this.dpr = config.dpr || 1;
-        }
-        setSize(width, height) {
-          this.canvas.width = width;
-          this.canvas.height = height;
-        }
-        render(scene) {
-          const gl = this.gl;
-          if (scene && scene.program) {
-            gl.useProgram(scene.program.program);
-            gl.drawArrays(gl.TRIANGLES, 0, 3);
-          }
-        }
-      }
-
-      class Program {
-        constructor(gl, config) {
-          this.gl = gl;
-          this.uniforms = config.uniforms || {};
-
-          // Create minimal WebGL program
-          const vertexShader = gl.createShader(gl.VERTEX_SHADER);
-          gl.shaderSource(vertexShader, config.vertex);
-          gl.compileShader(vertexShader);
-
-          const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-          gl.shaderSource(fragmentShader, config.fragment);
-          gl.compileShader(fragmentShader);
-
-          this.program = gl.createProgram();
-          gl.attachShader(this.program, vertexShader);
-          gl.attachShader(this.program, fragmentShader);
-          gl.linkProgram(this.program);
-        }
-      }
-
-      class Mesh {
-        constructor(gl, config) {
-          this.gl = gl;
-          this.geometry = config.geometry;
-          this.program = config.program;
-        }
-      }
-
-      class Triangle {
-        constructor(gl) {
-          this.gl = gl;
-        }
-      }
-
-      class Vec3 {
-        constructor(x = 0, y = 0, z = 0) {
-          this.x = x;
-          this.y = y;
-          this.z = z;
-        }
-        set(x, y, z) {
-          this.x = x;
-          this.y = y;
-          this.z = z;
-        }
-      }
-
-      return { Renderer, Program, Mesh, Triangle, Vec3 };
-    })();
   </script>
 
   <!-- Main App - Using type=module for ES imports -->
   <script type="module">
     import React, { useState, useRef, useEffect, useMemo, forwardRef, createElement as h } from 'react';
     import { createRoot } from 'react-dom/client';
-    import { motion } from 'framer-motion';
+    import { motion } from 'motion/react';
+    import { Renderer, Program, Mesh, Triangle, Vec3 } from 'ogl';
     import Matter from 'matter-js';
-
-    // OGL loaded from inline implementation above
-    const { Renderer, Program, Mesh, Triangle, Vec3 } = window.OGLModule;
 
     // ============================================
     // MetaBalls Component
@@ -1327,7 +1246,7 @@
           mouseBallPos.y += (targetY - mouseBallPos.y) * hoverSmoothness;
           program.uniforms.iMouse.value.set(mouseBallPos.x, mouseBallPos.y, 0);
 
-          renderer.render(mesh);
+          renderer.render({ scene: mesh });
         }
         animationFrameId = requestAnimationFrame(update);
 
