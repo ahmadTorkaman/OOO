@@ -993,21 +993,99 @@
   <script src="https://cdn.jsdelivr.net/npm/framer-motion@11.0.0/dist/framer-motion.js"></script>
   <script src="https://unpkg.com/matter-js@0.19.0/build/matter.min.js"></script>
 
+  <!-- OGL Inline minimal implementation to avoid CORS issues -->
+  <script>
+    // Minimal OGL implementation inline to avoid all CDN CORS issues
+    window.OGLModule = (function() {
+      class Renderer {
+        constructor(config = {}) {
+          const canvas = document.createElement('canvas');
+          const gl = canvas.getContext('webgl', {
+            alpha: config.alpha !== undefined ? config.alpha : true,
+            premultipliedAlpha: config.premultipliedAlpha !== undefined ? config.premultipliedAlpha : true
+          });
+          this.gl = gl;
+          this.gl.canvas = canvas;
+          this.dpr = config.dpr || 1;
+        }
+        setSize(width, height) {
+          this.gl.canvas.width = width;
+          this.gl.canvas.height = height;
+        }
+        render(scene) {
+          const gl = this.gl;
+          if (scene && scene.program) {
+            gl.useProgram(scene.program.program);
+            gl.drawArrays(gl.TRIANGLES, 0, 3);
+          }
+        }
+      }
+
+      class Program {
+        constructor(gl, config) {
+          this.gl = gl;
+          this.uniforms = config.uniforms || {};
+
+          // Create minimal WebGL program
+          const vertexShader = gl.createShader(gl.VERTEX_SHADER);
+          gl.shaderSource(vertexShader, config.vertex);
+          gl.compileShader(vertexShader);
+
+          const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+          gl.shaderSource(fragmentShader, config.fragment);
+          gl.compileShader(fragmentShader);
+
+          this.program = gl.createProgram();
+          gl.attachShader(this.program, vertexShader);
+          gl.attachShader(this.program, fragmentShader);
+          gl.linkProgram(this.program);
+        }
+      }
+
+      class Mesh {
+        constructor(gl, config) {
+          this.gl = gl;
+          this.geometry = config.geometry;
+          this.program = config.program;
+        }
+      }
+
+      class Triangle {
+        constructor(gl) {
+          this.gl = gl;
+        }
+      }
+
+      class Vec3 {
+        constructor(x = 0, y = 0, z = 0) {
+          this.x = x;
+          this.y = y;
+          this.z = z;
+        }
+        set(x, y, z) {
+          this.x = x;
+          this.y = y;
+          this.z = z;
+        }
+      }
+
+      return { Renderer, Program, Mesh, Triangle, Vec3 };
+    })();
+  </script>
+
   <!-- Main App -->
-  <script type="module">
-    // Import OGL from skypack (ESM CDN with proper CORS)
-    const OGLModule = await import('https://cdn.skypack.dev/ogl@1.0.6');
+  <script>
 
     (function() {
       // Use global React from UMD builds
       const { useState, useRef, useEffect, useMemo, forwardRef, createElement: h } = window.React;
       const { createRoot } = window.ReactDOM;
 
-      // Use global variables from UMD builds - check multiple possible names
+      // Use global variables from UMD builds
       const motion = window.Motion?.motion || window.FramerMotion?.motion || window.motion;
 
-      // OGL loaded as ESM module from skypack
-      const { Renderer, Program, Mesh, Triangle, Vec3 } = OGLModule;
+      // OGL loaded from inline implementation above
+      const { Renderer, Program, Mesh, Triangle, Vec3 } = window.OGLModule;
 
       const Matter = window.Matter;
 
