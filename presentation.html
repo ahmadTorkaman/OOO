@@ -991,19 +991,12 @@
   <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/framer-motion@11.0.0/dist/framer-motion.js"></script>
-
-  <!-- OGL: Load the ESM build through unpkg -->
-  <script type="module">
-    import * as OGLModule from 'https://unpkg.com/ogl@1.0.6/dist/ogl.mjs';
-    window.OGL = OGLModule;
-  </script>
-
   <script src="https://unpkg.com/matter-js@0.19.0/build/matter.min.js"></script>
 
   <!-- Main App -->
   <script type="module">
-    // Wait a bit for OGL to load
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Import OGL dynamically as ESM
+    const OGLModule = await import('https://unpkg.com/ogl@1.0.6/dist/ogl.mjs');
 
     (function() {
       // Use global React from UMD builds
@@ -1013,8 +1006,8 @@
       // Use global variables from UMD builds - check multiple possible names
       const motion = window.Motion?.motion || window.FramerMotion?.motion || window.motion;
 
-      // OGL loaded as ESM module and attached to window
-      const { Renderer, Program, Mesh, Triangle, Vec3 } = window.OGL;
+      // OGL loaded as ESM module
+      const { Renderer, Program, Mesh, Triangle, Vec3 } = OGLModule;
 
       const Matter = window.Matter;
 
