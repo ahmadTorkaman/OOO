@@ -1516,7 +1516,8 @@
           { className: 'value-flow-header' },
           h('h2', null, 'How OZONE Creates Value for Everyone'),
           h('p', { className: 'subtitle-persian' }, 'چگونه اُزون برای همه ارزش می‌آفریند'),
-          h('p', null, 'Transparent metrics that drive company success AND employee satisfaction')
+          h('p', null, 'Transparent metrics that drive company success AND employee satisfaction'),
+          h('p', { className: 'subtitle-persian', style: { fontSize: '0.95rem', marginTop: '0.5rem' } }, 'معیارهای شفاف که موفقیت سازمان و رضایت کارکنان را تضمین می‌کنند')
         ),
 
         // Part 1: Animated Flow Diagram
@@ -1709,7 +1710,8 @@
                   'div',
                   { className: 'employee-info' },
                   h('h4', null, 'Designer ', h('span', { className: 'persian-text' }, '• طراح')),
-                  h('p', null, 'Creates products')
+                  h('p', null, 'Creates products'),
+                  h('p', { className: 'persian-subtitle', style: { fontSize: '0.75rem', marginTop: '0.2rem', opacity: 0.7 } }, 'محصولات طراحی می‌کند')
                 )
               ),
               h(
@@ -1720,7 +1722,8 @@
                   'div',
                   { className: 'employee-info' },
                   h('h4', null, 'Engineer ', h('span', { className: 'persian-text' }, '• مهندس')),
-                  h('p', null, 'Optimizes design')
+                  h('p', null, 'Optimizes design'),
+                  h('p', { className: 'persian-subtitle', style: { fontSize: '0.75rem', marginTop: '0.2rem', opacity: 0.7 } }, 'طراحی را بهینه می‌کند')
                 )
               ),
               h(
@@ -1731,7 +1734,8 @@
                   'div',
                   { className: 'employee-info' },
                   h('h4', null, 'Operator ', h('span', { className: 'persian-text' }, '• اپراتور')),
-                  h('p', null, 'Runs machines')
+                  h('p', null, 'Runs machines'),
+                  h('p', { className: 'persian-subtitle', style: { fontSize: '0.75rem', marginTop: '0.2rem', opacity: 0.7 } }, 'ماشین‌آلات را اداره می‌کند')
                 )
               ),
               h(
@@ -1742,7 +1746,8 @@
                   'div',
                   { className: 'employee-info' },
                   h('h4', null, 'Manager ', h('span', { className: 'persian-text' }, '• مدیر')),
-                  h('p', null, 'Oversees production')
+                  h('p', null, 'Oversees production'),
+                  h('p', { className: 'persian-subtitle', style: { fontSize: '0.75rem', marginTop: '0.2rem', opacity: 0.7 } }, 'بر تولید نظارت می‌کند')
                 )
               ),
               h(
@@ -1753,7 +1758,8 @@
                   'div',
                   { className: 'employee-info' },
                   h('h4', null, 'Commerce ', h('span', { className: 'persian-text' }, '• بازرگانی')),
-                  h('p', null, 'Manages orders')
+                  h('p', null, 'Manages orders'),
+                  h('p', { className: 'persian-subtitle', style: { fontSize: '0.75rem', marginTop: '0.2rem', opacity: 0.7 } }, 'سفارشات را مدیریت می‌کند')
                 )
               ),
               h(
@@ -1764,7 +1770,8 @@
                   'div',
                   { className: 'employee-info' },
                   h('h4', null, 'Sales ', h('span', { className: 'persian-text' }, '• فروش')),
-                  h('p', null, 'Drives revenue')
+                  h('p', null, 'Drives revenue'),
+                  h('p', { className: 'persian-subtitle', style: { fontSize: '0.75rem', marginTop: '0.2rem', opacity: 0.7 } }, 'درآمد ایجاد می‌کند')
                 )
               )
             ),
@@ -1855,7 +1862,8 @@
               h('h3', null, 'KPI ', h('span', { className: 'persian-text', style: { fontSize: '0.8em' } }, '• شاخص‌های کلیدی')),
               h('h4', null, 'Key Performance Indicators'),
               h('p', null, 'Track efficiency, quality & speed'),
-              h('button', { className: 'expand-button' }, 'Learn More ▼')
+              h('p', { className: 'persian-subtitle', style: { fontSize: '0.8rem', marginTop: '0.3rem', opacity: 0.75 } }, 'پیگیری کارایی، کیفیت و سرعت'),
+              h('button', { className: 'expand-button' }, 'Learn More ▼ ', h('span', { className: 'persian-text', style: { fontSize: '0.85em' } }, '• اطلاعات بیشتر'))
             )
           ),
 
@@ -1873,7 +1881,8 @@
               h('h3', null, 'MRP ', h('span', { className: 'persian-text', style: { fontSize: '0.8em' } }, '• برنامه‌ریزی منابع')),
               h('h4', null, 'Material Resource Planning'),
               h('p', null, 'Optimize inventory & reduce waste'),
-              h('button', { className: 'expand-button' }, 'Learn More ▼')
+              h('p', { className: 'persian-subtitle', style: { fontSize: '0.8rem', marginTop: '0.3rem', opacity: 0.75 } }, 'بهینه‌سازی موجودی و کاهش ضایعات'),
+              h('button', { className: 'expand-button' }, 'Learn More ▼ ', h('span', { className: 'persian-text', style: { fontSize: '0.85em' } }, '• اطلاعات بیشتر'))
             )
           ),
 
@@ -1891,7 +1900,8 @@
               h('h3', null, 'BPM ', h('span', { className: 'persian-text', style: { fontSize: '0.8em' } }, '• مدیریت فرآیند')),
               h('h4', null, 'Business Process Management'),
               h('p', null, 'Streamline & automate workflows'),
-              h('button', { className: 'expand-button' }, 'Learn More ▼')
+              h('p', { className: 'persian-subtitle', style: { fontSize: '0.8rem', marginTop: '0.3rem', opacity: 0.75 } }, 'ساده‌سازی و خودکارسازی جریان کار'),
+              h('button', { className: 'expand-button' }, 'Learn More ▼ ', h('span', { className: 'persian-text', style: { fontSize: '0.85em' } }, '• اطلاعات بیشتر'))
             )
           )
         ),
@@ -1939,9 +1949,9 @@
                   h(
                     'ul',
                     null,
-                    h('li', null, 'Individual & team productivity'),
-                    h('li', null, 'Quality metrics (defect rates)'),
-                    h('li', null, 'Time efficiency (cycle times)')
+                    h('li', null, 'Individual & team productivity ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.8 } }, '• بهره‌وری فردی و تیمی')),
+                    h('li', null, 'Quality metrics (defect rates) ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.8 } }, '• معیارهای کیفیت (نرخ نقص)')),
+                    h('li', null, 'Time efficiency (cycle times) ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.8 } }, '• کارایی زمانی (زمان چرخه)'))
                   )
                 ),
                 h(
@@ -1949,7 +1959,9 @@
                   { className: 'metric-example' },
                   h('h5', null, 'Real Example:', h('span', { className: 'persian-text', style: { marginLeft: '0.5rem', fontSize: '0.85em' } }, '• مثال واقعی')),
                   h('p', null, '"Sarah designed 14 chairs this week"'),
-                  h('p', null, '"Team A: 97% quality score, +12% vs last month"')
+                  h('p', { className: 'persian-subtitle', style: { fontSize: '0.85rem', marginTop: '0.3rem', opacity: 0.75 } }, '«سارا این هفته ۱۴ صندلی طراحی کرد»'),
+                  h('p', null, '"Team A: 97% quality score, +12% vs last month"'),
+                  h('p', { className: 'persian-subtitle', style: { fontSize: '0.85rem', marginTop: '0.3rem', opacity: 0.75 } }, '«تیم A: نمره کیفیت ۹۷٪، +۱۲٪ نسبت به ماه گذشته»')
                 ),
                 h(
                   'div',
@@ -1961,10 +1973,10 @@
                     h(
                       'ul',
                       null,
-                      h('li', null, 'Clear performance metrics'),
-                      h('li', null, 'Data-driven decisions'),
-                      h('li', null, 'Productivity insights'),
-                      h('li', null, 'Quality tracking')
+                      h('li', null, 'Clear performance metrics ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• معیارهای واضح عملکرد')),
+                      h('li', null, 'Data-driven decisions ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• تصمیمات مبتنی بر داده')),
+                      h('li', null, 'Productivity insights ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• بینش‌های بهره‌وری')),
+                      h('li', null, 'Quality tracking ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• پیگیری کیفیت'))
                     )
                   ),
                   h(
@@ -1974,11 +1986,11 @@
                     h(
                       'ul',
                       null,
-                      h('li', null, 'Fair recognition'),
-                      h('li', null, 'Performance bonus'),
-                      h('li', null, 'Career growth path'),
-                      h('li', null, 'Transparent evaluation'),
-                      h('li', null, 'Skill feedback')
+                      h('li', null, 'Fair recognition ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• شناخت منصفانه')),
+                      h('li', null, 'Performance bonus ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• پاداش عملکرد')),
+                      h('li', null, 'Career growth path ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• مسیر رشد شغلی')),
+                      h('li', null, 'Transparent evaluation ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• ارزیابی شفاف')),
+                      h('li', null, 'Skill feedback ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• بازخورد مهارتی'))
                     )
                   )
                 )
@@ -2028,9 +2040,9 @@
                   h(
                     'ul',
                     null,
-                    h('li', null, 'Material consumption rates'),
-                    h('li', null, 'Inventory levels (real-time)'),
-                    h('li', null, 'Waste generation & reduction')
+                    h('li', null, 'Material consumption rates ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.8 } }, '• نرخ مصرف مواد')),
+                    h('li', null, 'Inventory levels (real-time) ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.8 } }, '• سطح موجودی (لحظه‌ای)')),
+                    h('li', null, 'Waste generation & reduction ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.8 } }, '• تولید و کاهش ضایعات'))
                   )
                 ),
                 h(
@@ -2038,7 +2050,9 @@
                   { className: 'metric-example' },
                   h('h5', null, 'Real Example:', h('span', { className: 'persian-text', style: { marginLeft: '0.5rem', fontSize: '0.85em' } }, '• مثال واقعی')),
                   h('p', null, '"Oak usage down 23%, waste reduced 61%"'),
-                  h('p', null, '"Auto-ordered materials arrive just-in-time"')
+                  h('p', { className: 'persian-subtitle', style: { fontSize: '0.85rem', marginTop: '0.3rem', opacity: 0.75 } }, '«مصرف چوب بلوط ۲۳٪ کاهش، ضایعات ۶۱٪ کاهش»'),
+                  h('p', null, '"Auto-ordered materials arrive just-in-time"'),
+                  h('p', { className: 'persian-subtitle', style: { fontSize: '0.85rem', marginTop: '0.3rem', opacity: 0.75 } }, '«مواد سفارش خودکار دقیقاً به موقع می‌رسند»')
                 ),
                 h(
                   'div',
@@ -2050,11 +2064,11 @@
                     h(
                       'ul',
                       null,
-                      h('li', null, '61% less waste'),
-                      h('li', null, '$200K saved annually'),
-                      h('li', null, 'Automated ordering'),
-                      h('li', null, 'Optimal stock levels'),
-                      h('li', null, 'Cost control')
+                      h('li', null, '61% less waste ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• ۶۱٪ کمتر ضایعات')),
+                      h('li', null, '$200K saved annually ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• صرفه‌جویی سالانه ۲۰۰ هزار دلار')),
+                      h('li', null, 'Automated ordering ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• سفارش خودکار')),
+                      h('li', null, 'Optimal stock levels ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• سطح بهینه موجودی')),
+                      h('li', null, 'Cost control ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• کنترل هزینه'))
                     )
                   ),
                   h(
@@ -2064,11 +2078,11 @@
                     h(
                       'ul',
                       null,
-                      h('li', null, 'Better tools available'),
-                      h('li', null, 'No material waits'),
-                      h('li', null, 'Less frustration'),
-                      h('li', null, 'Smooth workflows'),
-                      h('li', null, 'Quality materials')
+                      h('li', null, 'Better tools available ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• ابزارهای بهتر در دسترس')),
+                      h('li', null, 'No material waits ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• بدون انتظار برای مواد')),
+                      h('li', null, 'Less frustration ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• سرخوردگی کمتر')),
+                      h('li', null, 'Smooth workflows ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• جریان کاری روان')),
+                      h('li', null, 'Quality materials ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• مواد باکیفیت'))
                     )
                   )
                 )
@@ -2118,9 +2132,9 @@
                   h(
                     'ul',
                     null,
-                    h('li', null, 'Process bottlenecks & delays'),
-                    h('li', null, 'Workflow cycle times'),
-                    h('li', null, 'Automation opportunities')
+                    h('li', null, 'Process bottlenecks & delays ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.8 } }, '• گلوگاه‌ها و تأخیرات فرآیند')),
+                    h('li', null, 'Workflow cycle times ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.8 } }, '• زمان چرخه جریان کار')),
+                    h('li', null, 'Automation opportunities ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.8 } }, '• فرصت‌های خودکارسازی'))
                   )
                 ),
                 h(
@@ -2128,7 +2142,9 @@
                   { className: 'metric-example' },
                   h('h5', null, 'Real Example:', h('span', { className: 'persian-text', style: { marginLeft: '0.5rem', fontSize: '0.85em' } }, '• مثال واقعی')),
                   h('p', null, '"Approval time: 48hrs → 18min (Chronos AI)"'),
-                  h('p', null, '"Bottleneck detected: auto-reallocated"')
+                  h('p', { className: 'persian-subtitle', style: { fontSize: '0.85rem', marginTop: '0.3rem', opacity: 0.75 } }, '«زمان تأیید: ۴۸ساعت ← ۱۸دقیقه (هوش مصنوعی کرونوس)»'),
+                  h('p', null, '"Bottleneck detected: auto-reallocated"'),
+                  h('p', { className: 'persian-subtitle', style: { fontSize: '0.85rem', marginTop: '0.3rem', opacity: 0.75 } }, '«گلوگاه شناسایی شد: تخصیص مجدد خودکار»')
                 ),
                 h(
                   'div',
@@ -2140,11 +2156,11 @@
                     h(
                       'ul',
                       null,
-                      h('li', null, 'Faster processes'),
-                      h('li', null, 'Automatic routing'),
-                      h('li', null, 'Bottleneck fixes'),
-                      h('li', null, '73% faster TTM'),
-                      h('li', null, 'Efficiency +47%')
+                      h('li', null, 'Faster processes ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• فرآیندهای سریع‌تر')),
+                      h('li', null, 'Automatic routing ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• مسیریابی خودکار')),
+                      h('li', null, 'Bottleneck fixes ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• رفع گلوگاه‌ها')),
+                      h('li', null, '73% faster TTM ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• ۷۳٪ سریع‌تر به بازار')),
+                      h('li', null, 'Efficiency +47% ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• کارایی +۴۷٪'))
                     )
                   ),
                   h(
@@ -2154,11 +2170,11 @@
                     h(
                       'ul',
                       null,
-                      h('li', null, 'Less bureaucracy'),
-                      h('li', null, 'Clear workflows'),
-                      h('li', null, 'Balanced workload'),
-                      h('li', null, 'More creative time'),
-                      h('li', null, 'Less repetition')
+                      h('li', null, 'Less bureaucracy ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• بوروکراسی کمتر')),
+                      h('li', null, 'Clear workflows ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• جریان کاری واضح')),
+                      h('li', null, 'Balanced workload ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• بار کاری متعادل')),
+                      h('li', null, 'More creative time ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• زمان بیشتر برای خلاقیت')),
+                      h('li', null, 'Less repetition ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', opacity: 0.75 } }, '• تکرار کمتر'))
                     )
                   )
                 )
@@ -2176,7 +2192,8 @@
             { className: 'benefits-showcase-header' },
             h('h3', null, 'The OZONE Win-Win Model'),
             h('p', { className: 'persian-subtitle', style: { fontSize: '1.1rem', marginBottom: '0.5rem' } }, 'مدل برد-برد اُزون'),
-            h('p', null, '"Success for company = Success for people"')
+            h('p', null, '"Success for company = Success for people"'),
+            h('p', { className: 'persian-subtitle', style: { fontSize: '0.95rem', marginTop: '0.3rem', opacity: 0.85 } }, '«موفقیت سازمان = موفقیت افراد»')
           ),
           h(
             'div',
@@ -2192,43 +2209,43 @@
                   'div',
                   { className: 'benefit-item' },
                   h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'dollar-sign', size: 24 })),
-                  h('span', { className: 'benefit-text' }, '34% cost reduction')
+                  h('span', { className: 'benefit-text' }, '34% cost reduction ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', display: 'block', marginTop: '0.2rem' } }, '• ۳۴٪ کاهش هزینه'))
                 ),
                 h(
                   'div',
                   { className: 'benefit-item' },
                   h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'trending-up', size: 24 })),
-                  h('span', { className: 'benefit-text' }, '73% faster time-to-market')
+                  h('span', { className: 'benefit-text' }, '73% faster time-to-market ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', display: 'block', marginTop: '0.2rem' } }, '• ۷۳٪ سریع‌تر به بازار'))
                 ),
                 h(
                   'div',
                   { className: 'benefit-item' },
                   h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'target', size: 24 })),
-                  h('span', { className: 'benefit-text' }, '89% fewer errors')
+                  h('span', { className: 'benefit-text' }, '89% fewer errors ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', display: 'block', marginTop: '0.2rem' } }, '• ۸۹٪ خطای کمتر'))
                 ),
                 h(
                   'div',
                   { className: 'benefit-item' },
                   h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'bar-chart-2', size: 24 })),
-                  h('span', { className: 'benefit-text' }, 'Real-time visibility')
+                  h('span', { className: 'benefit-text' }, 'Real-time visibility ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', display: 'block', marginTop: '0.2rem' } }, '• شفافیت لحظه‌ای'))
                 ),
                 h(
                   'div',
                   { className: 'benefit-item' },
                   h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'refresh-cw', size: 24 })),
-                  h('span', { className: 'benefit-text' }, 'Zero data loss')
+                  h('span', { className: 'benefit-text' }, 'Zero data loss ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', display: 'block', marginTop: '0.2rem' } }, '• صفر از دست رفتن داده'))
                 ),
                 h(
                   'div',
                   { className: 'benefit-item' },
                   h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'cpu', size: 24 })),
-                  h('span', { className: 'benefit-text' }, 'AI-driven decisions')
+                  h('span', { className: 'benefit-text' }, 'AI-driven decisions ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', display: 'block', marginTop: '0.2rem' } }, '• تصمیمات هوشمند'))
                 ),
                 h(
                   'div',
                   { className: 'benefit-item' },
                   h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'globe', size: 24 })),
-                  h('span', { className: 'benefit-text' }, 'Global coordination')
+                  h('span', { className: 'benefit-text' }, 'Global coordination ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', display: 'block', marginTop: '0.2rem' } }, '• هماهنگی جهانی'))
                 )
               )
             ),
@@ -2243,43 +2260,43 @@
                   'div',
                   { className: 'benefit-item' },
                   h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'coins', size: 24 })),
-                  h('span', { className: 'benefit-text' }, 'Performance bonuses')
+                  h('span', { className: 'benefit-text' }, 'Performance bonuses ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', display: 'block', marginTop: '0.2rem' } }, '• پاداش عملکرد'))
                 ),
                 h(
                   'div',
                   { className: 'benefit-item' },
                   h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'graduation-cap', size: 24 })),
-                  h('span', { className: 'benefit-text' }, 'Skill development insights')
+                  h('span', { className: 'benefit-text' }, 'Skill development insights ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', display: 'block', marginTop: '0.2rem' } }, '• بینش توسعه مهارت'))
                 ),
                 h(
                   'div',
                   { className: 'benefit-item' },
                   h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'scale', size: 24 })),
-                  h('span', { className: 'benefit-text' }, 'Fair workload distribution')
+                  h('span', { className: 'benefit-text' }, 'Fair workload distribution ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', display: 'block', marginTop: '0.2rem' } }, '• توزیع عادلانه بار کار'))
                 ),
                 h(
                   'div',
                   { className: 'benefit-item' },
                   h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'eye', size: 24 })),
-                  h('span', { className: 'benefit-text' }, 'Complete transparency')
+                  h('span', { className: 'benefit-text' }, 'Complete transparency ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', display: 'block', marginTop: '0.2rem' } }, '• شفافیت کامل'))
                 ),
                 h(
                   'div',
                   { className: 'benefit-item' },
                   h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'award', size: 24 })),
-                  h('span', { className: 'benefit-text' }, 'Recognition & credit')
+                  h('span', { className: 'benefit-text' }, 'Recognition & credit ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', display: 'block', marginTop: '0.2rem' } }, '• شناخت و اعتبار'))
                 ),
                 h(
                   'div',
                   { className: 'benefit-item' },
                   h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'wrench', size: 24 })),
-                  h('span', { className: 'benefit-text' }, 'Better tools & resources')
+                  h('span', { className: 'benefit-text' }, 'Better tools & resources ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', display: 'block', marginTop: '0.2rem' } }, '• ابزار و منابع بهتر'))
                 ),
                 h(
                   'div',
                   { className: 'benefit-item' },
                   h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'handshake', size: 24 })),
-                  h('span', { className: 'benefit-text' }, 'Easier collaboration')
+                  h('span', { className: 'benefit-text' }, 'Easier collaboration ', h('span', { className: 'persian-text', style: { fontSize: '0.85em', display: 'block', marginTop: '0.2rem' } }, '• همکاری آسان‌تر'))
                 )
               )
             )
@@ -2549,9 +2566,11 @@
           h(
             'div',
             { className: 'content-section' },
-            h('h2', null, 'Unified Platform'),
+            h('h2', null, 'Unified Platform ', h('span', { className: 'persian-text', style: { fontSize: '0.85em' } }, '• پلتفرم یکپارچه')),
             h('p', null, 'OZONE brings together every aspect of your manufacturing and design process into one seamless, integrated platform. No more switching between disconnected tools or losing data in translation.'),
-            h('p', null, 'From initial concept to final delivery, manage everything in one place with real-time visibility and control.')
+            h('p', { className: 'persian-subtitle', style: { fontSize: '0.9rem', marginTop: '0.5rem', opacity: 0.85 } }, 'اُزون تمام جنبه‌های فرآیند تولید و طراحی شما را در یک پلتفرم یکپارچه گردهم می‌آورد. دیگر نیازی به جابجایی بین ابزارهای مختلف یا از دست دادن داده‌ها نیست.'),
+            h('p', null, 'From initial concept to final delivery, manage everything in one place with real-time visibility and control.'),
+            h('p', { className: 'persian-subtitle', style: { fontSize: '0.9rem', marginTop: '0.5rem', opacity: 0.85 } }, 'از ایده اولیه تا تحویل نهایی، همه چیز را در یک مکان با شفافیت و کنترل لحظه‌ای مدیریت کنید.')
           ),
 
           // Section 2: ValueFlow Visualization (KPI/MRP/BPM)
@@ -2561,33 +2580,37 @@
           h(
             'div',
             { className: 'content-section' },
-            h('h2', null, 'Core Capabilities'),
+            h('h2', null, 'Core Capabilities ', h('span', { className: 'persian-text', style: { fontSize: '0.85em' } }, '• قابلیت‌های اصلی')),
             h(
               'div',
               { className: 'features-grid' },
               h(
                 'div',
                 { className: 'feature-card' },
-                h('h3', null, 'Real-Time Analytics'),
-                h('p', null, 'Live dashboards with instant insights into operations, finances, and team performance.')
+                h('h3', null, 'Real-Time Analytics ', h('span', { className: 'persian-text', style: { fontSize: '0.8em' } }, '• تحلیل لحظه‌ای')),
+                h('p', null, 'Live dashboards with instant insights into operations, finances, and team performance.'),
+                h('p', { className: 'persian-subtitle', style: { fontSize: '0.85rem', marginTop: '0.5rem', opacity: 0.8 } }, 'داشبوردهای زنده با بینش لحظه‌ای از عملیات، مالی و عملکرد تیم.')
               ),
               h(
                 'div',
                 { className: 'feature-card' },
-                h('h3', null, 'Unified Data Model'),
-                h('p', null, 'Single source of truth for all your business data, ensuring consistency across all departments.')
+                h('h3', null, 'Unified Data Model ', h('span', { className: 'persian-text', style: { fontSize: '0.8em' } }, '• مدل داده یکپارچه')),
+                h('p', null, 'Single source of truth for all your business data, ensuring consistency across all departments.'),
+                h('p', { className: 'persian-subtitle', style: { fontSize: '0.85rem', marginTop: '0.5rem', opacity: 0.8 } }, 'منبع واحد حقیقت برای تمام داده‌های کسب‌وکار، تضمین ثبات در تمام بخش‌ها.')
               ),
               h(
                 'div',
                 { className: 'feature-card' },
-                h('h3', null, 'Smart Automation'),
-                h('p', null, 'AI-powered workflows that eliminate repetitive tasks and optimize resource allocation.')
+                h('h3', null, 'Smart Automation ', h('span', { className: 'persian-text', style: { fontSize: '0.8em' } }, '• خودکارسازی هوشمند')),
+                h('p', null, 'AI-powered workflows that eliminate repetitive tasks and optimize resource allocation.'),
+                h('p', { className: 'persian-subtitle', style: { fontSize: '0.85rem', marginTop: '0.5rem', opacity: 0.8 } }, 'جریان کاری مبتنی بر هوش مصنوعی که وظایف تکراری را حذف و تخصیص منابع را بهینه می‌کند.')
               ),
               h(
                 'div',
                 { className: 'feature-card' },
-                h('h3', null, 'Collaborative Tools'),
-                h('p', null, 'Built-in communication and project management tools that keep your team aligned.')
+                h('h3', null, 'Collaborative Tools ', h('span', { className: 'persian-text', style: { fontSize: '0.8em' } }, '• ابزارهای همکاری')),
+                h('p', null, 'Built-in communication and project management tools that keep your team aligned.'),
+                h('p', { className: 'persian-subtitle', style: { fontSize: '0.85rem', marginTop: '0.5rem', opacity: 0.8 } }, 'ابزارهای ارتباطی و مدیریت پروژه داخلی که تیم شما را هماهنگ نگه می‌دارد.')
               )
             )
           ),
@@ -2596,15 +2619,16 @@
           h(
             'div',
             { className: 'content-section' },
-            h('h2', null, 'Experience the Dashboard'),
-            h('p', null, 'Scroll down to see the interactive manager\'s dashboard that demonstrates the power of unified data visualization.')
+            h('h2', null, 'Experience the Dashboard ', h('span', { className: 'persian-text', style: { fontSize: '0.85em' } }, '• داشبورد را تجربه کنید')),
+            h('p', null, 'Scroll down to see the interactive manager\'s dashboard that demonstrates the power of unified data visualization.'),
+            h('p', { className: 'persian-subtitle', style: { fontSize: '0.9rem', marginTop: '0.5rem', opacity: 0.85 } }, 'برای مشاهده داشبورد تعاملی مدیر که قدرت تصویرسازی داده یکپارچه را نشان می‌دهد، به پایین اسکرول کنید.')
           ),
 
           // Scroll Indicator (only visible when not fullscreen)
           h(
             'div',
             { className: 'scroll-indicator' },
-            h('div', { className: 'scroll-indicator-text' }, 'Scroll down to see the dashboard'),
+            h('div', { className: 'scroll-indicator-text' }, 'Scroll down to see the dashboard ', h('span', { className: 'persian-text', style: { fontSize: '0.9em', display: 'block', marginTop: '0.2rem' } }, '• برای مشاهده داشبورد اسکرول کنید')),
             h('div', { className: 'scroll-indicator-icon' })
           )
         ),
@@ -2618,8 +2642,9 @@
           !isFullscreen && h(
             'div',
             { className: 'dashboard-intro' },
-            h('h3', null, 'Interactive Manager Dashboard'),
-            h('p', null, 'Scroll over the window to go fullscreen')
+            h('h3', null, 'Interactive Manager Dashboard ', h('span', { className: 'persian-text', style: { fontSize: '0.85em' } }, '• داشبورد تعاملی مدیر')),
+            h('p', null, 'Scroll over the window to go fullscreen'),
+            h('p', { className: 'persian-subtitle', style: { fontSize: '0.85rem', marginTop: '0.3rem', opacity: 0.8 } }, 'برای تمام صفحه شدن، روی پنجره اسکرول کنید')
           ),
 
           h(
@@ -2632,7 +2657,11 @@
             })
           )
         ),
-        h('div', { className: 'back-hint' }, isFullscreen ? 'Press ESC or scroll up to exit fullscreen' : 'Press ← to go back')
+        h('div', { className: 'back-hint' },
+          isFullscreen
+            ? h('span', null, 'Press ESC or scroll up to exit fullscreen ', h('span', { className: 'persian-text', style: { fontSize: '0.9em' } }, '• برای خروج ESC بزنید یا بالا اسکرول کنید'))
+            : h('span', null, 'Press ← to go back ', h('span', { className: 'persian-text', style: { fontSize: '0.9em' } }, '• برای بازگشت ← بزنید'))
+        )
       );
     }
 
