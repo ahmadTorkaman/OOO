@@ -35,6 +35,7 @@ export class ManagerDashboard {
         this.setupQuickActions();
         this.loadDefaultWidgets();
         this.startLiveDataUpdates();
+        this.setupScrollExitFullscreen();
 
         // Listen for language changes
         window.addEventListener('languageChanged', () => {
@@ -243,6 +244,37 @@ export class ManagerDashboard {
         this.widgetManager.widgets.forEach(widget => {
             this.widgetManager.refreshWidget(widget.id);
         });
+    }
+
+    // ===== SCROLL EXIT FULLSCREEN =====
+    setupScrollExitFullscreen() {
+        let isTransitioning = false;
+        let lastScrollTop = 0;
+
+        window.addEventListener('wheel', (e) => {
+            // Only detect scroll-up (deltaY < 0)
+            if (e.deltaY < -20 && !isTransitioning) {
+                const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                // Check if we're at the top of the page
+                if (currentScrollTop <= 10) {
+                    console.log('Scroll-up detected at top of page, sending exit fullscreen message');
+
+                    // Send message to parent window (presentation.html)
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({ type: 'EXIT_FULLSCREEN' }, '*');
+                    }
+
+                    // Prevent multiple triggers
+                    isTransitioning = true;
+                    setTimeout(() => {
+                        isTransitioning = false;
+                    }, 1200);
+                }
+            }
+
+            lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        }, { passive: true });
     }
 
     // ===== THEME TOGGLE =====

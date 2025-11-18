@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="./Presentation/VariableProximity/VariableProximity.css">
   <link rel="stylesheet" href="./Presentation/MetaBalls/MetaBalls.css">
   <link rel="stylesheet" href="./Presentation/TrueFocus/TrueFocus.css">
+  <link rel="stylesheet" href="./Presentation/ValueFlow/ValueFlow.css">
 
   <!-- IRANYekan Persian Font -->
   <link rel="stylesheet" href="./Presentation/assets/css/fontiran.css">
@@ -184,7 +185,9 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
       padding: 2rem;
       padding-top: 3rem;
       transition: padding 0.6s cubic-bezier(0.4, 0, 0.2, 1);
@@ -194,6 +197,7 @@
       padding: 0;
       padding-top: 0;
       background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(20, 20, 30, 0.98) 100%);
+      overflow: hidden;
     }
 
     .one-system-header {
@@ -219,6 +223,78 @@
       pointer-events: none;
     }
 
+    .one-system-scrollable-content {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding-bottom: 2rem;
+      z-index: 10;
+    }
+
+    .content-section {
+      padding: 3rem 2rem;
+      margin-bottom: 2rem;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(76, 98, 186, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .content-section h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 1.5rem;
+    }
+
+    .content-section p {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #34495e;
+      margin-bottom: 1rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .feature-card {
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 12px;
+      border: 1px solid rgba(76, 98, 186, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(76, 98, 186, 0.2);
+    }
+
+    .feature-card h3 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #4c62ba;
+      margin-bottom: 0.75rem;
+    }
+
+    .feature-card p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: #5a6c7d;
+      margin: 0;
+    }
+
+    .slide-one-system.fullscreen .one-system-scrollable-content {
+      display: none;
+    }
+
     .one-system-content {
       position: relative;
       z-index: 10;
@@ -226,22 +302,50 @@
       max-width: 95%;
       width: 100%;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      flex: 1;
+      min-height: 100vh;
+      padding: 3rem 0;
       transition: max-width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .slide-one-system.fullscreen .one-system-content {
       max-width: 100%;
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    .dashboard-intro {
+      margin-bottom: 2rem;
+      opacity: 1;
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .slide-one-system.fullscreen .dashboard-intro {
+      opacity: 0;
+      height: 0;
+      overflow: hidden;
+    }
+
+    .dashboard-intro h3 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #4c62ba;
+      margin-bottom: 0.5rem;
+    }
+
+    .dashboard-intro p {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      color: #5a6c7d;
+      margin: 0;
     }
 
     .scroll-indicator {
-      position: absolute;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 100;
+      position: relative;
+      margin: 3rem auto;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -249,10 +353,6 @@
       opacity: 1;
       transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
       pointer-events: none;
-    }
-
-    .slide-one-system.fullscreen .scroll-indicator {
-      opacity: 0;
     }
 
     .scroll-indicator-text {
@@ -514,6 +614,22 @@
       display: block;
     }
 
+    /* Scroll capture overlay for fullscreen */
+    .scroll-capture-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9999;
+      pointer-events: none;
+      background: transparent;
+    }
+
+    .scroll-capture-overlay.hidden {
+      display: none;
+    }
+
     /* Custom scrollbar for macOS window */
     .macos-window-content::-webkit-scrollbar {
       width: 8px;
@@ -658,6 +774,9 @@
 </head>
 <body>
   <div id="root"></div>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 
   <!-- Import map for ES modules -->
   <script type="importmap">
@@ -1340,6 +1459,836 @@
 
 
     // ============================================
+    // Lucide Icon Helper
+    // ============================================
+
+    function LucideIcon({ name, size = 24, color, className = '', style = {} }) {
+      const iconRef = useRef(null);
+
+      useEffect(() => {
+        if (iconRef.current && window.lucide) {
+          // Use lucide.createIcons() to replace the data-lucide attribute with SVG
+          window.lucide.createIcons();
+
+          // Apply color if provided
+          if (color) {
+            const svg = iconRef.current.querySelector('svg');
+            if (svg) {
+              svg.setAttribute('stroke', color);
+            }
+          }
+        }
+      }, [name, size, color]);
+
+      return h('i', {
+        ref: iconRef,
+        'data-lucide': name,
+        className: `lucide-icon ${className}`,
+        style: {
+          width: `${size}px`,
+          height: `${size}px`,
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          ...style
+        }
+      });
+    }
+
+    // ============================================
+    // ValueFlow Component
+    // ============================================
+
+    function ValueFlowVisualization() {
+      const [expandedCard, setExpandedCard] = useState(null);
+
+      const toggleCard = (cardId) => {
+        setExpandedCard(expandedCard === cardId ? null : cardId);
+      };
+
+      return h(
+        'div',
+        { className: 'value-flow-section' },
+
+        // Header
+        h(
+          'div',
+          { className: 'value-flow-header' },
+          h('h2', null, 'How OZONE Creates Value for Everyone'),
+          h('p', { className: 'subtitle-persian' }, 'چگونه اُزون برای همه ارزش می‌آفریند'),
+          h('p', null, 'Transparent metrics that drive company success AND employee satisfaction')
+        ),
+
+        // Part 1: Animated Flow Diagram
+        h(
+          'div',
+          { className: 'flow-diagram-container' },
+          // SVG Wires and Data Flow
+          h(
+            'svg',
+            { className: 'wire-system', viewBox: '0 0 1000 600', preserveAspectRatio: 'xMidYMid meet' },
+            // Defs for gradients and glows
+            h(
+              'defs',
+              null,
+              // Gradient for wires
+              h('linearGradient', { id: 'wireGradient', x1: '0%', y1: '0%', x2: '100%', y2: '0%' },
+                h('stop', { offset: '0%', style: { stopColor: 'rgba(76, 98, 186, 0.6)', stopOpacity: 1 } }),
+                h('stop', { offset: '50%', style: { stopColor: 'rgba(118, 75, 162, 0.8)', stopOpacity: 1 } }),
+                h('stop', { offset: '100%', style: { stopColor: 'rgba(240, 147, 251, 0.6)', stopOpacity: 1 } })
+              ),
+              // Glow filter
+              h('filter', { id: 'glow' },
+                h('feGaussianBlur', { stdDeviation: '3', result: 'coloredBlur' }),
+                h('feMerge', null,
+                  h('feMergeNode', { in: 'coloredBlur' }),
+                  h('feMergeNode', { in: 'SourceGraphic' })
+                )
+              )
+            ),
+
+            // Wire paths from employees to OZONE
+            // Designer
+            h('path', {
+              d: 'M 150 100 Q 325 100, 500 300',
+              className: 'wire wire-designer',
+              stroke: '#3498db',
+              strokeWidth: '3',
+              fill: 'none',
+              opacity: '0.4',
+              filter: 'url(#glow)'
+            }),
+            h('circle', { className: 'data-packet packet-designer', r: '6', fill: '#3498db' },
+              h('animateMotion', {
+                dur: '4s',
+                repeatCount: 'indefinite',
+                path: 'M 150 100 Q 325 100, 500 300'
+              })
+            ),
+
+            // Engineer
+            h('path', {
+              d: 'M 150 190 Q 325 190, 500 300',
+              className: 'wire wire-engineer',
+              stroke: '#2ecc71',
+              strokeWidth: '3',
+              fill: 'none',
+              opacity: '0.4',
+              filter: 'url(#glow)'
+            }),
+            h('circle', { className: 'data-packet packet-engineer', r: '6', fill: '#2ecc71' },
+              h('animateMotion', {
+                dur: '4.5s',
+                repeatCount: 'indefinite',
+                path: 'M 150 190 Q 325 190, 500 300'
+              })
+            ),
+
+            // Operator
+            h('path', {
+              d: 'M 150 280 Q 325 280, 500 300',
+              className: 'wire wire-operator',
+              stroke: '#f39c12',
+              strokeWidth: '3',
+              fill: 'none',
+              opacity: '0.4',
+              filter: 'url(#glow)'
+            }),
+            h('circle', { className: 'data-packet packet-operator', r: '6', fill: '#f39c12' },
+              h('animateMotion', {
+                dur: '3.8s',
+                repeatCount: 'indefinite',
+                path: 'M 150 280 Q 325 280, 500 300'
+              })
+            ),
+
+            // Manager
+            h('path', {
+              d: 'M 150 370 Q 325 370, 500 300',
+              className: 'wire wire-manager',
+              stroke: '#9b59b6',
+              strokeWidth: '3',
+              fill: 'none',
+              opacity: '0.4',
+              filter: 'url(#glow)'
+            }),
+            h('circle', { className: 'data-packet packet-manager', r: '6', fill: '#9b59b6' },
+              h('animateMotion', {
+                dur: '4.2s',
+                repeatCount: 'indefinite',
+                path: 'M 150 370 Q 325 370, 500 300'
+              })
+            ),
+
+            // Commerce
+            h('path', {
+              d: 'M 150 460 Q 325 460, 500 300',
+              className: 'wire wire-commerce',
+              stroke: '#e74c3c',
+              strokeWidth: '3',
+              fill: 'none',
+              opacity: '0.4',
+              filter: 'url(#glow)'
+            }),
+            h('circle', { className: 'data-packet packet-commerce', r: '6', fill: '#e74c3c' },
+              h('animateMotion', {
+                dur: '3.6s',
+                repeatCount: 'indefinite',
+                path: 'M 150 460 Q 325 460, 500 300'
+              })
+            ),
+
+            // Sales
+            h('path', {
+              d: 'M 150 550 Q 325 550, 500 300',
+              className: 'wire wire-sales',
+              stroke: '#16a085',
+              strokeWidth: '3',
+              fill: 'none',
+              opacity: '0.4',
+              filter: 'url(#glow)'
+            }),
+            h('circle', { className: 'data-packet packet-sales', r: '6', fill: '#16a085' },
+              h('animateMotion', {
+                dur: '4.8s',
+                repeatCount: 'indefinite',
+                path: 'M 150 550 Q 325 550, 500 300'
+              })
+            ),
+
+            // Wires from OZONE to outputs
+            // To Company
+            h('path', {
+              d: 'M 500 300 Q 675 200, 850 200',
+              className: 'wire wire-output-company',
+              stroke: 'url(#wireGradient)',
+              strokeWidth: '4',
+              fill: 'none',
+              opacity: '0.5',
+              filter: 'url(#glow)'
+            }),
+            h('circle', { className: 'data-packet packet-output-company', r: '7', fill: '#e74c3c' },
+              h('animateMotion', {
+                dur: '3s',
+                repeatCount: 'indefinite',
+                path: 'M 500 300 Q 675 200, 850 200'
+              })
+            ),
+
+            // To Employees
+            h('path', {
+              d: 'M 500 300 Q 675 400, 850 400',
+              className: 'wire wire-output-employee',
+              stroke: 'url(#wireGradient)',
+              strokeWidth: '4',
+              fill: 'none',
+              opacity: '0.5',
+              filter: 'url(#glow)'
+            }),
+            h('circle', { className: 'data-packet packet-output-employee', r: '7', fill: '#27ae60' },
+              h('animateMotion', {
+                dur: '3.2s',
+                repeatCount: 'indefinite',
+                path: 'M 500 300 Q 675 400, 850 400'
+              })
+            )
+          ),
+          h(
+            'div',
+            { className: 'flow-diagram' },
+
+            // Employee Input Column
+            h(
+              'div',
+              { className: 'flow-column employees' },
+              h(
+                'div',
+                { className: 'employee-node designer' },
+                h('div', { className: 'employee-icon' }, h(LucideIcon, { name: 'palette', size: 32, color: '#3498db' })),
+                h(
+                  'div',
+                  { className: 'employee-info' },
+                  h('h4', null, 'Designer ', h('span', { className: 'persian-text' }, '• طراح')),
+                  h('p', null, 'Creates products')
+                )
+              ),
+              h(
+                'div',
+                { className: 'employee-node engineer' },
+                h('div', { className: 'employee-icon' }, h(LucideIcon, { name: 'cpu', size: 32, color: '#2ecc71' })),
+                h(
+                  'div',
+                  { className: 'employee-info' },
+                  h('h4', null, 'Engineer ', h('span', { className: 'persian-text' }, '• مهندس')),
+                  h('p', null, 'Optimizes design')
+                )
+              ),
+              h(
+                'div',
+                { className: 'employee-node operator' },
+                h('div', { className: 'employee-icon' }, h(LucideIcon, { name: 'cog', size: 32, color: '#f39c12' })),
+                h(
+                  'div',
+                  { className: 'employee-info' },
+                  h('h4', null, 'Operator ', h('span', { className: 'persian-text' }, '• اپراتور')),
+                  h('p', null, 'Runs machines')
+                )
+              ),
+              h(
+                'div',
+                { className: 'employee-node manager' },
+                h('div', { className: 'employee-icon' }, h(LucideIcon, { name: 'briefcase', size: 32, color: '#9b59b6' })),
+                h(
+                  'div',
+                  { className: 'employee-info' },
+                  h('h4', null, 'Manager ', h('span', { className: 'persian-text' }, '• مدیر')),
+                  h('p', null, 'Oversees production')
+                )
+              ),
+              h(
+                'div',
+                { className: 'employee-node commerce' },
+                h('div', { className: 'employee-icon' }, h(LucideIcon, { name: 'shopping-cart', size: 32, color: '#e74c3c' })),
+                h(
+                  'div',
+                  { className: 'employee-info' },
+                  h('h4', null, 'Commerce ', h('span', { className: 'persian-text' }, '• بازرگانی')),
+                  h('p', null, 'Manages orders')
+                )
+              ),
+              h(
+                'div',
+                { className: 'employee-node sales' },
+                h('div', { className: 'employee-icon' }, h(LucideIcon, { name: 'trending-up', size: 32, color: '#16a085' })),
+                h(
+                  'div',
+                  { className: 'employee-info' },
+                  h('h4', null, 'Sales ', h('span', { className: 'persian-text' }, '• فروش')),
+                  h('p', null, 'Drives revenue')
+                )
+              )
+            ),
+
+            // OZONE Core Column
+            h(
+              'div',
+              { className: 'flow-column ozone-core' },
+              h(
+                'div',
+                { className: 'ozone-core-container' },
+                h('div', { className: 'ozone-logo-text' }, 'OZONE'),
+                h(
+                  'div',
+                  { className: 'ozone-metrics' },
+                  h(
+                    'div',
+                    { className: 'metric-badge' },
+                    h('span', { className: 'metric-icon' }, h(LucideIcon, { name: 'bar-chart-2', size: 24 })),
+                    h('span', { className: 'metric-label' }, 'KPI Tracking')
+                  ),
+                  h(
+                    'div',
+                    { className: 'metric-badge' },
+                    h('span', { className: 'metric-icon' }, h(LucideIcon, { name: 'package', size: 24 })),
+                    h('span', { className: 'metric-label' }, 'MRP System')
+                  ),
+                  h(
+                    'div',
+                    { className: 'metric-badge' },
+                    h('span', { className: 'metric-icon' }, h(LucideIcon, { name: 'settings', size: 24 })),
+                    h('span', { className: 'metric-label' }, 'BPM Engine')
+                  )
+                )
+              )
+            ),
+
+            // Output Column
+            h(
+              'div',
+              { className: 'flow-column outputs' },
+              h(
+                'div',
+                { className: 'output-node company' },
+                h('h4', null, h(LucideIcon, { name: 'building-2', size: 20, style: { marginRight: '8px' } }), ' Company Benefits ', h('span', { className: 'persian-text' }, '• مزایای سازمان')),
+                h(
+                  'ul',
+                  null,
+                  h('li', null, '34% cost reduction'),
+                  h('li', null, '73% faster to market'),
+                  h('li', null, '89% fewer errors'),
+                  h('li', null, 'Real-time visibility')
+                )
+              ),
+              h(
+                'div',
+                { className: 'output-node employees' },
+                h('h4', null, h(LucideIcon, { name: 'users', size: 20, style: { marginRight: '8px' } }), ' Employee Benefits ', h('span', { className: 'persian-text' }, '• مزایای کارکنان')),
+                h(
+                  'ul',
+                  null,
+                  h('li', null, 'Performance bonuses'),
+                  h('li', null, 'Skill development'),
+                  h('li', null, 'Fair workload'),
+                  h('li', null, 'Transparency')
+                )
+              )
+            )
+          )
+        ),
+
+        // Part 2: Interactive Metric Cards
+        h(
+          'div',
+          { className: 'metric-cards-container' },
+
+          // KPI Card
+          h(
+            'div',
+            {
+              className: 'metric-card kpi',
+              onClick: () => toggleCard('kpi')
+            },
+            h(
+              'div',
+              { className: 'metric-card-header' },
+              h('span', { className: 'metric-card-icon' }, h(LucideIcon, { name: 'activity', size: 48, color: '#3498db' })),
+              h('h3', null, 'KPI ', h('span', { className: 'persian-text', style: { fontSize: '0.8em' } }, '• شاخص‌های کلیدی')),
+              h('h4', null, 'Key Performance Indicators'),
+              h('p', null, 'Track efficiency, quality & speed'),
+              h('button', { className: 'expand-button' }, 'Learn More ▼')
+            )
+          ),
+
+          // MRP Card
+          h(
+            'div',
+            {
+              className: 'metric-card mrp',
+              onClick: () => toggleCard('mrp')
+            },
+            h(
+              'div',
+              { className: 'metric-card-header' },
+              h('span', { className: 'metric-card-icon' }, h(LucideIcon, { name: 'box', size: 48, color: '#2ecc71' })),
+              h('h3', null, 'MRP ', h('span', { className: 'persian-text', style: { fontSize: '0.8em' } }, '• برنامه‌ریزی منابع')),
+              h('h4', null, 'Material Resource Planning'),
+              h('p', null, 'Optimize inventory & reduce waste'),
+              h('button', { className: 'expand-button' }, 'Learn More ▼')
+            )
+          ),
+
+          // BPM Card
+          h(
+            'div',
+            {
+              className: 'metric-card bpm',
+              onClick: () => toggleCard('bpm')
+            },
+            h(
+              'div',
+              { className: 'metric-card-header' },
+              h('span', { className: 'metric-card-icon' }, h(LucideIcon, { name: 'zap', size: 48, color: '#f39c12' })),
+              h('h3', null, 'BPM ', h('span', { className: 'persian-text', style: { fontSize: '0.8em' } }, '• مدیریت فرآیند')),
+              h('h4', null, 'Business Process Management'),
+              h('p', null, 'Streamline & automate workflows'),
+              h('button', { className: 'expand-button' }, 'Learn More ▼')
+            )
+          )
+        ),
+
+        // Modals (rendered outside the cards container)
+
+        // KPI Modal
+        expandedCard === 'kpi' && h(
+          'div',
+          {
+            className: 'metric-modal-overlay',
+            onClick: () => toggleCard(null)
+          },
+          h(
+            'div',
+            {
+              className: 'metric-modal-content kpi',
+              onClick: (e) => e.stopPropagation()
+            },
+            h(
+              'div',
+              { className: 'metric-modal-header' },
+              h('span', { className: 'metric-card-icon' }, h(LucideIcon, { name: 'activity', size: 64, color: '#3498db' })),
+              h('h2', null, 'KPI - Key Performance Indicators'),
+              h('p', { className: 'persian-subtitle', style: { marginTop: '0.5rem', fontSize: '1rem', opacity: 0.8 } }, 'شاخص‌های کلیدی عملکرد'),
+              h(
+                'button',
+                {
+                  className: 'modal-close-button',
+                  onClick: () => toggleCard(null)
+                },
+                h(LucideIcon, { name: 'x', size: 24 })
+              )
+            ),
+            h(
+              'div',
+              { className: 'metric-modal-body' },
+              h(
+                'div',
+                { className: 'metric-card-content' },
+                h(
+                  'div',
+                  { className: 'metric-measures' },
+                  h('h5', null, 'What it measures:', h('span', { className: 'persian-text', style: { marginLeft: '0.5rem', fontSize: '0.85em' } }, '• چه چیزی را اندازه می‌گیرد')),
+                  h(
+                    'ul',
+                    null,
+                    h('li', null, 'Individual & team productivity'),
+                    h('li', null, 'Quality metrics (defect rates)'),
+                    h('li', null, 'Time efficiency (cycle times)')
+                  )
+                ),
+                h(
+                  'div',
+                  { className: 'metric-example' },
+                  h('h5', null, 'Real Example:', h('span', { className: 'persian-text', style: { marginLeft: '0.5rem', fontSize: '0.85em' } }, '• مثال واقعی')),
+                  h('p', null, '"Sarah designed 14 chairs this week"'),
+                  h('p', null, '"Team A: 97% quality score, +12% vs last month"')
+                ),
+                h(
+                  'div',
+                  { className: 'metric-benefits' },
+                  h(
+                    'div',
+                    { className: 'benefit-column company' },
+                    h('h6', null, h(LucideIcon, { name: 'building-2', size: 16, style: { marginRight: '6px' } }), ' Company Gets ', h('span', { className: 'persian-text' }, '• سازمان دریافت می‌کند')),
+                    h(
+                      'ul',
+                      null,
+                      h('li', null, 'Clear performance metrics'),
+                      h('li', null, 'Data-driven decisions'),
+                      h('li', null, 'Productivity insights'),
+                      h('li', null, 'Quality tracking')
+                    )
+                  ),
+                  h(
+                    'div',
+                    { className: 'benefit-column employee' },
+                    h('h6', null, h(LucideIcon, { name: 'user', size: 16, style: { marginRight: '6px' } }), ' Sarah Gets ', h('span', { className: 'persian-text' }, '• سارا دریافت می‌کند')),
+                    h(
+                      'ul',
+                      null,
+                      h('li', null, 'Fair recognition'),
+                      h('li', null, 'Performance bonus'),
+                      h('li', null, 'Career growth path'),
+                      h('li', null, 'Transparent evaluation'),
+                      h('li', null, 'Skill feedback')
+                    )
+                  )
+                )
+              )
+            )
+          )
+        ),
+
+        // MRP Modal
+        expandedCard === 'mrp' && h(
+          'div',
+          {
+            className: 'metric-modal-overlay',
+            onClick: () => toggleCard(null)
+          },
+          h(
+            'div',
+            {
+              className: 'metric-modal-content mrp',
+              onClick: (e) => e.stopPropagation()
+            },
+            h(
+              'div',
+              { className: 'metric-modal-header' },
+              h('span', { className: 'metric-card-icon' }, h(LucideIcon, { name: 'box', size: 64, color: '#2ecc71' })),
+              h('h2', null, 'MRP - Material Resource Planning'),
+              h('p', { className: 'persian-subtitle', style: { marginTop: '0.5rem', fontSize: '1rem', opacity: 0.8 } }, 'برنامه‌ریزی منابع مواد'),
+              h(
+                'button',
+                {
+                  className: 'modal-close-button',
+                  onClick: () => toggleCard(null)
+                },
+                h(LucideIcon, { name: 'x', size: 24 })
+              )
+            ),
+            h(
+              'div',
+              { className: 'metric-modal-body' },
+              h(
+                'div',
+                { className: 'metric-card-content' },
+                h(
+                  'div',
+                  { className: 'metric-measures' },
+                  h('h5', null, 'What it measures:', h('span', { className: 'persian-text', style: { marginLeft: '0.5rem', fontSize: '0.85em' } }, '• چه چیزی را اندازه می‌گیرد')),
+                  h(
+                    'ul',
+                    null,
+                    h('li', null, 'Material consumption rates'),
+                    h('li', null, 'Inventory levels (real-time)'),
+                    h('li', null, 'Waste generation & reduction')
+                  )
+                ),
+                h(
+                  'div',
+                  { className: 'metric-example' },
+                  h('h5', null, 'Real Example:', h('span', { className: 'persian-text', style: { marginLeft: '0.5rem', fontSize: '0.85em' } }, '• مثال واقعی')),
+                  h('p', null, '"Oak usage down 23%, waste reduced 61%"'),
+                  h('p', null, '"Auto-ordered materials arrive just-in-time"')
+                ),
+                h(
+                  'div',
+                  { className: 'metric-benefits' },
+                  h(
+                    'div',
+                    { className: 'benefit-column company' },
+                    h('h6', null, h(LucideIcon, { name: 'building-2', size: 16, style: { marginRight: '6px' } }), ' Company Gets ', h('span', { className: 'persian-text' }, '• سازمان دریافت می‌کند')),
+                    h(
+                      'ul',
+                      null,
+                      h('li', null, '61% less waste'),
+                      h('li', null, '$200K saved annually'),
+                      h('li', null, 'Automated ordering'),
+                      h('li', null, 'Optimal stock levels'),
+                      h('li', null, 'Cost control')
+                    )
+                  ),
+                  h(
+                    'div',
+                    { className: 'benefit-column employee' },
+                    h('h6', null, h(LucideIcon, { name: 'user', size: 16, style: { marginRight: '6px' } }), ' Employee Gets ', h('span', { className: 'persian-text' }, '• کارکنان دریافت می‌کنند')),
+                    h(
+                      'ul',
+                      null,
+                      h('li', null, 'Better tools available'),
+                      h('li', null, 'No material waits'),
+                      h('li', null, 'Less frustration'),
+                      h('li', null, 'Smooth workflows'),
+                      h('li', null, 'Quality materials')
+                    )
+                  )
+                )
+              )
+            )
+          )
+        ),
+
+        // BPM Modal
+        expandedCard === 'bpm' && h(
+          'div',
+          {
+            className: 'metric-modal-overlay',
+            onClick: () => toggleCard(null)
+          },
+          h(
+            'div',
+            {
+              className: 'metric-modal-content bpm',
+              onClick: (e) => e.stopPropagation()
+            },
+            h(
+              'div',
+              { className: 'metric-modal-header' },
+              h('span', { className: 'metric-card-icon' }, h(LucideIcon, { name: 'zap', size: 64, color: '#f39c12' })),
+              h('h2', null, 'BPM - Business Process Management'),
+              h('p', { className: 'persian-subtitle', style: { marginTop: '0.5rem', fontSize: '1rem', opacity: 0.8 } }, 'مدیریت فرآیندهای کسب‌وکار'),
+              h(
+                'button',
+                {
+                  className: 'modal-close-button',
+                  onClick: () => toggleCard(null)
+                },
+                h(LucideIcon, { name: 'x', size: 24 })
+              )
+            ),
+            h(
+              'div',
+              { className: 'metric-modal-body' },
+              h(
+                'div',
+                { className: 'metric-card-content' },
+                h(
+                  'div',
+                  { className: 'metric-measures' },
+                  h('h5', null, 'What it measures:', h('span', { className: 'persian-text', style: { marginLeft: '0.5rem', fontSize: '0.85em' } }, '• چه چیزی را اندازه می‌گیرد')),
+                  h(
+                    'ul',
+                    null,
+                    h('li', null, 'Process bottlenecks & delays'),
+                    h('li', null, 'Workflow cycle times'),
+                    h('li', null, 'Automation opportunities')
+                  )
+                ),
+                h(
+                  'div',
+                  { className: 'metric-example' },
+                  h('h5', null, 'Real Example:', h('span', { className: 'persian-text', style: { marginLeft: '0.5rem', fontSize: '0.85em' } }, '• مثال واقعی')),
+                  h('p', null, '"Approval time: 48hrs → 18min (Chronos AI)"'),
+                  h('p', null, '"Bottleneck detected: auto-reallocated"')
+                ),
+                h(
+                  'div',
+                  { className: 'metric-benefits' },
+                  h(
+                    'div',
+                    { className: 'benefit-column company' },
+                    h('h6', null, h(LucideIcon, { name: 'building-2', size: 16, style: { marginRight: '6px' } }), ' Company Gets ', h('span', { className: 'persian-text' }, '• سازمان دریافت می‌کند')),
+                    h(
+                      'ul',
+                      null,
+                      h('li', null, 'Faster processes'),
+                      h('li', null, 'Automatic routing'),
+                      h('li', null, 'Bottleneck fixes'),
+                      h('li', null, '73% faster TTM'),
+                      h('li', null, 'Efficiency +47%')
+                    )
+                  ),
+                  h(
+                    'div',
+                    { className: 'benefit-column employee' },
+                    h('h6', null, h(LucideIcon, { name: 'user', size: 16, style: { marginRight: '6px' } }), ' Employee Gets ', h('span', { className: 'persian-text' }, '• کارکنان دریافت می‌کنند')),
+                    h(
+                      'ul',
+                      null,
+                      h('li', null, 'Less bureaucracy'),
+                      h('li', null, 'Clear workflows'),
+                      h('li', null, 'Balanced workload'),
+                      h('li', null, 'More creative time'),
+                      h('li', null, 'Less repetition')
+                    )
+                  )
+                )
+              )
+            )
+          )
+        ),
+
+        // Part 3: Benefits Showcase
+        h(
+          'div',
+          { className: 'benefits-showcase' },
+          h(
+            'div',
+            { className: 'benefits-showcase-header' },
+            h('h3', null, 'The OZONE Win-Win Model'),
+            h('p', { className: 'persian-subtitle', style: { fontSize: '1.1rem', marginBottom: '0.5rem' } }, 'مدل برد-برد اُزون'),
+            h('p', null, '"Success for company = Success for people"')
+          ),
+          h(
+            'div',
+            { className: 'benefits-grid' },
+            h(
+              'div',
+              { className: 'benefits-section company-benefits' },
+              h('h4', null, h(LucideIcon, { name: 'building-2', size: 24, style: { marginRight: '8px' } }), ' Company Benefits ', h('span', { className: 'persian-text' }, '• مزایای سازمان')),
+              h(
+                'div',
+                { className: 'benefits-list' },
+                h(
+                  'div',
+                  { className: 'benefit-item' },
+                  h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'dollar-sign', size: 24 })),
+                  h('span', { className: 'benefit-text' }, '34% cost reduction')
+                ),
+                h(
+                  'div',
+                  { className: 'benefit-item' },
+                  h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'trending-up', size: 24 })),
+                  h('span', { className: 'benefit-text' }, '73% faster time-to-market')
+                ),
+                h(
+                  'div',
+                  { className: 'benefit-item' },
+                  h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'target', size: 24 })),
+                  h('span', { className: 'benefit-text' }, '89% fewer errors')
+                ),
+                h(
+                  'div',
+                  { className: 'benefit-item' },
+                  h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'bar-chart-2', size: 24 })),
+                  h('span', { className: 'benefit-text' }, 'Real-time visibility')
+                ),
+                h(
+                  'div',
+                  { className: 'benefit-item' },
+                  h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'refresh-cw', size: 24 })),
+                  h('span', { className: 'benefit-text' }, 'Zero data loss')
+                ),
+                h(
+                  'div',
+                  { className: 'benefit-item' },
+                  h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'cpu', size: 24 })),
+                  h('span', { className: 'benefit-text' }, 'AI-driven decisions')
+                ),
+                h(
+                  'div',
+                  { className: 'benefit-item' },
+                  h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'globe', size: 24 })),
+                  h('span', { className: 'benefit-text' }, 'Global coordination')
+                )
+              )
+            ),
+            h(
+              'div',
+              { className: 'benefits-section employee-benefits' },
+              h('h4', null, h(LucideIcon, { name: 'users', size: 24, style: { marginRight: '8px' } }), ' Employee Benefits ', h('span', { className: 'persian-text' }, '• مزایای کارکنان')),
+              h(
+                'div',
+                { className: 'benefits-list' },
+                h(
+                  'div',
+                  { className: 'benefit-item' },
+                  h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'coins', size: 24 })),
+                  h('span', { className: 'benefit-text' }, 'Performance bonuses')
+                ),
+                h(
+                  'div',
+                  { className: 'benefit-item' },
+                  h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'graduation-cap', size: 24 })),
+                  h('span', { className: 'benefit-text' }, 'Skill development insights')
+                ),
+                h(
+                  'div',
+                  { className: 'benefit-item' },
+                  h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'scale', size: 24 })),
+                  h('span', { className: 'benefit-text' }, 'Fair workload distribution')
+                ),
+                h(
+                  'div',
+                  { className: 'benefit-item' },
+                  h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'eye', size: 24 })),
+                  h('span', { className: 'benefit-text' }, 'Complete transparency')
+                ),
+                h(
+                  'div',
+                  { className: 'benefit-item' },
+                  h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'award', size: 24 })),
+                  h('span', { className: 'benefit-text' }, 'Recognition & credit')
+                ),
+                h(
+                  'div',
+                  { className: 'benefit-item' },
+                  h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'wrench', size: 24 })),
+                  h('span', { className: 'benefit-text' }, 'Better tools & resources')
+                ),
+                h(
+                  'div',
+                  { className: 'benefit-item' },
+                  h('span', { className: 'benefit-emoji' }, h(LucideIcon, { name: 'handshake', size: 24 })),
+                  h('span', { className: 'benefit-text' }, 'Easier collaboration')
+                )
+              )
+            )
+          )
+        )
+      );
+    }
+
+    // ============================================
     // MacOS Window Component
     // ============================================
 
@@ -1456,22 +2405,15 @@
     function Slide3() {
       const [isFullscreen, setIsFullscreen] = useState(false);
       const slideRef = useRef(null);
+      const windowRef = useRef(null);
       const isTransitioningRef = useRef(false);
 
       useEffect(() => {
         let wheelTimeout = null;
-        let lastScrollTime = 0;
 
         const handleWheel = (e) => {
-          const now = Date.now();
-
           // Check if we're on the active slide
           if (!slideRef.current || !slideRef.current.closest('.slide.active')) {
-            return;
-          }
-
-          // Prevent rapid toggling - require at least 100ms between scroll events
-          if (now - lastScrollTime < 100) {
             return;
           }
 
@@ -1480,64 +2422,108 @@
             return;
           }
 
-          const scrollThreshold = 30; // Reduced threshold for better responsiveness
+          // Check if the scroll event originated from within the macOS window
+          const isOverWindow = windowRef.current && windowRef.current.contains(e.target);
+
+          const scrollThreshold = 20;
           const deltaY = e.deltaY;
 
-          console.log('Scroll detected:', { deltaY, isFullscreen, isTransitioning: isTransitioningRef.current });
+          console.log('Scroll event:', {
+            deltaY,
+            isFullscreen,
+            isOverWindow,
+            isTransitioning: isTransitioningRef.current,
+            willGoFullscreen: deltaY > scrollThreshold && !isFullscreen && isOverWindow
+          });
 
-          if (Math.abs(deltaY) > scrollThreshold) {
-            if (deltaY > 0 && !isFullscreen) {
-              // Scrolling down - go fullscreen
-              console.log('Going fullscreen');
-              lastScrollTime = now;
-              isTransitioningRef.current = true;
-              setIsFullscreen(true);
+          // Scrolling down over the window - go fullscreen
+          if (deltaY > scrollThreshold && !isFullscreen && isOverWindow) {
+            console.log('>>> GOING FULLSCREEN');
+            e.preventDefault();
+            isTransitioningRef.current = true;
+            setIsFullscreen(true);
 
-              // Reset transition lock after animation completes
-              if (wheelTimeout) clearTimeout(wheelTimeout);
-              wheelTimeout = setTimeout(() => {
-                isTransitioningRef.current = false;
-                console.log('Transition complete - fullscreen');
-              }, 1000);
-            } else if (deltaY < 0 && isFullscreen) {
-              // Scrolling up - exit fullscreen
-              console.log('Exiting fullscreen');
-              lastScrollTime = now;
+            if (wheelTimeout) clearTimeout(wheelTimeout);
+            wheelTimeout = setTimeout(() => {
+              isTransitioningRef.current = false;
+              console.log('Fullscreen transition complete');
+            }, 1200);
+          }
+        };
+
+        const handleMessage = (e) => {
+          // Listen for messages from the iframe (dashboard)
+          if (e.data && e.data.type === 'EXIT_FULLSCREEN') {
+            console.log('>>> RECEIVED EXIT_FULLSCREEN MESSAGE FROM DASHBOARD');
+
+            if (isFullscreen && !isTransitioningRef.current) {
               isTransitioningRef.current = true;
               setIsFullscreen(false);
 
-              // Reset transition lock after animation completes
               if (wheelTimeout) clearTimeout(wheelTimeout);
               wheelTimeout = setTimeout(() => {
                 isTransitioningRef.current = false;
-                console.log('Transition complete - windowed');
-              }, 1000);
+                console.log('Windowed transition complete');
+              }, 1200);
             }
           }
         };
 
         const handleKeyDown = (e) => {
+          // ESC key should ALWAYS exit fullscreen, regardless of which slide is active
+          if (e.key === 'Escape' && isFullscreen) {
+            console.log('>>> ESC KEY PRESSED - EXITING FULLSCREEN');
+            e.preventDefault();
+            e.stopPropagation();
+            setIsFullscreen(false);
+            return;
+          }
+
+          // Other keys only work when slide is active
           if (slideRef.current && slideRef.current.closest('.slide.active')) {
             if (e.key === 'f' || e.key === 'F') {
-              // Toggle fullscreen with 'F' key
+              e.preventDefault();
               setIsFullscreen(prev => !prev);
-            } else if (e.key === 'Escape' && isFullscreen) {
-              // Exit fullscreen with Escape
-              setIsFullscreen(false);
             }
           }
         };
 
-        window.addEventListener('wheel', handleWheel, { passive: true });
-        window.addEventListener('keydown', handleKeyDown);
+        // When windowed, listen on slide element for scroll-down
+        const slideElement = slideRef.current;
+
+        if (!isFullscreen && slideElement) {
+          slideElement.addEventListener('wheel', handleWheel, { passive: false });
+        }
+
+        // Always listen for messages from iframe
+        window.addEventListener('message', handleMessage);
+        window.addEventListener('keydown', handleKeyDown, true); // Use capture phase to get event first
 
         return () => {
-          window.removeEventListener('wheel', handleWheel);
-          window.removeEventListener('keydown', handleKeyDown);
+          if (slideElement) {
+            slideElement.removeEventListener('wheel', handleWheel);
+          }
+          window.removeEventListener('message', handleMessage);
+          window.removeEventListener('keydown', handleKeyDown, true);
           if (wheelTimeout) {
             clearTimeout(wheelTimeout);
           }
         };
+      }, [isFullscreen]);
+
+      // Exit fullscreen when slide becomes inactive
+      useEffect(() => {
+        const checkSlideActive = () => {
+          if (slideRef.current && !slideRef.current.closest('.slide.active') && isFullscreen) {
+            console.log('>>> SLIDE BECAME INACTIVE - EXITING FULLSCREEN');
+            setIsFullscreen(false);
+          }
+        };
+
+        // Check periodically (simple approach)
+        const interval = setInterval(checkSlideActive, 100);
+
+        return () => clearInterval(interval);
       }, [isFullscreen]);
 
       return h(
@@ -1553,10 +2539,89 @@
           h('h1', { className: 'one-system-title' }, 'One System'),
           h('p', { className: 'one-system-subtitle' }, 'یک سیستم یکپارچه برای طراحی و تولید')
         ),
-        // macOS Window with Embedded Dashboard
+
+        // Scrollable Content Sections (hidden in fullscreen)
+        !isFullscreen && h(
+          'div',
+          { className: 'one-system-scrollable-content' },
+
+          // Section 1: Overview
+          h(
+            'div',
+            { className: 'content-section' },
+            h('h2', null, 'Unified Platform'),
+            h('p', null, 'OZONE brings together every aspect of your manufacturing and design process into one seamless, integrated platform. No more switching between disconnected tools or losing data in translation.'),
+            h('p', null, 'From initial concept to final delivery, manage everything in one place with real-time visibility and control.')
+          ),
+
+          // Section 2: ValueFlow Visualization (KPI/MRP/BPM)
+          h(ValueFlowVisualization),
+
+          // Section 3: Key Features
+          h(
+            'div',
+            { className: 'content-section' },
+            h('h2', null, 'Core Capabilities'),
+            h(
+              'div',
+              { className: 'features-grid' },
+              h(
+                'div',
+                { className: 'feature-card' },
+                h('h3', null, 'Real-Time Analytics'),
+                h('p', null, 'Live dashboards with instant insights into operations, finances, and team performance.')
+              ),
+              h(
+                'div',
+                { className: 'feature-card' },
+                h('h3', null, 'Unified Data Model'),
+                h('p', null, 'Single source of truth for all your business data, ensuring consistency across all departments.')
+              ),
+              h(
+                'div',
+                { className: 'feature-card' },
+                h('h3', null, 'Smart Automation'),
+                h('p', null, 'AI-powered workflows that eliminate repetitive tasks and optimize resource allocation.')
+              ),
+              h(
+                'div',
+                { className: 'feature-card' },
+                h('h3', null, 'Collaborative Tools'),
+                h('p', null, 'Built-in communication and project management tools that keep your team aligned.')
+              )
+            )
+          ),
+
+          // Section 4: Call to Action
+          h(
+            'div',
+            { className: 'content-section' },
+            h('h2', null, 'Experience the Dashboard'),
+            h('p', null, 'Scroll down to see the interactive manager\'s dashboard that demonstrates the power of unified data visualization.')
+          ),
+
+          // Scroll Indicator (only visible when not fullscreen)
+          h(
+            'div',
+            { className: 'scroll-indicator' },
+            h('div', { className: 'scroll-indicator-text' }, 'Scroll down to see the dashboard'),
+            h('div', { className: 'scroll-indicator-icon' })
+          )
+        ),
+
+        // macOS Window with Embedded Dashboard (at the very bottom)
         h(
           'div',
-          { className: 'one-system-content' },
+          { className: 'one-system-content', ref: windowRef },
+
+          // Dashboard intro text (hidden in fullscreen)
+          !isFullscreen && h(
+            'div',
+            { className: 'dashboard-intro' },
+            h('h3', null, 'Interactive Manager Dashboard'),
+            h('p', null, 'Scroll over the window to go fullscreen')
+          ),
+
           h(
             MacOSWindow,
             { title: 'OZONE Manager Dashboard', isFullscreen },
@@ -1566,13 +2631,6 @@
               style: { background: 'white' }
             })
           )
-        ),
-        // Scroll Indicator (only visible when not fullscreen)
-        !isFullscreen && h(
-          'div',
-          { className: 'scroll-indicator' },
-          h('div', { className: 'scroll-indicator-text' }, 'Scroll down for fullscreen'),
-          h('div', { className: 'scroll-indicator-icon' })
         ),
         h('div', { className: 'back-hint' }, isFullscreen ? 'Press ESC or scroll up to exit fullscreen' : 'Press ← to go back')
       );

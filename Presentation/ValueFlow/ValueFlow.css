@@ -1,0 +1,932 @@
+/* Value Flow Visualization Styles */
+
+/* Lucide Icon Styles */
+.lucide-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lucide-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Persian Text Styles */
+.persian-text {
+  font-family: 'IRANYekan', 'Tahoma', sans-serif;
+  font-weight: 400;
+  opacity: 0.75;
+  font-size: 0.9em;
+  margin-right: 0.25rem;
+}
+
+.persian-subtitle {
+  font-family: 'IRANYekan', 'Tahoma', sans-serif;
+  direction: rtl;
+  text-align: center;
+  color: inherit;
+}
+
+.value-flow-section {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+
+.value-flow-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.value-flow-header h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.value-flow-header .subtitle-persian {
+  font-family: iranyekan, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: #5a6c7d;
+  direction: rtl;
+  margin-bottom: 1.5rem;
+}
+
+.value-flow-header p {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: #666;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ============================================ */
+/* PART 1: Animated Flow Diagram */
+/* ============================================ */
+
+.flow-diagram-container {
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  margin-bottom: 3rem;
+  box-shadow: 0 4px 20px rgba(76, 98, 186, 0.1);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.flow-diagram {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  position: relative;
+  min-height: 600px;
+}
+
+/* Employee Input Column */
+.flow-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.flow-column.employees {
+  align-items: flex-start;
+}
+
+.flow-column.ozone-core {
+  align-items: center;
+  justify-content: center;
+}
+
+.flow-column.outputs {
+  align-items: flex-end;
+}
+
+.employee-node {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.employee-node:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 15px rgba(76, 98, 186, 0.2);
+  border-color: rgba(76, 98, 186, 0.3);
+}
+
+.employee-node.designer { border-left: 4px solid #3498db; }
+.employee-node.engineer { border-left: 4px solid #2ecc71; }
+.employee-node.operator { border-left: 4px solid #f39c12; }
+.employee-node.manager { border-left: 4px solid #9b59b6; }
+.employee-node.commerce { border-left: 4px solid #e74c3c; }
+.employee-node.sales { border-left: 4px solid #16a085; }
+
+.employee-icon {
+  font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.employee-info h4 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0 0 0.25rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.employee-info p {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #7f8c8d;
+  margin: 0;
+}
+
+/* OZONE Core */
+.ozone-core-container {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  border-radius: 24px;
+  padding: 3rem;
+  box-shadow:
+    0 10px 40px rgba(102, 126, 234, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+    0 20px 60px rgba(118, 75, 162, 0.2);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.ozone-core-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+  animation: pulse 6s ease-in-out infinite;
+}
+
+.ozone-core-container::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  height: 150%;
+  background: radial-gradient(circle, rgba(240, 147, 251, 0.2) 0%, transparent 70%);
+  animation: rotate 20s linear infinite;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes rotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.ozone-logo-text {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 3rem;
+  font-weight: 900;
+  color: white;
+  text-align: center;
+  margin-bottom: 2rem;
+  letter-spacing: 0.15em;
+  position: relative;
+  z-index: 1;
+  text-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(255, 255, 255, 0.3),
+    0 0 60px rgba(240, 147, 251, 0.4);
+  animation: glow 3s ease-in-out infinite;
+}
+
+@keyframes glow {
+  0%, 100% {
+    text-shadow:
+      0 2px 10px rgba(0, 0, 0, 0.3),
+      0 0 30px rgba(255, 255, 255, 0.3),
+      0 0 60px rgba(240, 147, 251, 0.4);
+  }
+  50% {
+    text-shadow:
+      0 2px 10px rgba(0, 0, 0, 0.3),
+      0 0 40px rgba(255, 255, 255, 0.5),
+      0 0 80px rgba(240, 147, 251, 0.6);
+  }
+}
+
+.ozone-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.metric-badge {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.metric-badge:hover {
+  transform: translateX(-5px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 1);
+}
+
+.metric-icon {
+  font-size: 1.5rem;
+}
+
+.metric-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Output Column */
+.output-node {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.output-node:hover {
+  transform: translateX(-5px);
+  box-shadow: 0 4px 15px rgba(76, 98, 186, 0.2);
+  border-color: rgba(76, 98, 186, 0.3);
+}
+
+.output-node.company { border-right: 4px solid #e74c3c; }
+.output-node.employees { border-right: 4px solid #27ae60; }
+
+.output-node h4 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 0.5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.output-node ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.output-node li {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  color: #5a6c7d;
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.output-node li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #27ae60;
+  font-weight: bold;
+}
+
+/* Wire System SVG */
+.wire-system {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.wire {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: opacity 0.3s ease, stroke-width 0.3s ease;
+}
+
+.wire:hover {
+  opacity: 0.8 !important;
+  stroke-width: 5;
+}
+
+.data-packet {
+  filter: drop-shadow(0 0 8px currentColor);
+  opacity: 0.9;
+}
+
+/* Wire animation pulse */
+.wire {
+  animation: wirePulse 3s ease-in-out infinite;
+}
+
+@keyframes wirePulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Stagger animations for visual interest */
+.wire-designer { animation-delay: 0s; }
+.wire-engineer { animation-delay: 0.5s; }
+.wire-operator { animation-delay: 1s; }
+.wire-manager { animation-delay: 1.5s; }
+.wire-commerce { animation-delay: 2s; }
+.wire-sales { animation-delay: 2.5s; }
+
+/* Output wires have different timing */
+.wire-output-company { animation-delay: 0.3s; }
+.wire-output-employee { animation-delay: 0.6s; }
+
+/* ============================================ */
+/* PART 2: Interactive Metric Cards */
+/* ============================================ */
+
+.metric-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.metric-card {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(76, 98, 186, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.metric-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(76, 98, 186, 0.2);
+  border-color: rgba(76, 98, 186, 0.3);
+}
+
+.metric-card-header {
+  padding: 2rem;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(76, 98, 186, 0.05) 0%, rgba(76, 98, 186, 0.1) 100%);
+  position: relative;
+}
+
+.metric-card-header h3 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.metric-card.kpi .metric-card-header { border-top: 4px solid #3498db; }
+.metric-card.mrp .metric-card-header { border-top: 4px solid #2ecc71; }
+.metric-card.bpm .metric-card-header { border-top: 4px solid #f39c12; }
+
+.metric-card-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.metric-card-header h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 0.5rem 0;
+}
+
+.metric-card-header h4 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #4c62ba;
+  margin: 0 0 1rem 0;
+}
+
+.metric-card-header p {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #5a6c7d;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.6;
+}
+
+.expand-button {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4c62ba;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 auto;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.expand-button:hover {
+  background: rgba(76, 98, 186, 0.1);
+}
+
+.metric-card-content {
+  padding: 2rem;
+}
+
+.metric-measures {
+  margin-bottom: 2rem;
+}
+
+.metric-measures h5 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 1rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.metric-measures ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.metric-measures li {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.9rem;
+  color: #5a6c7d;
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.metric-measures li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #4c62ba;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.metric-example {
+  background: rgba(76, 98, 186, 0.05);
+  border-left: 4px solid #4c62ba;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.metric-example h5 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 1rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.metric-example p {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  color: #2c3e50;
+  margin: 0 0 0.75rem 0;
+  font-weight: 500;
+}
+
+.metric-example p:last-child {
+  margin-bottom: 0;
+}
+
+.metric-benefits {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.benefit-column {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 2px solid transparent;
+}
+
+.benefit-column.company {
+  border-color: rgba(231, 76, 60, 0.3);
+}
+
+.benefit-column.employee {
+  border-color: rgba(39, 174, 96, 0.3);
+}
+
+.benefit-column h6 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.benefit-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.benefit-column li {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.85rem;
+  color: #5a6c7d;
+  margin-bottom: 0.5rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.benefit-column li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  font-weight: bold;
+}
+
+.benefit-column.company li::before {
+  color: #e74c3c;
+}
+
+.benefit-column.employee li::before {
+  color: #27ae60;
+}
+
+/* Modal Overlay */
+.metric-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 2rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.metric-modal-content {
+  background: white;
+  border-radius: 24px;
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+  position: relative;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.metric-modal-header {
+  padding: 3rem;
+  text-align: center;
+  background: linear-gradient(135deg, rgba(76, 98, 186, 0.05) 0%, rgba(76, 98, 186, 0.1) 100%);
+  border-bottom: 2px solid rgba(76, 98, 186, 0.1);
+  position: relative;
+}
+
+.metric-modal-header h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 1rem 0 0 0;
+}
+
+.modal-close-button {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(76, 98, 186, 0.2);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.modal-close-button:hover {
+  background: #e74c3c;
+  border-color: #e74c3c;
+  transform: rotate(90deg);
+}
+
+.modal-close-button:hover svg {
+  stroke: white;
+}
+
+.metric-modal-body {
+  padding: 3rem;
+}
+
+/* Color accents for different modals */
+.metric-modal-content.kpi .metric-modal-header {
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.05) 0%, rgba(52, 152, 219, 0.15) 100%);
+}
+
+.metric-modal-content.mrp .metric-modal-header {
+  background: linear-gradient(135deg, rgba(46, 204, 113, 0.05) 0%, rgba(46, 204, 113, 0.15) 100%);
+}
+
+.metric-modal-content.bpm .metric-modal-header {
+  background: linear-gradient(135deg, rgba(243, 156, 18, 0.05) 0%, rgba(243, 156, 18, 0.15) 100%);
+}
+
+/* ============================================ */
+/* PART 3: Benefits Showcase */
+/* ============================================ */
+
+.benefits-showcase {
+  background: linear-gradient(135deg, rgba(76, 98, 186, 0.05) 0%, rgba(76, 98, 186, 0.1) 100%);
+  border-radius: 20px;
+  padding: 3rem;
+  margin-bottom: 3rem;
+  box-shadow: 0 4px 20px rgba(76, 98, 186, 0.1);
+}
+
+.benefits-showcase-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.benefits-showcase-header h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 0.5rem 0;
+}
+
+.benefits-showcase-header p {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: #5a6c7d;
+  margin: 0;
+  font-style: italic;
+}
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.benefits-section {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  padding: 2rem;
+  border: 3px solid transparent;
+}
+
+.benefits-section.company-benefits {
+  border-color: rgba(231, 76, 60, 0.3);
+}
+
+.benefits-section.employee-benefits {
+  border-color: rgba(39, 174, 96, 0.3);
+}
+
+.benefits-section h4 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 1.5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.benefits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.benefit-item:hover {
+  background: rgba(76, 98, 186, 0.05);
+}
+
+.benefit-emoji {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.benefit-text {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #2c3e50;
+  line-height: 1.5;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .flow-diagram {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .flow-column.employees,
+  .flow-column.outputs {
+    align-items: center;
+  }
+
+  .employee-node:hover {
+    transform: translateY(-5px);
+  }
+
+  .output-node:hover {
+    transform: translateY(-5px);
+  }
+
+  .benefits-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .metric-benefits {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .value-flow-header h2 {
+    font-size: 2rem;
+  }
+
+  .value-flow-header .subtitle-persian {
+    font-size: 1.2rem;
+  }
+
+  .metric-cards-container {
+    grid-template-columns: 1fr;
+  }
+
+  .flow-diagram-container {
+    padding: 2rem 1rem;
+  }
+
+  .benefits-showcase {
+    padding: 2rem 1.5rem;
+  }
+
+  .metric-modal-overlay {
+    padding: 1rem;
+  }
+
+  .metric-modal-header {
+    padding: 2rem 1.5rem;
+  }
+
+  .metric-modal-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .metric-modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-close-button {
+    width: 40px;
+    height: 40px;
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .persian-text {
+    margin-right: 0;
+    font-size: 0.85em;
+  }
+
+  .employee-info h4,
+  .output-node h4,
+  .benefits-section h4,
+  .benefit-column h6,
+  .metric-measures h5,
+  .metric-example h5 {
+    flex-wrap: wrap;
+  }
+}
