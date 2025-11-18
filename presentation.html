@@ -971,16 +971,27 @@
     }
 
     /* Value flow section Persian */
-    .value-flow-header .subtitle-persian {
+    .value-flow-header.farsi-section {
+      text-align: center;
+    }
+
+    .value-flow-header.farsi-section h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 1rem;
+    }
+
+    .value-flow-header.farsi-section p {
       font-family: iranyekan, 'Segoe UI', Tahoma, sans-serif !important;
       direction: rtl;
       text-align: center;
       font-weight: 400;
       color: #666;
-      font-size: 1.1rem;
-      line-height: 1.7;
+      font-size: 1.15rem;
+      line-height: 1.9;
       max-width: 700px;
-      margin: 0.5rem auto;
+      margin: 0.8rem auto;
     }
 
     /* Output node Persian */
@@ -1750,11 +1761,9 @@
         // Header
         h(
           'div',
-          { className: 'value-flow-header' },
-          h('h2', null, 'How OZONE Creates Value for Everyone'),
-          h('p', { className: 'subtitle-persian' }, 'چگونه اُزون برای همه ارزش می‌آفریند'),
-          h('p', null, 'Transparent metrics that drive company success AND employee satisfaction'),
-          h('p', { className: 'subtitle-persian' }, 'معیارهای شفاف که موفقیت سازمان و رضایت کارکنان را تضمین می‌کنند')
+          { className: 'value-flow-header farsi-section' },
+          h('h2', null, 'چگونه اُزون برای همه ارزش می‌آفریند'),
+          h('p', null, 'معیارهای شفاف که موفقیت سازمان و رضایت کارکنان را تضمین می‌کنند')
         ),
 
         // Part 1: Animated Flow Diagram
