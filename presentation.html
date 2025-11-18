@@ -1014,12 +1014,12 @@
             premultipliedAlpha: config.premultipliedAlpha !== undefined ? config.premultipliedAlpha : true
           });
           this.gl = gl;
-          this.gl.canvas = canvas;
+          this.canvas = canvas;
           this.dpr = config.dpr || 1;
         }
         setSize(width, height) {
-          this.gl.canvas.width = width;
-          this.gl.canvas.height = height;
+          this.canvas.width = width;
+          this.canvas.height = height;
         }
         render(scene) {
           const gl = this.gl;
