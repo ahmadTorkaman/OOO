@@ -474,10 +474,10 @@
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       position: relative;
-      width: 90vw;
-      max-width: 1400px;
-      height: 75vh;
-      max-height: 800px;
+      width: 95vw;
+      max-width: 1800px;
+      height: 85vh;
+      max-height: 1000px;
       transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1),
                   box-shadow 0.8s cubic-bezier(0.4, 0, 0.2, 1),
                   border-radius 0.8s cubic-bezier(0.4, 0, 0.2, 1);
@@ -2728,9 +2728,10 @@
           !isFullscreen && h(
             'div',
             { className: 'dashboard-intro' },
-            h('h3', null, 'Interactive Manager Dashboard ', h('span', { className: 'persian-text' }, '• داشبورد تعاملی مدیر')),
+            h('h3', null, 'Interactive Manager Dashboard'),
+            h('p', { className: 'persian-subtitle', style: { textAlign: 'center', fontSize: '1.2rem', fontWeight: 600, marginTop: '0.5rem' } }, 'داشبورد تعاملی مدیر'),
             h('p', null, 'Scroll over the window to go fullscreen'),
-            h('p', { className: 'persian-subtitle' }, 'برای تمام صفحه شدن، روی پنجره اسکرول کنید')
+            h('p', { className: 'persian-subtitle', style: { textAlign: 'center' } }, 'برای تمام صفحه شدن، روی پنجره اسکرول کنید')
           ),
 
           h(
