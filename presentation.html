@@ -2504,34 +2504,27 @@
       useEffect(() => {
         let wheelTimeout = null;
 
-        const handleWheel = (e) => {
-          // Check if we're on the active slide
+        const handleWheelEnter = (e) => {
+          // For entering fullscreen - scroll down over window
           if (!slideRef.current || !slideRef.current.closest('.slide.active')) {
             return;
           }
 
-          // If already transitioning, ignore
-          if (isTransitioningRef.current) {
+          if (isTransitioningRef.current || isFullscreen) {
             return;
           }
 
-          // Check if the scroll event originated from within the macOS window
           const isOverWindow = windowRef.current && windowRef.current.contains(e.target);
-
           const scrollThreshold = 20;
           const deltaY = e.deltaY;
 
-          console.log('Scroll event:', {
+          console.log('Scroll enter event:', {
             deltaY,
-            isFullscreen,
             isOverWindow,
-            isTransitioning: isTransitioningRef.current,
-            willGoFullscreen: deltaY > scrollThreshold && !isFullscreen && isOverWindow,
-            willExitFullscreen: deltaY < -scrollThreshold && isFullscreen
+            willGoFullscreen: deltaY > scrollThreshold && isOverWindow
           });
 
-          // Scrolling down over the window - go fullscreen
-          if (deltaY > scrollThreshold && !isFullscreen && isOverWindow) {
+          if (deltaY > scrollThreshold && isOverWindow) {
             console.log('>>> GOING FULLSCREEN');
             e.preventDefault();
             isTransitioningRef.current = true;
@@ -2543,8 +2536,28 @@
               console.log('Fullscreen transition complete');
             }, 1200);
           }
-          // Scrolling up - exit fullscreen
-          else if (deltaY < -scrollThreshold && isFullscreen) {
+        };
+
+        const handleWheelExit = (e) => {
+          // For exiting fullscreen - scroll up anywhere
+          if (!slideRef.current || !slideRef.current.closest('.slide.active')) {
+            return;
+          }
+
+          if (isTransitioningRef.current || !isFullscreen) {
+            return;
+          }
+
+          const scrollThreshold = 20;
+          const deltaY = e.deltaY;
+
+          console.log('Scroll exit event:', {
+            deltaY,
+            isFullscreen,
+            willExitFullscreen: deltaY < -scrollThreshold
+          });
+
+          if (deltaY < -scrollThreshold) {
             console.log('>>> SCROLLING UP - EXITING FULLSCREEN');
             e.preventDefault();
             isTransitioningRef.current = true;
@@ -2602,21 +2615,28 @@
           }
         };
 
-        // Always listen on slide element for scroll (both up and down)
+        // Attach appropriate listeners based on fullscreen state
         const slideElement = slideRef.current;
 
-        if (slideElement) {
-          slideElement.addEventListener('wheel', handleWheel, { passive: false });
+        if (!isFullscreen && slideElement) {
+          // When windowed: listen on slide element for scroll down to enter fullscreen
+          slideElement.addEventListener('wheel', handleWheelEnter, { passive: false });
         }
 
-        // Always listen for messages from iframe
+        if (isFullscreen) {
+          // When fullscreen: listen globally for scroll up to exit fullscreen
+          window.addEventListener('wheel', handleWheelExit, { passive: false });
+        }
+
+        // Always listen for messages from iframe and keyboard
         window.addEventListener('message', handleMessage);
-        window.addEventListener('keydown', handleKeyDown, true); // Use capture phase to get event first
+        window.addEventListener('keydown', handleKeyDown, true);
 
         return () => {
           if (slideElement) {
-            slideElement.removeEventListener('wheel', handleWheel);
+            slideElement.removeEventListener('wheel', handleWheelEnter);
           }
+          window.removeEventListener('wheel', handleWheelExit);
           window.removeEventListener('message', handleMessage);
           window.removeEventListener('keydown', handleKeyDown, true);
           if (wheelTimeout) {
