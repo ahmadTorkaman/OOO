@@ -84,6 +84,16 @@
   overflow: hidden;
 }
 
+.flow-diagram-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .flow-diagram {
   display: grid;
   grid-template-columns: 1fr 1.5fr 1fr;
