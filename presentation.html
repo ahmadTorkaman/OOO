@@ -1778,176 +1778,6 @@
         h(
           'div',
           { className: 'flow-diagram-container' },
-          // SVG Wires and Data Flow
-          h(
-            'svg',
-            { className: 'wire-system', viewBox: '0 0 1000 600', preserveAspectRatio: 'xMidYMid meet' },
-            // Defs for gradients and glows
-            h(
-              'defs',
-              null,
-              // Gradient for wires
-              h('linearGradient', { id: 'wireGradient', x1: '0%', y1: '0%', x2: '100%', y2: '0%' },
-                h('stop', { offset: '0%', style: { stopColor: 'rgba(76, 98, 186, 0.6)', stopOpacity: 1 } }),
-                h('stop', { offset: '50%', style: { stopColor: 'rgba(118, 75, 162, 0.8)', stopOpacity: 1 } }),
-                h('stop', { offset: '100%', style: { stopColor: 'rgba(240, 147, 251, 0.6)', stopOpacity: 1 } })
-              ),
-              // Glow filter
-              h('filter', { id: 'glow' },
-                h('feGaussianBlur', { stdDeviation: '3', result: 'coloredBlur' }),
-                h('feMerge', null,
-                  h('feMergeNode', { in: 'coloredBlur' }),
-                  h('feMergeNode', { in: 'SourceGraphic' })
-                )
-              )
-            ),
-
-            // Wire paths from employees to OZONE (using OZONE purple-blue gradient)
-            // Designer
-            h('path', {
-              d: 'M 150 100 Q 325 100, 500 300',
-              className: 'wire wire-designer',
-              stroke: 'url(#wireGradient)',
-              strokeWidth: '3',
-              fill: 'none',
-              opacity: '0.5',
-              filter: 'url(#glow)'
-            }),
-            h('circle', { className: 'data-packet packet-designer', r: '6', fill: '#764ba2' },
-              h('animateMotion', {
-                dur: '4s',
-                repeatCount: 'indefinite',
-                path: 'M 150 100 Q 325 100, 500 300'
-              })
-            ),
-
-            // Engineer
-            h('path', {
-              d: 'M 150 190 Q 325 190, 500 300',
-              className: 'wire wire-engineer',
-              stroke: 'url(#wireGradient)',
-              strokeWidth: '3',
-              fill: 'none',
-              opacity: '0.5',
-              filter: 'url(#glow)'
-            }),
-            h('circle', { className: 'data-packet packet-engineer', r: '6', fill: '#764ba2' },
-              h('animateMotion', {
-                dur: '4.5s',
-                repeatCount: 'indefinite',
-                path: 'M 150 190 Q 325 190, 500 300'
-              })
-            ),
-
-            // Operator
-            h('path', {
-              d: 'M 150 280 Q 325 280, 500 300',
-              className: 'wire wire-operator',
-              stroke: 'url(#wireGradient)',
-              strokeWidth: '3',
-              fill: 'none',
-              opacity: '0.5',
-              filter: 'url(#glow)'
-            }),
-            h('circle', { className: 'data-packet packet-operator', r: '6', fill: '#764ba2' },
-              h('animateMotion', {
-                dur: '3.8s',
-                repeatCount: 'indefinite',
-                path: 'M 150 280 Q 325 280, 500 300'
-              })
-            ),
-
-            // Manager
-            h('path', {
-              d: 'M 150 370 Q 325 370, 500 300',
-              className: 'wire wire-manager',
-              stroke: 'url(#wireGradient)',
-              strokeWidth: '3',
-              fill: 'none',
-              opacity: '0.5',
-              filter: 'url(#glow)'
-            }),
-            h('circle', { className: 'data-packet packet-manager', r: '6', fill: '#764ba2' },
-              h('animateMotion', {
-                dur: '4.2s',
-                repeatCount: 'indefinite',
-                path: 'M 150 370 Q 325 370, 500 300'
-              })
-            ),
-
-            // Commerce
-            h('path', {
-              d: 'M 150 460 Q 325 460, 500 300',
-              className: 'wire wire-commerce',
-              stroke: 'url(#wireGradient)',
-              strokeWidth: '3',
-              fill: 'none',
-              opacity: '0.5',
-              filter: 'url(#glow)'
-            }),
-            h('circle', { className: 'data-packet packet-commerce', r: '6', fill: '#764ba2' },
-              h('animateMotion', {
-                dur: '3.6s',
-                repeatCount: 'indefinite',
-                path: 'M 150 460 Q 325 460, 500 300'
-              })
-            ),
-
-            // Sales
-            h('path', {
-              d: 'M 150 550 Q 325 550, 500 300',
-              className: 'wire wire-sales',
-              stroke: 'url(#wireGradient)',
-              strokeWidth: '3',
-              fill: 'none',
-              opacity: '0.5',
-              filter: 'url(#glow)'
-            }),
-            h('circle', { className: 'data-packet packet-sales', r: '6', fill: '#764ba2' },
-              h('animateMotion', {
-                dur: '4.8s',
-                repeatCount: 'indefinite',
-                path: 'M 150 550 Q 325 550, 500 300'
-              })
-            ),
-
-            // Wires from OZONE to outputs
-            // To Company
-            h('path', {
-              d: 'M 500 300 Q 675 200, 850 200',
-              className: 'wire wire-output-company',
-              stroke: 'url(#wireGradient)',
-              strokeWidth: '4',
-              fill: 'none',
-              opacity: '0.5',
-              filter: 'url(#glow)'
-            }),
-            h('circle', { className: 'data-packet packet-output-company', r: '7', fill: '#e74c3c' },
-              h('animateMotion', {
-                dur: '3s',
-                repeatCount: 'indefinite',
-                path: 'M 500 300 Q 675 200, 850 200'
-              })
-            ),
-
-            // To Employees
-            h('path', {
-              d: 'M 500 300 Q 675 400, 850 400',
-              className: 'wire wire-output-employee',
-              stroke: 'url(#wireGradient)',
-              strokeWidth: '4',
-              fill: 'none',
-              opacity: '0.5',
-              filter: 'url(#glow)'
-            }),
-            h('circle', { className: 'data-packet packet-output-employee', r: '7', fill: '#27ae60' },
-              h('animateMotion', {
-                dur: '3.2s',
-                repeatCount: 'indefinite',
-                path: 'M 500 300 Q 675 400, 850 400'
-              })
-            )
-          ),
           h(
             'div',
             { className: 'flow-diagram' },
@@ -1963,9 +1793,7 @@
                 h(
                   'div',
                   { className: 'employee-info' },
-                  h('h4', null, 'Designer ', h('span', { className: 'persian-text' }, '• طراح')),
-                  h('p', null, 'Creates products'),
-                  h('p', { className: 'persian-subtitle' }, 'محصولات طراحی می‌کند')
+                  h('h4', null, 'Designer')
                 )
               ),
               h(
@@ -1975,9 +1803,7 @@
                 h(
                   'div',
                   { className: 'employee-info' },
-                  h('h4', null, 'Engineer ', h('span', { className: 'persian-text' }, '• مهندس')),
-                  h('p', null, 'Optimizes design'),
-                  h('p', { className: 'persian-subtitle' }, 'طراحی را بهینه می‌کند')
+                  h('h4', null, 'Engineer')
                 )
               ),
               h(
@@ -1987,9 +1813,7 @@
                 h(
                   'div',
                   { className: 'employee-info' },
-                  h('h4', null, 'Operator ', h('span', { className: 'persian-text' }, '• اپراتور')),
-                  h('p', null, 'Runs machines'),
-                  h('p', { className: 'persian-subtitle' }, 'ماشین‌آلات را اداره می‌کند')
+                  h('h4', null, 'Operator')
                 )
               ),
               h(
@@ -1999,9 +1823,7 @@
                 h(
                   'div',
                   { className: 'employee-info' },
-                  h('h4', null, 'Manager ', h('span', { className: 'persian-text' }, '• مدیر')),
-                  h('p', null, 'Oversees production'),
-                  h('p', { className: 'persian-subtitle' }, 'بر تولید نظارت می‌کند')
+                  h('h4', null, 'Manager')
                 )
               ),
               h(
@@ -2011,9 +1833,7 @@
                 h(
                   'div',
                   { className: 'employee-info' },
-                  h('h4', null, 'Commerce ', h('span', { className: 'persian-text' }, '• بازرگانی')),
-                  h('p', null, 'Manages orders'),
-                  h('p', { className: 'persian-subtitle' }, 'سفارشات را مدیریت می‌کند')
+                  h('h4', null, 'Commerce')
                 )
               ),
               h(
@@ -2023,9 +1843,7 @@
                 h(
                   'div',
                   { className: 'employee-info' },
-                  h('h4', null, 'Sales ', h('span', { className: 'persian-text' }, '• فروش')),
-                  h('p', null, 'Drives revenue'),
-                  h('p', { className: 'persian-subtitle' }, 'درآمد ایجاد می‌کند')
+                  h('h4', null, 'Sales')
                 )
               )
             ),
@@ -2074,9 +1892,9 @@
                 h(
                   'ul',
                   null,
-                  h('li', null, '34% cost reduction'),
-                  h('li', null, '73% faster to market'),
-                  h('li', null, '89% fewer errors'),
+                  h('li', null, 'Cost reduction'),
+                  h('li', null, 'Faster to market'),
+                  h('li', null, 'Fewer errors'),
                   h('li', null, 'Real-time visibility')
                 )
               ),
