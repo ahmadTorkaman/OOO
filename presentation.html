@@ -2385,7 +2385,7 @@
     // MacOS Window Component
     // ============================================
 
-    function MacOSWindow({ title = 'Window', children, className = '', isFullscreen = false }) {
+    function MacOSWindow({ title = 'Window', children, className = '', isFullscreen = false, onMaximize, onMinimize, onClose }) {
       return h(
         motion.div,
         {
@@ -2405,9 +2405,30 @@
           h(
             'div',
             { className: 'macos-traffic-lights' },
-            h('div', { className: 'macos-traffic-light close' }),
-            h('div', { className: 'macos-traffic-light minimize' }),
-            h('div', { className: 'macos-traffic-light maximize' })
+            h('div', {
+              className: 'macos-traffic-light close',
+              onClick: (e) => {
+                e.stopPropagation();
+                if (onClose) onClose();
+              },
+              title: 'Close'
+            }),
+            h('div', {
+              className: 'macos-traffic-light minimize',
+              onClick: (e) => {
+                e.stopPropagation();
+                if (onMinimize) onMinimize();
+              },
+              title: 'Minimize'
+            }),
+            h('div', {
+              className: 'macos-traffic-light maximize',
+              onClick: (e) => {
+                e.stopPropagation();
+                if (onMaximize) onMaximize();
+              },
+              title: isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'
+            })
           ),
           // Window Title
           h('div', { className: 'macos-window-title' }, title)
@@ -2771,13 +2792,30 @@
             { className: 'dashboard-intro' },
             h('h3', null, 'Interactive Manager Dashboard'),
             h('p', { className: 'persian-subtitle', style: { textAlign: 'center', fontSize: '1.2rem', fontWeight: 600, marginTop: '0.5rem' } }, 'داشبورد تعاملی مدیر'),
-            h('p', null, 'Scroll over the window to go fullscreen'),
-            h('p', { className: 'persian-subtitle', style: { textAlign: 'center' } }, 'برای تمام صفحه شدن، روی پنجره اسکرول کنید')
+            h('p', null, 'Click the green button to enter fullscreen'),
+            h('p', { className: 'persian-subtitle', style: { textAlign: 'center' } }, 'برای تمام صفحه شدن، دکمه سبز را کلیک کنید')
           ),
 
           h(
             MacOSWindow,
-            { title: 'OZONE Manager Dashboard', isFullscreen },
+            {
+              title: 'OZONE Manager Dashboard',
+              isFullscreen,
+              onMaximize: () => {
+                console.log('>>> MAXIMIZE BUTTON CLICKED');
+                setIsFullscreen(prev => !prev);
+              },
+              onMinimize: () => {
+                console.log('>>> MINIMIZE BUTTON CLICKED');
+                if (isFullscreen) {
+                  setIsFullscreen(false);
+                }
+              },
+              onClose: () => {
+                console.log('>>> CLOSE BUTTON CLICKED - No action');
+                // Close button doesn't do anything in presentation mode
+              }
+            },
             h('iframe', {
               src: './Presentation/managers-dashboard/manager-dashboard.html',
               title: 'OZONE Manager Dashboard',
@@ -2787,7 +2825,7 @@
         ),
         h('div', { className: 'back-hint' },
           isFullscreen
-            ? h('span', null, 'Press ESC or scroll up to exit fullscreen ', h('span', { className: 'persian-text' }, '• برای خروج ESC بزنید یا بالا اسکرول کنید'))
+            ? h('span', null, 'Click green button or press ESC to exit fullscreen ', h('span', { className: 'persian-text' }, '• برای خروج، دکمه سبز یا ESC را بزنید'))
             : h('span', null, 'Press ← to go back ', h('span', { className: 'persian-text' }, '• برای بازگشت ← بزنید'))
         )
       );
