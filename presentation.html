@@ -1998,10 +1998,162 @@
 
     function ValueFlowVisualization() {
       const [expandedCard, setExpandedCard] = useState(null);
+      const canvasRef = useRef(null);
+      const containerRef = useRef(null);
 
       const toggleCard = (cardId) => {
         setExpandedCard(expandedCard === cardId ? null : cardId);
       };
+
+      // Particle animation
+      useEffect(() => {
+        const canvas = canvasRef.current;
+        const container = containerRef.current;
+        if (!canvas || !container) return;
+
+        const ctx = canvas.getContext('2d');
+        const particles = [];
+        const connections = [];
+        let animationId;
+
+        // Calculate edge point on circle
+        const getEdgePoint = (centerX, centerY, targetX, targetY, radius) => {
+          const angle = Math.atan2(targetY - centerY, targetX - centerX);
+          return {
+            x: centerX + radius * Math.cos(angle),
+            y: centerY + radius * Math.sin(angle)
+          };
+        };
+
+        // Calculate connections between all nodes
+        const calculateConnections = () => {
+          connections.length = 0;
+          const width = canvas.width;
+          const height = canvas.height;
+
+          const benefitX = width * 0.12;
+          const benefitY1 = height * 0.35;
+          const benefitY2 = height * 0.65;
+          const coreX = width * 0.5;
+          const coreY = height * 0.5;
+          const employeeX = width * 0.88;
+          const employeeYPositions = [height * 0.15, height * 0.30, height * 0.45, height * 0.60, height * 0.75, height * 0.90];
+          const benefitRadius = 80;
+          const coreRadius = 100;
+          const employeeRadius = 70;
+
+          const colors = ['#4c62ba', '#6a7fc1'];
+          [benefitY1, benefitY2].forEach((benefitY, index) => {
+            const start = getEdgePoint(benefitX, benefitY, coreX, coreY, benefitRadius);
+            const end = getEdgePoint(coreX, coreY, benefitX, benefitY, coreRadius);
+            connections.push({ startX: start.x, startY: start.y, endX: end.x, endY: end.y, color: colors[index] });
+          });
+
+          const employeeColors = ['#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#e74c3c', '#16a085'];
+          employeeYPositions.forEach((empY, index) => {
+            const start = getEdgePoint(coreX, coreY, employeeX, empY, coreRadius);
+            const end = getEdgePoint(employeeX, empY, coreX, coreY, employeeRadius);
+            connections.push({ startX: start.x, startY: start.y, endX: end.x, endY: end.y, color: employeeColors[index] });
+          });
+        };
+
+        const drawConnections = () => {
+          connections.forEach(conn => {
+            const controlX = (conn.startX + conn.endX) / 2;
+            const controlY = (conn.startY + conn.endY) / 2 - 30;
+            ctx.save();
+            ctx.strokeStyle = conn.color;
+            ctx.lineWidth = 2;
+            ctx.globalAlpha = 0.15;
+            ctx.beginPath();
+            ctx.moveTo(conn.startX, conn.startY);
+            ctx.quadraticCurveTo(controlX, controlY, conn.endX, conn.endY);
+            ctx.stroke();
+            ctx.restore();
+          });
+        };
+
+        class Particle {
+          constructor(startX, startY, endX, endY, color, delay = 0) {
+            this.startX = startX;
+            this.startY = startY;
+            this.endX = endX;
+            this.endY = endY;
+            this.color = color;
+            this.progress = -delay;
+            this.speed = 0.003 + Math.random() * 0.002;
+            this.size = 3 + Math.random() * 2;
+            this.opacity = 0;
+          }
+          update() {
+            this.progress += this.speed;
+            if (this.progress > 1) this.progress = 0;
+            if (this.progress < 0) this.opacity = 0;
+            else if (this.progress < 0.1) this.opacity = this.progress * 10;
+            else if (this.progress > 0.9) this.opacity = (1 - this.progress) * 10;
+            else this.opacity = 1;
+          }
+          draw(ctx) {
+            if (this.progress < 0 || this.progress > 1) return;
+            const t = this.progress;
+            const controlX = (this.startX + this.endX) / 2;
+            const controlY = (this.startY + this.endY) / 2 - 30;
+            const x = Math.pow(1 - t, 2) * this.startX + 2 * (1 - t) * t * controlX + Math.pow(t, 2) * this.endX;
+            const y = Math.pow(1 - t, 2) * this.startY + 2 * (1 - t) * t * controlY + Math.pow(t, 2) * this.endY;
+            ctx.save();
+            ctx.globalAlpha = this.opacity * 0.3;
+            ctx.beginPath();
+            ctx.arc(x, y, this.size * 2, 0, Math.PI * 2);
+            const gradient = ctx.createRadialGradient(x, y, 0, x, y, this.size * 2);
+            gradient.addColorStop(0, this.color);
+            gradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            ctx.globalAlpha = this.opacity;
+            ctx.beginPath();
+            ctx.arc(x, y, this.size, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            ctx.restore();
+          }
+        }
+
+        const createParticles = () => {
+          particles.length = 0;
+          connections.forEach((conn, index) => {
+            for (let i = 0; i < 2; i++) {
+              particles.push(new Particle(conn.startX, conn.startY, conn.endX, conn.endY, conn.color, i * 0.4 + index * 0.08));
+            }
+          });
+        };
+
+        const resizeCanvas = () => {
+          canvas.width = container.offsetWidth;
+          canvas.height = container.offsetHeight;
+          calculateConnections();
+          createParticles();
+        };
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const animate = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          drawConnections();
+          particles.forEach(particle => {
+            particle.update();
+            particle.draw(ctx);
+          });
+          animationId = requestAnimationFrame(animate);
+        };
+
+        animate();
+
+        return () => {
+          cancelAnimationFrame(animationId);
+          window.removeEventListener('resize', resizeCanvas);
+        };
+      }, []);
 
       return h(
         'div',
@@ -2018,7 +2170,8 @@
         // Part 1: Animated Flow Diagram
         h(
           'div',
-          { className: 'flow-diagram-container' },
+          { className: 'flow-diagram-container', ref: containerRef },
+          h('canvas', { ref: canvasRef, className: 'flow-diagram-canvas' }),
           h(
             'div',
             { className: 'flow-diagram' },
@@ -3306,10 +3459,6 @@
 
           // Section 2: ValueFlow Visualization (KPI/MRP/BPM)
           h(ValueFlowVisualization),
-
-          // Section 2.5: Animation Demos
-          h(DataWaveAnimationDemo),
-          h(AnimatedParticlesDemo),
 
           // Section 3: Key Features
           h(
