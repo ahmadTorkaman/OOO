@@ -62,6 +62,11 @@ export class i18n {
                 'todays-focus': "Today's Focus",
                 'executive-summary': 'Executive Summary',
                 'custom-chart': 'Custom Chart',
+                'notes': 'Quick Notes',
+
+                // Notes Widget
+                'notes-placeholder': 'Type your notes here...',
+                'notes-save': 'Auto-saved',
 
                 // Financial Metrics
                 'current-cash-balance': 'Current Cash Balance',
@@ -264,6 +269,11 @@ export class i18n {
                 'todays-focus': 'تمرکز امروز',
                 'executive-summary': 'خلاصه مدیریتی',
                 'custom-chart': 'نمودار سفارشی',
+                'notes': 'یادداشت سریع',
+
+                // Notes Widget
+                'notes-placeholder': 'یادداشت‌های خود را اینجا بنویسید...',
+                'notes-save': 'ذخیره خودکار',
 
                 // Financial Metrics
                 'current-cash-balance': 'موجودی نقدی فعلی',

@@ -118,6 +118,11 @@ export class GridLayoutManager {
                 minW: 2, minH: 2, maxW: 6, maxH: 4,
                 defaultW: 3, defaultH: 3,
                 resizable: true
+            },
+            'notes': {
+                minW: 2, minH: 2, maxW: 4, maxH: 4,
+                defaultW: 2, defaultH: 3,
+                resizable: true
             }
         };
 

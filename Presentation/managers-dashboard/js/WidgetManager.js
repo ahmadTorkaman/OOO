@@ -118,6 +118,11 @@ export class WidgetManager {
         // Setup event listeners for widget controls
         this.setupWidgetControls(widgetEl, widget.id);
 
+        // Setup double-click to expand
+        if (widgetConfig.hasChart || widgetConfig.drillDown) {
+            this.setupWidgetExpansion(widgetEl, widget.id, widget.type);
+        }
+
         // Initialize Lucide icons
         setTimeout(() => IconHelper.createIcons(), 50);
 
@@ -173,6 +178,110 @@ export class WidgetManager {
         }
     }
 
+    setupWidgetExpansion(widgetEl, widgetId, widgetType) {
+        const widgetBody = widgetEl.querySelector('.widget-body');
+        if (widgetBody) {
+            widgetBody.style.cursor = 'pointer';
+            widgetBody.addEventListener('dblclick', (e) => {
+                // Don't trigger if clicking on a button or input
+                if (e.target.closest('button, input, textarea, select, a')) {
+                    return;
+                }
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Double-click to expand', widgetId);
+                this.expandWidget(widgetId, widgetType);
+            });
+        }
+    }
+
+    expandWidget(widgetId, widgetType) {
+        const widget = this.widgets.find(w => w.id === widgetId);
+        if (!widget) return;
+
+        // Create full-screen modal
+        const modal = document.createElement('div');
+        modal.className = 'widget-expansion-modal';
+        modal.id = `expansion-${widgetId}`;
+
+        const widgetConfig = this.getWidgetConfig(widgetType);
+
+        modal.innerHTML = `
+            <div class="expansion-modal-content">
+                <div class="expansion-modal-header">
+                    <div class="expansion-modal-title">
+                        ${IconHelper.widgetIcon(widgetConfig.icon)}
+                        ${widgetConfig.title}
+                    </div>
+                    <button class="expansion-close-btn" onclick="dashboard.widgetManager.closeExpansion('${widgetId}')">
+                        ${this.getCloseIcon()}
+                    </button>
+                </div>
+                <div class="expansion-modal-body" id="expansion-body-${widgetId}">
+                    ${this.renderExpandedWidgetBody(widget)}
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Animate in
+        setTimeout(() => modal.classList.add('active'), 10);
+
+        // Initialize chart if needed
+        if (widgetConfig.hasChart) {
+            setTimeout(() => this.initializeExpandedChart(widget), 250);
+        }
+
+        // Initialize Lucide icons
+        setTimeout(() => IconHelper.createIcons(), 50);
+    }
+
+    closeExpansion(widgetId) {
+        const modal = document.getElementById(`expansion-${widgetId}`);
+        if (modal) {
+            modal.classList.remove('active');
+            setTimeout(() => modal.remove(), 300);
+        }
+    }
+
+    renderExpandedWidgetBody(widget) {
+        // Render the same content but optimized for large display
+        return this.renderWidgetBody(widget);
+    }
+
+    initializeExpandedChart(widget) {
+        const chartId = `expanded-${widget.data.chartId || widget.id}`;
+        const ctx = document.getElementById(`chart-${widget.data.chartId}`);
+        if (!ctx) return;
+
+        let chartConfig = this.getChartConfig(widget);
+        if (!chartConfig) return;
+
+        // Increase font sizes for expanded view
+        if (chartConfig.options && chartConfig.options.plugins) {
+            if (chartConfig.options.plugins.legend) {
+                chartConfig.options.plugins.legend.labels = {
+                    ...chartConfig.options.plugins.legend.labels,
+                    font: { size: 14 }
+                };
+            }
+            if (chartConfig.options.plugins.title) {
+                chartConfig.options.plugins.title.font = {
+                    ...chartConfig.options.plugins.title.font,
+                    size: 18
+                };
+            }
+        }
+
+        // Create the chart
+        if (this.charts[`expanded-${widget.data.chartId}`]) {
+            this.charts[`expanded-${widget.data.chartId}`].destroy();
+        }
+
+        this.charts[`expanded-${widget.data.chartId}`] = new Chart(ctx, chartConfig);
+    }
+
     getCloseIcon() {
         return `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -224,7 +333,8 @@ export class WidgetManager {
             'project-manager': { title: translator.t('project-manager'), icon: 'bar-chart-2', hasChart: false, drillDown: true },
             'todays-focus': { title: translator.t('todays-focus'), icon: 'target', hasChart: false, drillDown: false },
             'executive-summary': { title: translator.t('executive-summary'), icon: 'trending-up', hasChart: false, drillDown: true },
-            'custom-chart': { title: translator.t('custom-chart'), icon: 'bar-chart-3', hasChart: true, drillDown: false }
+            'custom-chart': { title: translator.t('custom-chart'), icon: 'bar-chart-3', hasChart: true, drillDown: false },
+            'notes': { title: translator.t('notes'), icon: 'edit-3', hasChart: false, drillDown: false }
         };
         return configs[type] || { title: 'Widget', icon: 'diamond', hasChart: false, drillDown: false };
     }
@@ -260,7 +370,8 @@ export class WidgetManager {
             'project-manager': this.renderProjectManagerWidget,
             'todays-focus': this.renderTodaysFocusWidget,
             'executive-summary': this.renderExecutiveSummaryWidget,
-            'custom-chart': this.renderCustomChartWidget
+            'custom-chart': this.renderCustomChartWidget,
+            'notes': this.renderNotesWidget
         };
 
         const renderer = renderers[widget.type];
@@ -653,6 +764,45 @@ export class WidgetManager {
         return `<canvas id="chart-${data.chartId}" class="chart-container" style="height: 100%;"></canvas>`;
     }
 
+    renderNotesWidget(data, widgetId) {
+        const savedNotes = data.content || '';
+        return `
+            <div class="notes-widget">
+                <textarea
+                    class="notes-textarea"
+                    id="notes-${widgetId}"
+                    placeholder="${translator.t('notes-placeholder')}"
+                    oninput="dashboard.widgetManager.saveNotes('${widgetId}')"
+                >${savedNotes}</textarea>
+                <div class="notes-footer">
+                    <span class="notes-status" id="notes-status-${widgetId}">${translator.t('notes-save')}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    saveNotes(widgetId) {
+        const textarea = document.getElementById(`notes-${widgetId}`);
+        const widget = this.widgets.find(w => w.id === widgetId);
+
+        if (textarea && widget) {
+            widget.data.content = textarea.value;
+            // Save to localStorage
+            const notesData = JSON.parse(localStorage.getItem('widget-notes') || '{}');
+            notesData[widgetId] = textarea.value;
+            localStorage.setItem('widget-notes', JSON.stringify(notesData));
+
+            // Show save indicator
+            const statusEl = document.getElementById(`notes-status-${widgetId}`);
+            if (statusEl) {
+                statusEl.style.opacity = '1';
+                setTimeout(() => {
+                    statusEl.style.opacity = '0.6';
+                }, 1000);
+            }
+        }
+    }
+
     // Continued in next part...
     removeWidget(widgetId) {
         const widgetEl = document.getElementById(widgetId);
@@ -903,7 +1053,15 @@ export class WidgetManager {
                     { icon: 'wallet', title: 'Cash', titleKey: 'cash-metric', detail: 'Warning (45 days runway)', detailKey: 'cash-detail', status: 'warning' },
                     { icon: 'users', title: 'Team', titleKey: 'team-metric', detail: 'Performing Well (4.6/5)', detailKey: 'team-detail', status: 'success' }
                 ]
-            })
+            }),
+            'notes': () => {
+                // Load saved notes from localStorage if available
+                const widgetId = `widget-${Date.now()}`;
+                const notesData = JSON.parse(localStorage.getItem('widget-notes') || '{}');
+                return {
+                    content: notesData[widgetId] || ''
+                };
+            }
         };
 
         const generator = dataGenerators[type];
