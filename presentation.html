@@ -737,6 +737,13 @@
       transition: transform 0.3s ease;
     }
 
+    /* Persian Text Style */
+    .persian-text {
+      font-family: iranyekan, sans-serif;
+      direction: rtl;
+      font-weight: 400;
+    }
+
     /* Responsive text */
     @media (max-width: 1200px) {
       .ozone-logo {
@@ -1709,7 +1716,7 @@
                   'div',
                   { className: 'employee-info' },
                   h('h4', null, 'Designer ', h('span', { className: 'persian-text' }, '• طراح')),
-                  h('p', null, 'Creates products')
+                  h('p', null, 'Creates products ', h('span', { className: 'persian-text', style: { fontSize: '0.9em' } }, '• محصولات را طراحی می‌کند'))
                 )
               ),
               h(
@@ -1720,7 +1727,7 @@
                   'div',
                   { className: 'employee-info' },
                   h('h4', null, 'Engineer ', h('span', { className: 'persian-text' }, '• مهندس')),
-                  h('p', null, 'Optimizes design')
+                  h('p', null, 'Optimizes design ', h('span', { className: 'persian-text', style: { fontSize: '0.9em' } }, '• طرح را بهینه‌سازی می‌کند'))
                 )
               ),
               h(
@@ -1731,7 +1738,7 @@
                   'div',
                   { className: 'employee-info' },
                   h('h4', null, 'Operator ', h('span', { className: 'persian-text' }, '• اپراتور')),
-                  h('p', null, 'Runs machines')
+                  h('p', null, 'Runs machines ', h('span', { className: 'persian-text', style: { fontSize: '0.9em' } }, '• ماشین‌ها را اداره می‌کند'))
                 )
               ),
               h(
@@ -1742,7 +1749,7 @@
                   'div',
                   { className: 'employee-info' },
                   h('h4', null, 'Manager ', h('span', { className: 'persian-text' }, '• مدیر')),
-                  h('p', null, 'Oversees production')
+                  h('p', null, 'Oversees production ', h('span', { className: 'persian-text', style: { fontSize: '0.9em' } }, '• نظارت بر تولید می‌کند'))
                 )
               ),
               h(
@@ -1753,7 +1760,7 @@
                   'div',
                   { className: 'employee-info' },
                   h('h4', null, 'Commerce ', h('span', { className: 'persian-text' }, '• بازرگانی')),
-                  h('p', null, 'Manages orders')
+                  h('p', null, 'Manages orders ', h('span', { className: 'persian-text', style: { fontSize: '0.9em' } }, '• سفارشات را مدیریت می‌کند'))
                 )
               ),
               h(
@@ -1764,7 +1771,7 @@
                   'div',
                   { className: 'employee-info' },
                   h('h4', null, 'Sales ', h('span', { className: 'persian-text' }, '• فروش')),
-                  h('p', null, 'Drives revenue')
+                  h('p', null, 'Drives revenue ', h('span', { className: 'persian-text', style: { fontSize: '0.9em' } }, '• درآمد ایجاد می‌کند'))
                 )
               )
             ),
