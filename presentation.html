@@ -2701,6 +2701,7 @@
 
         const ctx = canvas.getContext('2d');
         const particles = [];
+        const connections = [];
         let animationId;
 
         // Set canvas size
@@ -2708,9 +2709,106 @@
           const container = canvas.parentElement;
           canvas.width = container.offsetWidth;
           canvas.height = container.offsetHeight;
+
+          // Recalculate connections when resizing
+          calculateConnections();
         };
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
+
+        // Node configuration
+        const nodeRadius = 40; // 80px diameter / 2
+        const coreRadius = 60; // 120px diameter / 2
+
+        // Calculate edge point on circle
+        const getEdgePoint = (centerX, centerY, targetX, targetY, radius) => {
+          const angle = Math.atan2(targetY - centerY, targetX - centerX);
+          return {
+            x: centerX + radius * Math.cos(angle),
+            y: centerY + radius * Math.sin(angle)
+          };
+        };
+
+        // Calculate connections between nodes
+        const calculateConnections = () => {
+          connections.length = 0;
+          const width = canvas.width;
+          const height = canvas.height;
+          const centerX = width / 2;
+          const centerY = height / 2;
+
+          // Node positions (centers)
+          const employeeX = width * 0.15;
+          const employeeY1 = height * 0.35;
+          const employeeY2 = height * 0.65;
+
+          const benefitX = width * 0.85;
+          const benefitY1 = height * 0.35;
+          const benefitY2 = height * 0.65;
+
+          // Calculate edge points for each connection
+          // Employee 1 -> Core
+          const emp1Start = getEdgePoint(employeeX, employeeY1, centerX, centerY, nodeRadius);
+          const emp1End = getEdgePoint(centerX, centerY, employeeX, employeeY1, coreRadius);
+          connections.push({
+            startX: emp1Start.x,
+            startY: emp1Start.y,
+            endX: emp1End.x,
+            endY: emp1End.y,
+            color: '#3498db'
+          });
+
+          // Employee 2 -> Core
+          const emp2Start = getEdgePoint(employeeX, employeeY2, centerX, centerY, nodeRadius);
+          const emp2End = getEdgePoint(centerX, centerY, employeeX, employeeY2, coreRadius);
+          connections.push({
+            startX: emp2Start.x,
+            startY: emp2Start.y,
+            endX: emp2End.x,
+            endY: emp2End.y,
+            color: '#9b59b6'
+          });
+
+          // Core -> Benefit 1
+          const ben1Start = getEdgePoint(centerX, centerY, benefitX, benefitY1, coreRadius);
+          const ben1End = getEdgePoint(benefitX, benefitY1, centerX, centerY, nodeRadius);
+          connections.push({
+            startX: ben1Start.x,
+            startY: ben1Start.y,
+            endX: ben1End.x,
+            endY: ben1End.y,
+            color: '#2ecc71'
+          });
+
+          // Core -> Benefit 2
+          const ben2Start = getEdgePoint(centerX, centerY, benefitX, benefitY2, coreRadius);
+          const ben2End = getEdgePoint(benefitX, benefitY2, centerX, centerY, nodeRadius);
+          connections.push({
+            startX: ben2Start.x,
+            startY: ben2Start.y,
+            endX: ben2End.x,
+            endY: ben2End.y,
+            color: '#f39c12'
+          });
+        };
+
+        // Draw curved connection lines
+        const drawConnections = () => {
+          connections.forEach(conn => {
+            const controlX = (conn.startX + conn.endX) / 2;
+            const controlY = Math.min(conn.startY, conn.endY) - 50;
+
+            ctx.save();
+            ctx.strokeStyle = conn.color;
+            ctx.lineWidth = 2;
+            ctx.globalAlpha = 0.2;
+            ctx.beginPath();
+            ctx.moveTo(conn.startX, conn.startY);
+            ctx.quadraticCurveTo(controlX, controlY, conn.endX, conn.endY);
+            ctx.stroke();
+            ctx.restore();
+          });
+        };
 
         // Particle class
         class Particle {
@@ -2777,40 +2875,34 @@
 
         // Create particles
         const createParticles = () => {
-          const width = canvas.width;
-          const height = canvas.height;
-          const centerX = width / 2;
-          const centerY = height / 2;
+          particles.length = 0;
 
-          // Employees to Core (left side)
-          const employeeX = width * 0.15;
-          const employeeY1 = height * 0.35;
-          const employeeY2 = height * 0.65;
-
-          // Benefits from Core (right side)
-          const benefitX = width * 0.85;
-          const benefitY1 = height * 0.35;
-          const benefitY2 = height * 0.65;
-
-          // Employee particles (blue/cyan)
-          for (let i = 0; i < 3; i++) {
-            particles.push(new Particle(employeeX, employeeY1, centerX, centerY, '#3498db', i * 0.3));
-            particles.push(new Particle(employeeX, employeeY2, centerX, centerY, '#9b59b6', i * 0.3 + 0.15));
-          }
-
-          // Benefit particles (green/gold)
-          for (let i = 0; i < 3; i++) {
-            particles.push(new Particle(centerX, centerY, benefitX, benefitY1, '#2ecc71', i * 0.3));
-            particles.push(new Particle(centerX, centerY, benefitX, benefitY2, '#f39c12', i * 0.3 + 0.15));
-          }
+          // Create particles for each connection
+          connections.forEach((conn, index) => {
+            for (let i = 0; i < 3; i++) {
+              particles.push(new Particle(
+                conn.startX,
+                conn.startY,
+                conn.endX,
+                conn.endY,
+                conn.color,
+                i * 0.3 + index * 0.1
+              ));
+            }
+          });
         };
 
+        calculateConnections();
         createParticles();
 
         // Animation loop
         const animate = () => {
           ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+          // Draw connection lines
+          drawConnections();
+
+          // Draw particles
           particles.forEach(particle => {
             particle.update();
             particle.draw(ctx);
