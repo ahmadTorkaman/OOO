@@ -1789,10 +1789,75 @@
             'div',
             { className: 'flow-diagram' },
 
-            // Employee Input Column
+            // Benefits Input Column
             h(
               'div',
               { className: 'flow-column employees' },
+              h(
+                'div',
+                { className: 'output-node company' },
+                h('h4', null, h(LucideIcon, { name: 'building-2', size: 20, style: { marginRight: '8px' } }), ' Company Benefits ', h('span', { className: 'persian-text' }, '• مزایای سازمان')),
+                h(
+                  'ul',
+                  null,
+                  h('li', null, 'Cost reduction'),
+                  h('li', null, 'Faster to market'),
+                  h('li', null, 'Fewer errors'),
+                  h('li', null, 'Real-time visibility')
+                )
+              ),
+              h(
+                'div',
+                { className: 'output-node employees' },
+                h('h4', null, h(LucideIcon, { name: 'users', size: 20, style: { marginRight: '8px' } }), ' Employee Benefits ', h('span', { className: 'persian-text' }, '• مزایای کارکنان')),
+                h(
+                  'ul',
+                  null,
+                  h('li', null, 'Performance bonuses'),
+                  h('li', null, 'Skill development'),
+                  h('li', null, 'Fair workload'),
+                  h('li', null, 'Transparency')
+                )
+              )
+            ),
+
+            // OZONE Core Column
+            h(
+              'div',
+              { className: 'flow-column ozone-core' },
+              h(
+                'div',
+                { className: 'ozone-core-container' },
+                h('div', { className: 'ozone-logo-text' }, 'OZONE'),
+                h(
+                  'div',
+                  { className: 'ozone-metrics' },
+                  h(
+                    'div',
+                    { className: 'metric-badge' },
+                    h('span', { className: 'metric-icon' }, h(LucideIcon, { name: 'bar-chart-2', size: 24 })),
+                    h('span', { className: 'metric-label' }, 'KPI Tracking')
+                  ),
+                  h(
+                    'div',
+                    { className: 'metric-badge' },
+                    h('span', { className: 'metric-icon' }, h(LucideIcon, { name: 'package', size: 24 })),
+                    h('span', { className: 'metric-label' }, 'MRP System')
+                  ),
+                  h(
+                    'div',
+                    { className: 'metric-badge' },
+                    h('span', { className: 'metric-icon' }, h(LucideIcon, { name: 'settings', size: 24 })),
+                    h('span', { className: 'metric-label' }, 'BPM Engine')
+                  )
+                )
+              )
+            ),
+
+            // Employee Output Column
+            h(
+              'div',
+              { className: 'flow-column outputs' },
               h(
                 'div',
                 { className: 'employee-node designer' },
@@ -1857,71 +1922,6 @@
                   { className: 'employee-info' },
                   h('h4', null, 'Sales ', h('span', { className: 'persian-text' }, '• فروش')),
                   h('p', { className: 'persian-text' }, 'درآمد ایجاد می‌کند')
-                )
-              )
-            ),
-
-            // OZONE Core Column
-            h(
-              'div',
-              { className: 'flow-column ozone-core' },
-              h(
-                'div',
-                { className: 'ozone-core-container' },
-                h('div', { className: 'ozone-logo-text' }, 'OZONE'),
-                h(
-                  'div',
-                  { className: 'ozone-metrics' },
-                  h(
-                    'div',
-                    { className: 'metric-badge' },
-                    h('span', { className: 'metric-icon' }, h(LucideIcon, { name: 'bar-chart-2', size: 24 })),
-                    h('span', { className: 'metric-label' }, 'KPI Tracking')
-                  ),
-                  h(
-                    'div',
-                    { className: 'metric-badge' },
-                    h('span', { className: 'metric-icon' }, h(LucideIcon, { name: 'package', size: 24 })),
-                    h('span', { className: 'metric-label' }, 'MRP System')
-                  ),
-                  h(
-                    'div',
-                    { className: 'metric-badge' },
-                    h('span', { className: 'metric-icon' }, h(LucideIcon, { name: 'settings', size: 24 })),
-                    h('span', { className: 'metric-label' }, 'BPM Engine')
-                  )
-                )
-              )
-            ),
-
-            // Output Column
-            h(
-              'div',
-              { className: 'flow-column outputs' },
-              h(
-                'div',
-                { className: 'output-node company' },
-                h('h4', null, h(LucideIcon, { name: 'building-2', size: 20, style: { marginRight: '8px' } }), ' Company Benefits ', h('span', { className: 'persian-text' }, '• مزایای سازمان')),
-                h(
-                  'ul',
-                  null,
-                  h('li', null, 'Cost reduction'),
-                  h('li', null, 'Faster to market'),
-                  h('li', null, 'Fewer errors'),
-                  h('li', null, 'Real-time visibility')
-                )
-              ),
-              h(
-                'div',
-                { className: 'output-node employees' },
-                h('h4', null, h(LucideIcon, { name: 'users', size: 20, style: { marginRight: '8px' } }), ' Employee Benefits ', h('span', { className: 'persian-text' }, '• مزایای کارکنان')),
-                h(
-                  'ul',
-                  null,
-                  h('li', null, 'Performance bonuses'),
-                  h('li', null, 'Skill development'),
-                  h('li', null, 'Fair workload'),
-                  h('li', null, 'Transparency')
                 )
               )
             )
