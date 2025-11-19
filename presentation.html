@@ -2704,18 +2704,6 @@
         const connections = [];
         let animationId;
 
-        // Set canvas size
-        const resizeCanvas = () => {
-          const container = canvas.parentElement;
-          canvas.width = container.offsetWidth;
-          canvas.height = container.offsetHeight;
-
-          // Recalculate connections when resizing
-          calculateConnections();
-        };
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
         // Node configuration
         const nodeRadius = 40; // 80px diameter / 2
         const coreRadius = 60; // 120px diameter / 2
@@ -2892,8 +2880,19 @@
           });
         };
 
-        calculateConnections();
-        createParticles();
+        // Set canvas size
+        const resizeCanvas = () => {
+          const container = canvas.parentElement;
+          canvas.width = container.offsetWidth;
+          canvas.height = container.offsetHeight;
+
+          // Recalculate connections when resizing
+          calculateConnections();
+          createParticles();
+        };
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
 
         // Animation loop
         const animate = () => {
