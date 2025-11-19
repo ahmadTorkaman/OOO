@@ -113,6 +113,9 @@
 
 .flow-column.outputs {
   align-items: flex-end;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .employee-node {
@@ -132,6 +135,15 @@
   transform: translateX(5px);
   box-shadow: 0 4px 15px rgba(76, 98, 186, 0.2);
   border-color: rgba(76, 98, 186, 0.3);
+}
+
+.flow-column.outputs .employee-node {
+  max-width: 200px;
+  margin: 0.5rem;
+}
+
+.flow-column.outputs .employee-node:hover {
+  transform: translateY(-5px);
 }
 
 .employee-node.designer { border-left: 4px solid #3498db; }
