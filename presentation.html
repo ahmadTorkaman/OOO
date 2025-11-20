@@ -2042,18 +2042,20 @@
           const coreRadius = 100;
           const employeeRadius = 70;
 
-          const colors = ['#4c62ba', '#6a7fc1'];
-          [benefitY1, benefitY2].forEach((benefitY, index) => {
-            const start = getEdgePoint(benefitX, benefitY, coreX, coreY, benefitRadius);
-            const end = getEdgePoint(coreX, coreY, benefitX, benefitY, coreRadius);
-            connections.push({ startX: start.x, startY: start.y, endX: end.x, endY: end.y, color: colors[index] });
-          });
-
+          // Employees -> Core connections (data flows FROM employees TO core)
           const employeeColors = ['#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#e74c3c', '#16a085'];
           employeeYPositions.forEach((empY, index) => {
-            const start = getEdgePoint(coreX, coreY, employeeX, empY, coreRadius);
-            const end = getEdgePoint(employeeX, empY, coreX, coreY, employeeRadius);
+            const start = getEdgePoint(employeeX, empY, coreX, coreY, employeeRadius);
+            const end = getEdgePoint(coreX, coreY, employeeX, empY, coreRadius);
             connections.push({ startX: start.x, startY: start.y, endX: end.x, endY: end.y, color: employeeColors[index] });
+          });
+
+          // Core -> Benefits connections (data flows FROM core TO benefits)
+          const colors = ['#4c62ba', '#6a7fc1'];
+          [benefitY1, benefitY2].forEach((benefitY, index) => {
+            const start = getEdgePoint(coreX, coreY, benefitX, benefitY, coreRadius);
+            const end = getEdgePoint(benefitX, benefitY, coreX, coreY, benefitRadius);
+            connections.push({ startX: start.x, startY: start.y, endX: end.x, endY: end.y, color: colors[index] });
           });
         };
 
